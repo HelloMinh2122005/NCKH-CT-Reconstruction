@@ -4,11 +4,19 @@ Tài liệu này hướng dẫn chi tiết cách tạo và tiền xử lý dữ 
 
 ---
 
-## 1. Giới thiệu Bài toán Limited-Angle CT
-Trong chụp cắt lớp vi tính thông thường, đầu phát tia X và máy thu (detector) quay trọn một góc $360^\circ$ (hoặc $180^\circ + 2\gamma$ đối với chùm tia Fan-Beam). 
-Tuy nhiên trong thực tế lâm sàng (như chụp C-arm trong phẫu thuật, nha khoa, chụp X-quang tuyến vú cắt lớp số - DBT) hoặc kiểm tra công nghiệp, góc quay bị cản trở bởi cấu trúc cơ thể hoặc thiết bị:
-- **Góc quét bị giới hạn (Limited Angular Range):** $\Delta \theta < 180^\circ$ (ví dụ: $90^\circ, 120^\circ, 140^\circ, 150^\circ$).
-- **Vấn đề toán học (Missing Wedge Problem):** Theo định lý lát cắt Fourier (Fourier Slice Theorem), việc thiếu một phần góc quét dẫn đến vùng khuyết hình nêm trong miền tần số. Do đó, ảnh tái tạo bằng giải thuật FBP cổ điển bị vệt sọc nặng (streak artifacts), mờ biên và méo dạng cấu trúc nghiêm trọng hơn bài toán Sparse-view rất nhiều.
+## 1. Động Lực Nghiên Cứu & Bài Toán Limited-Angle CT
+
+### Động lực chính: Giảm thiểu liều bức xạ tia X chiếu vào người bệnh nhân
+Trong chẩn đoán hình ảnh y khoa, việc tiếp xúc nhiều với bức xạ tia X mang lại nguy cơ tích tụ phóng xạ và tiềm ẩn các rủi ro sức khỏe nghiêm trọng (như ung thư). Tuân theo nguyên tắc y tế **ALARA (As Low As Reasonably Achievable)**, bài toán **Limited-Angle CT** ra đời nhằm giải quyết mục tiêu cốt lõi:
+1. **Cắt giảm trực tiếp liều bức xạ (Radiation Dose Reduction):** Thay vì để nguồn phát tia X quay trọn vòng $360^\circ$ quanh cơ thể, ta chỉ cho phát tia trong một cung góc hẹp (ví dụ: $90^\circ, 120^\circ$ hoặc $150^\circ$), giúp giảm ngay từ **50% đến 75% tổng lượng tia X** chiếu vào bệnh nhân.
+2. **Bảo vệ các cơ quan nhạy cảm với phóng xạ (Organ Shielding):** Giới hạn góc quét cho phép bác sĩ điều chỉnh hướng chiếu tia chỉ đi qua vùng tổn thương, tránh chiếu trực diện vào các cơ quan dễ tổn thương do tia X (như tuyến giáp, mắt, tuyến vú, cơ quan sinh sản).
+3. **Rút ngắn thời gian chụp:** Quét trong dải góc hẹp giúp giảm đáng kể thời gian quét, hạn chế nhiễu do cử động của bệnh nhân (motion artifacts) và rất hữu ích trong phẫu thuật can thiệp khẩn cấp (C-arm CT).
+
+### Thách thức toán học (The Missing Wedge Problem):
+Khi dải góc quét bị giới hạn $\Delta \theta < 180^\circ$:
+- Theo **Định lý Lát cắt Fourier (Fourier Slice Theorem)**, miền tần số $k$-space bị khuyết một vùng hình nêm lớn (**Missing Wedge**).
+- Phương pháp giải tích cổ điển (Filtered Backprojection - FBP) sẽ cho ra ảnh bị suy giảm chất lượng trầm trọng: xuất hiện vệt sọc dài (heavy streak artifacts), mất biên cạnh sắc nét và méo dạng cấu trúc giải phẫu dọc theo phương thiếu dữ liệu chiếu.
+- Vì vậy, việc ứng dụng các mô hình học sâu (Deep Learning) nhằm tái tạo và phục hồi thông tin vùng bị khuyết là giải pháp đột phá để thu được ảnh CT chất lượng chẩn đoán cao với liều tia cực thấp.
 
 ---
 
@@ -29,11 +37,11 @@ Mô phỏng phép chiếu được thực hiện qua thư viện **ODL (Operator
 
 ## 3. Các cấu hình góc quét Limited-Angle phổ biến
 
-| Tên cấu hình | Dải góc (Độ) | Dải góc (Radian) | Số góc chiếu (Views) |
-| :--- | :--- | :--- | :--- |
-| **LA-120° (Chuẩn Benchmark)** | $[-60^\circ, +60^\circ]$ | $[-\pi/3, +\pi/3]$ | $64$ hoặc $96$ views |
-| **LA-150° (Dễ hơn)** | $[-75^\circ, +75^\circ]$ | $[-5\pi/12, +5\pi/12]$ | $64$ hoặc $96$ views |
-| **LA-90° (Cực hạn / Thách thức)** | $[-45^\circ, +45^\circ]$ | $[-\pi/4, +\pi/4]$ | $48$ hoặc $64$ views |
+| Tên cấu hình | Dải góc (Độ) | Dải góc (Radian) | Số góc chiếu (Views) | Giảm liều tia X ước tính |
+| :--- | :--- | :--- | :--- | :--- |
+| **LA-120° (Chuẩn Benchmark)** | $[-60^\circ, +60^\circ]$ | $[-\pi/3, +\pi/3]$ | $64$ hoặc $96$ views | $\approx 66.7\%$ liều quét $360^\circ$ |
+| **LA-150° (Dễ hơn)** | $[-75^\circ, +75^\circ]$ | $[-5\pi/12, +5\pi/12]$ | $64$ hoặc $96$ views | $\approx 58.3\%$ liều quét $360^\circ$ |
+| **LA-90° (Cực hạn / Thách thức)** | $[-45^\circ, +45^\circ]$ | $[-\pi/4, +\pi/4]$ | $48$ hoặc $64$ views | $\approx 75.0\%$ liều quét $360^\circ$ |
 
 ---
 

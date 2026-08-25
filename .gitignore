@@ -1,0 +1,61 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Data & Large Files
+*.IMA
+*.ima
+*.dcm
+*.DCM
+*.npy
+*.npz
+*.png
+*.jpg
+*.jpeg
+*.tif
+*.tiff
+*.tar
+*.tar.gz
+*.zip
+*.7z
+*.h5
+*.hdf5
+
+# Split and cache directories
+split/
+split_dl/
+minideeplesion/
+data/raw/
+data/processed/
+datasets/
+
+# Model Checkpoints & Logs
+*.pt
+*.pth
+*.ckpt
+*.onnx
+*.engine
+lightning_logs/
+wandb/
+runs/
+checkpoints/
+logs/
+*.log
+*.out
+*.err
+
+# Virtual environments
+.env
+.venv
+env/
+venv/
+ENV/
+
+# IDE & OS
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+*.swo

@@ -11,9 +11,17 @@
 
 ---
 
-## 2. Mục Tiêu Nghiên Cứu & Cơ Sở Khoa Học
-- **Mục tiêu cốt lõi:** Cắt giảm tối đa liều bức xạ tia X chiếu vào người bệnh nhân (**Radiation Dose Reduction $50\% - 75\%$**) tuân theo nguyên tắc y học **ALARA**, đồng thời bảo vệ các cơ quan nhạy cảm với phóng xạ (tuyến giáp, mắt, tuyến vú).
-- **Thách thức toán học:** Cung quét bị giới hạn $\Delta \theta < 180^\circ$ dẫn đến vùng khuyết hình nêm trong miền tần số Fourier (**Missing Wedge Problem**). Giải thuật cổ điển FBP cho ảnh bị vệt sọc nặng (heavy streak artifacts) và mất biên cấu trúc giải phẫu. AI / Deep Learning được dùng để khôi phục vùng thiếu góc này.
+## 2. Kế Thừa Nghiên Cứu & Cơ Sở Khoa Học
+
+### 2.1. Kế thừa công trình nghiên cứu của Thành (Baseline):
+- **Bài báo gốc (Paper):** `~/note/MVA___CT_reconstruction_revised-2.pdf` (Mô hình MVA - Multi-View Attention cho bài toán Sparse-view CT).
+- **Toàn bộ Source code của Thành:** [`uittogether3-slurm-server/Thanhld`](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/Thanhld) (Bao gồm các mô hình `LEARN_LongNet`, `LEARN_Longformer`, `LEARN_Mamba` và các script sinh sinogram gốc).
+- **Tài liệu phân tích kiến trúc MVA vs Đề xuất mới:** [ARCHITECTURE_MVA_VS_PROPOSED_SOLAR.md](file:///home/phandinhminh/Downloads/kltn/agents-research/my-research/report-to-proffessor/ARCHITECTURE_MVA_VS_PROPOSED_SOLAR.md).
+
+### 2.2. Mục tiêu nghiên cứu cốt lõi:
+- **Mục tiêu nhân văn:** Cắt giảm tối đa liều bức xạ tia X chiếu vào người bệnh nhân (**Radiation Dose Reduction $50\% - 75\%$**) tuân theo nguyên tắc y học **ALARA**, đồng thời bảo vệ các cơ quan nhạy cảm với phóng xạ (tuyến giáp, mắt, tuyến vú).
+- **Thách thức toán học:** Cung quét bị giới hạn $\Delta \theta < 180^\circ$ dẫn đến vùng khuyết hình nêm trong miền tần số Fourier (**Missing Wedge Problem**). Địa hình Hessian $A^TA$ suy biến, các bước gradient bậc 1 bị dao động (Zigzag). 
+- **Hướng đề xuất:** Phát triển kiến trúc tối ưu hóa bậc 2 (Second-Order) kết hợp phân nhánh kép cục bộ - toàn cục (Dual-Branch Local/Nonlocal như mạng **SOLAR**) để vượt qua giới hạn của MVA trên bài toán Limited-Angle CT.
 
 ---
 
@@ -72,5 +80,5 @@
 
 ### Các bước tiếp theo:
 - [ ] Theo dõi và nghiệm thu dữ liệu sinh ra bởi Job `64295` tại `/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/`.
-- [ ] Thiết kế kiến trúc mô hình tái tạo Limited-Angle CT (kế thừa / cải tiến từ các baseline như FBPConvNet, LEARN, Mamba/Transformer).
+- [ ] Thiết kế kiến trúc mô hình tái tạo Limited-Angle CT (kế thừa / cải tiến từ các baseline như FBPConvNet, LEARN, Mamba/Transformer/SOLAR).
 - [ ] Xây dựng pipeline Training, Validation và Testing với các chỉ số đo lường (PSNR, SSIM, RMSE, Visual Comparison).

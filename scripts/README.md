@@ -115,8 +115,17 @@ python -c "import torch; print(f'PyTorch Version: {torch.__version__}'); print(f
 
 ### Gửi và kiểm tra Job:
 ```bash
-# Submit file script lên hàng đợi
+# 1. Sinh tập dữ liệu Limited-Angle CT
 sbatch scripts/generate_la_dataset.sh
+
+# 2. Huấn luyện Baseline LEARN_Mamba trên LA-CT
+sbatch scripts/train_mamba_la.sh
+
+# 3. Huấn luyện Baseline LEARN_Longformer trên LA-CT
+sbatch scripts/train_longformer_la.sh
+
+# 4. Huấn luyện Baseline LEARN_LongNet trên LA-CT
+sbatch scripts/train_longnet_la.sh
 
 # Xem danh sách tất cả các job đang chạy trong cụm
 squeue

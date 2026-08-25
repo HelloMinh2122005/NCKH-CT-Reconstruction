@@ -44,7 +44,7 @@
 - **Ánh xạ đường dẫn:**
   - Local SSHFS: `/home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/`
   - Server Datastore: `/datastore/uittogether3/LuuTru/`
-- **Môi trường Conda:** `/datastore/uittogether3/tools/miniconda3/envs/LongNet` (đầy đủ `torch`, `odl`, `astra-toolbox`, `pydicom`, `torchvision`)
+- **Môi trường Conda:** `/datastore/uittogether3/tools/miniconda3/envs/LongNet` (đầy đủ `torch==2.8.0+cu128`, `mamba-ssm==2.3.1`, `transformers==4.57.6`, `odl==0.8.3`, `astra-toolbox==2.3.0`, `torchmetrics==1.8.2`, `pydicom==2.4.4`).
 - **Cơ chế GPU:** NVIDIA MPS (`#SBATCH --gres=mps:a100:2`), kiểm tra VRAM qua script Admin `/usr/local/bin/gpu_check.sh $REQUIRED_VRAM $SLURM_JOB_ID`.
 - **Quy tắc bắt buộc về lưu Output/Log:**
   - Mọi job Slurm **bắt buộc** phải ghi log vào:
@@ -74,11 +74,19 @@
   - `data/CTSlice_Provider_LA.py`: Dataset loader Fan-beam góc giới hạn.
   - `data/prepare_data_sinogram_LA.py`: Script sinh hàng loạt sinogram & FBP `.npy`.
   - `data/datamodule_LA.py`: PyTorch Lightning DataModule.
-- [x] Biên soạn tài liệu chi tiết: `data/README.md`, `scripts/README.md`, `README.md`.
+- [x] Biên soạn tài liệu chi tiết: `data/README.md`, `scripts/README.md`, `README.md`, `baselines/README.md`.
 - [x] Khởi tạo Git repo, chuẩn hóa `.gitignore` và push lên GitHub `HelloMinh2122005/NCKH-CT-Reconstruction`.
 - [x] Submit Job Slurm sinh dữ liệu: **Job ID `64295`** (`generate_la_dataset.sh`), cấu hình log chuẩn `scripts/output/generate_la_dataset/log/`.
+- [x] **Sao chép và chuẩn hóa 3 mô hình Baseline từ paper của Thành sang Limited-Angle CT (`baselines/`):**
+  - **`LEARN_Mamba`:** `models.py`, `train_mamba_la.py`, `test_mamba_la.py`, `scripts/train_mamba_la.sh`.
+  - **`LEARN_Longformer`:** `models.py`, `train_longformer_la.py`, `test_longformer_la.py`, `scripts/train_longformer_la.sh`.
+  - **`LEARN_LongNet`:** `models.py`, `train_longnet_la.py`, `test_longnet_la.py`, `long_net.py`, `scripts/train_longnet_la.sh`.
+- [x] **Xác thực toàn diện môi trường Slurm A100:** Kiểm tra trực tiếp trên cluster `10.204.1.52`, tất cả 14 thư viện lõi đều đạt chuẩn `[OK]`.
+- [x] **Bổ sung chú thích (Comments & Docstrings) chi tiết 100%:** Cho từng hàm, từng khối logic toán học, từng phép toán reshape/permute và từng tham số trong toàn bộ 3 thư mục baseline.
+- [x] **Chuẩn hóa cấu hình Requirements:** Xóa các file requirements con thừa, tập trung vào [requirements.txt](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/requirements.txt) ở thư mục gốc.
 
 ### Các bước tiếp theo:
 - [ ] Theo dõi và nghiệm thu dữ liệu sinh ra bởi Job `64295` tại `/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/`.
-- [ ] Thiết kế kiến trúc mô hình tái tạo Limited-Angle CT (kế thừa / cải tiến từ các baseline như FBPConvNet, LEARN, Mamba/Transformer/SOLAR).
-- [ ] Xây dựng pipeline Training, Validation và Testing với các chỉ số đo lường (PSNR, SSIM, RMSE, Visual Comparison).
+- [ ] Submit các Slurm Job huấn luyện baseline (`train_mamba_la.sh`, `train_longformer_la.sh`, `train_longnet_la.sh`) ngay khi dataset sẵn sàng.
+- [ ] Thiết kế kiến trúc mô hình mới đề xuất **SOLAR** (Second-Order Dual-Branch Newton-CG Unrolling Network).
+- [ ] Đánh giá đối sánh kết quả Benchmark giữa các baseline và mô hình đề xuất (PSNR, SSIM, RMSE, Visual Reconstruction).

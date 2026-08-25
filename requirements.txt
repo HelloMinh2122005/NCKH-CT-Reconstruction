@@ -1,10 +1,21 @@
+# Core Deep Learning & Imaging
 torch>=2.0.0
 torchvision>=0.15.0
 pytorch-lightning>=2.0.0
+torchmetrics>=1.0.0
 pydicom>=2.4.0
-odl>=0.7.0
 scipy>=1.10.0
 numpy>=1.23.0
 Pillow>=9.5.0
 tqdm>=4.65.0
 matplotlib>=3.7.0
+tensorboard>=2.12.0
+einops>=0.6.0
+
+# CT Tomography & Reconstruction Operators
+odl>=0.7.0
+
+# Baseline Models Sequence Modeling Dependencies
+transformers>=4.30.0     # Dành cho LEARN_Longformer (LongformerSelfAttention)
+mamba-ssm>=2.0.0         # Dành cho LEARN_Mamba (Selective SSM Scan)
+long-net>=0.1.0          # Dành cho LEARN_LongNet (DilatedAttention)

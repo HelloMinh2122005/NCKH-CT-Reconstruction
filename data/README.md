@@ -25,17 +25,49 @@ Mô phỏng phép chiếu được thực hiện qua thư viện **ODL (Operator
 
 | Tham số | Giá trị mặc định | Giải thích |
 | :--- | :--- | :--- |
-| **Kích thước miền vật lý** | $200 \times 200\text{ mm}$ | Không gian tái tạo ảnh |
+| **Kích thước miền vật lý** | $200 \times 200\text{ mm}$ | Không gian tái tạo ảnh thực tế |
 | **Độ phân giải ảnh gốc** | $512 \times 512$ | Kích thước lát cắt chuẩn DICOM |
 | **Độ phân giải đầu ra** | $256 \times 256$ | Kích thước ảnh sau resize đưa vào Deep Learning |
-| **Bán kính nguồn (src_radius)** | $600\text{ mm}$ | Khoảng cách từ nguồn phát đến tâm quay |
-| **Bán kính detector (det_radius)** | $290\text{ mm}$ | Khoảng cách từ tâm quay đến detector |
-| **Số lượng Detector** | $512$ | Kích thước partition detector $[-480, 480]$ |
-| **Bộ lọc FBP** | Ram-Lak (`frequency_scaling=0.9`) | Bộ lọc chuẩn FBP tái tạo sơ bộ |
+| **Bán kính nguồn (src_radius)** | $600\text{ mm}$ | Khoảng cách từ nguồn phát đến tâm quay (Isocenter) |
+| **Bán kính detector (det_radius)** | $290\text{ mm}$ | Khoảng cách từ tâm quay đến dải cảm biến (Detector) |
+| **Số lượng Detector** | $512$ | Kích thước partition detector $[-480, 480]\text{ mm}$ |
+| **Bộ lọc FBP** | Ram-Lak (`frequency_scaling=0.9`) | Bộ lọc cắt cao (High-pass ramp filter) chuẩn FBP |
 
 ---
 
-## 3. Các cấu hình góc quét Limited-Angle phổ biến
+## 3. Lý Do Lựa Chọn & Ý Nghĩa Chi Tiết Của Từng Tham Số
+
+### 1. Dải góc quét: `start_ang = -np.pi / 3` ($-60^\circ$) và `end_ang = np.pi / 3` ($+60^\circ$)
+- **Tại sao đối xứng qua $0^\circ$ ($[-60^\circ, +60^\circ]$)?**
+  Cơ thể người có tính đối xứng giải phẫu hai bên (trục đối xứng dọc cơ thể). Việc đặt dải góc quét đối xứng qua hướng $0^\circ$ (hướng trước-sau AP hoặc sau-trước PA) giúp chùm tia X đi đều qua cả 2 bên cơ thể, tạo sự đồng nhất cho việc quan sát và bảo vệ các cơ quan nhạy cảm đối xứng (như 2 lá phổi, thận, tuyến vú).
+- **Tại sao là $120^\circ$?**
+  - Giảm chính xác **$66.7\%$ liều phóng xạ** so với quay đủ $360^\circ$.
+  - Đây là **chuẩn Benchmark quốc tế** được dùng rộng rãi nhất trong các công trình NCKH SOTA (như *FBPConvNet, LEARN, DuDoNet, RegFormer*), giúp kết quả nghiên cứu của bạn có thể so sánh trực tiếp, công bằng với các công bố quốc tế.
+  - Vùng thiếu góc ($240^\circ$) đủ lớn để chứng minh tính ưu việt của AI so với giải thuật truyền thống.
+
+### 2. Số lượng góc chiếu: `num_view = 64`
+- **Độ phân giải góc lý tưởng:** Với dải $120^\circ$, bước nhảy giữa các góc chiếu là $\Delta \theta = \frac{120^\circ}{64} \approx 1.875^\circ$/view. Mật độ này đủ dày để bài toán là **Góc giới hạn thuần túy (Pure Limited-Angle CT)**. Mô hình sẽ tập trung toàn bộ năng lực vào khôi phục **Missing Wedge**, tránh bị nhiễu bởi hiện tượng lấy mẫu quá thưa (Sparse-view under-sampling).
+- **Thuận lợi cho kiến trúc Deep Learning ($64 = 2^6$):** 
+  Các mô hình hiện đại (U-Net, Vision Transformer, LongNet, Mamba) thực hiện downsampling/upsampling qua nhiều tầng ($64 \rightarrow 32 \rightarrow 16 \rightarrow 8 \rightarrow 4$). Số 64 là lũy thừa của 2, tránh hoàn toàn lỗi kích thước lẻ hoặc padding sai lệch trên ma trận Sinogram `(Batch, 1, 64, 256)`.
+
+### 3. Kích thước Detector: `num_detectors = 512` & dải $[-480, 480]\text{ mm}$
+- Số lượng 512 detectors khớp hoàn toàn 1:1 với ma trận ảnh gốc $512 \times 512$.
+- Dải độ rộng detector $960\text{ mm}$ đảm bảo toàn bộ vùng vật thể (FOV $200 \times 200\text{ mm}$) nằm trọn trong chùm tia quét Fan-beam, loại bỏ triệt để hiện tượng cắt cụt dữ liệu biên (**Truncation Artifacts**).
+
+### 4. Bán kính hình học: `src_radius = 600 mm` & `det_radius = 290 mm`
+- Cấu hình này mô phỏng chính xác hình học chùm tia rẽ quạt (**Fan-Beam CT**) của các dòng máy CT y khoa thương mại (như Siemens SOMATOM Definition AS+ trong bộ dataset Mayo Clinic).
+- Tổng khoảng cách từ nguồn tới đầu thu ($SDD = 600 + 290 = 890\text{ mm}$) đảm bảo hệ số phóng đại hình học (Geometric Magnification $M = \frac{SDD}{SOD} \approx 1.48$) đạt chuẩn y tế.
+
+### 5. Mô phỏng nhiễu: `poisson_level = 1e6` & `gaussian_level = 0.05`
+- `poisson_level = 1e6` ($I_0 = 10^6$ photons): Mô phỏng hiện tượng thống kê hạt photon tới detector (Quantum Noise) khi giảm liều tia.
+- `gaussian_level = 0.05`: Mô phỏng nhiễu nhiệt và nhiễu đọc điện tử (Electronic Readout Noise) của bảng mạch cảm biến.
+
+### 6. Độ phân giải đầu ra: `input_size = 256`
+- Resize từ $512 \times 512$ về $256 \times 256$ giúp giảm $4$ lần số lượng điểm ảnh, cho phép các mô hình nặng (như Transformer/Mamba có độ phức tạp $O(N)$ hoặc $O(N^2)$) huấn luyện nhanh, batch size lớn hơn trên GPU A100 mà vẫn bảo toàn đầy đủ các chi tiết giải phẫu học quan trọng.
+
+---
+
+## 4. Các cấu hình góc quét Limited-Angle phổ biến
 
 | Tên cấu hình | Dải góc (Độ) | Dải góc (Radian) | Số góc chiếu (Views) | Giảm liều tia X ước tính |
 | :--- | :--- | :--- | :--- | :--- |
@@ -45,7 +77,7 @@ Mô phỏng phép chiếu được thực hiện qua thư viện **ODL (Operator
 
 ---
 
-## 4. Hướng dẫn chạy tiền xử lý (Generate Dataset)
+## 5. Hướng dẫn chạy tiền xử lý (Generate Dataset)
 
 ### Chạy trực tiếp qua Python:
 ```bash
@@ -77,7 +109,7 @@ sbatch ../scripts/generate_la_dataset.sh
 
 ---
 
-## 5. Cấu trúc thư mục dữ liệu được sinh ra
+## 6. Cấu trúc thư mục dữ liệu được sinh ra
 
 ```text
 /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/

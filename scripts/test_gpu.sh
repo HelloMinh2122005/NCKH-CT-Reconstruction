@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=check_gpu
-#SBATCH --output=check_gpu_%j.out
-#SBATCH --error=check_gpu_%j.err
+#SBATCH --job-name=test_gpu
+#SBATCH --output=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/test_gpu/log/%j.out
+#SBATCH --error=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/test_gpu/log/%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
@@ -11,7 +11,6 @@
 
 set -euo pipefail
 
-# Khai báo dung lượng VRAM tối thiểu cần (MB)
 REQUIRED_VRAM=2048
 
 echo "[INFO] Start at $(date)"

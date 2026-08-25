@@ -4,14 +4,35 @@ Tài liệu này hướng dẫn quy trình chạy job tiêu chuẩn trên cụm 
 
 ---
 
-## 1. Tổng quan về Cơ chế NVIDIA MPS
+## 1. Quy Ước Bắt Buộc Về Tổ Chức Output / Log của các Job
+
+> [!IMPORTANT]
+> **Quy định lưu log:** Tất cả output và error log khi chạy các job qua Slurm **bắt buộc phải được định tuyến vào thư mục:**
+> ```text
+> scripts/output/<tên file script>/log/
+> ```
+> Ví dụ:
+> - Script `generate_la_dataset.sh` $\rightarrow$ Logs lưu tại: `scripts/output/generate_la_dataset/log/%j.out` và `%j.err`
+> - Script `test_gpu.sh` $\rightarrow$ Logs lưu tại: `scripts/output/test_gpu/log/%j.out` và `%j.err`
+
+### Khai báo trong `#SBATCH`:
+```bash
+#SBATCH --output=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/<tên script>/log/%j.out
+#SBATCH --error=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/<tên script>/log/%j.err
+```
+
+*Lưu ý: Slurm yêu cầu thư mục cha phải tồn tại trước khi khởi tạo job. Hãy chắc chắn đã chạy `mkdir -p scripts/output/<tên script>/log` trước khi submit.*
+
+---
+
+## 2. Tổng quan về Cơ chế NVIDIA MPS
 - **NVIDIA MPS (Multi-Process Service):** Cho phép nhiều job chia sẻ tài nguyên tính toán và bộ nhớ trên cùng một GPU vật lý một cách an toàn và tối ưu hiệu năng.
-- **Lưu ý quan trọng:** Khi làm việc ở Headnode (Login node), bạn **không thể** xem trực tiếp trạng thái GPU bằng lệnh `nvidia-smi`. Toàn bộ tác vụ bắt buộc phải submit qua Slurm script.
+- **Lưu ý:** Khi làm việc ở Headnode (Login node), bạn **không thể** xem trực tiếp trạng thái GPU bằng lệnh `nvidia-smi`. Toàn bộ tác vụ bắt buộc phải submit qua Slurm script.
 - **Tài liệu chính thức từ trường:** [https://link.uit.edu.vn/slurm](https://link.uit.edu.vn/slurm)
 
 ---
 
-## 2. Cấu trúc một File Slurm Job Script (`.sh`)
+## 3. Cấu trúc một File Slurm Job Script (`.sh`) Chuẩn
 
 Mỗi file batch script gồm 3 phần chính:
 1. Khai báo ràng buộc tài nguyên (`#SBATCH`)
@@ -21,9 +42,9 @@ Mỗi file batch script gồm 3 phần chính:
 ### Ví dụ Script mẫu `test_gpu.sh`:
 ```bash
 #!/bin/bash
-#SBATCH --job-name=check_gpu
-#SBATCH --output=check_gpu_%j.out
-#SBATCH --error=check_gpu_%j.err
+#SBATCH --job-name=test_gpu
+#SBATCH --output=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/test_gpu/log/%j.out
+#SBATCH --error=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/test_gpu/log/%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=2
@@ -39,7 +60,7 @@ source /datastore/uittogether3/tools/miniconda3/etc/profile.d/conda.sh
 conda activate LongNet
 
 # 2. Khai báo VRAM dự tính (Tránh OOM)
-REQUIRED_VRAM=4096
+REQUIRED_VRAM=2048
 
 # 3. Kiểm tra GPU khả dụng (Logic Admin cung cấp)
 unset CUDA_VISIBLE_DEVICES
@@ -65,13 +86,13 @@ python -c "import torch; print(f'PyTorch Version: {torch.__version__}'); print(f
 
 ---
 
-## 3. Giải thích Chi tiết các Chỉ thị `#SBATCH`
+## 4. Giải thích Chi tiết các Chỉ thị `#SBATCH`
 
 | Chỉ thị | Ý nghĩa | Khuyến nghị & Lưu ý |
 | :--- | :--- | :--- |
 | `#SBATCH --job-name` | Tên của job | Đặt tên ngắn gọn, dễ phân biệt khi xem `squeue` |
-| `#SBATCH --output` | Đường dẫn ghi file log output chuẩn | Sử dụng cú pháp `%j` để tự động gán Job ID (vd: `job_%j.out`) |
-| `#SBATCH --error` | Đường dẫn ghi file log lỗi | Sử dụng cú pháp `%j` (vd: `job_%j.err`) |
+| `#SBATCH --output` | Đường dẫn ghi log output chuẩn | Định dạng: `scripts/output/<tên script>/log/%j.out` |
+| `#SBATCH --error` | Đường dẫn ghi log lỗi | Định dạng: `scripts/output/<tên script>/log/%j.err` |
 | `#SBATCH --nodes=1` | Số lượng node tính toán | Luôn để `1` cho các job đơn node |
 | `#SBATCH --ntasks=1` | Số lượng task chạy đồng thời | Thường đặt `1` |
 | `#SBATCH --cpus-per-task` | Số lượng CPU cores cấp phát | **Khuyến nghị:** Dùng trong phạm vi `2`, `4`, hoặc `8` cores. `2` core là an toàn nhất |
@@ -81,7 +102,7 @@ python -c "import torch; print(f'PyTorch Version: {torch.__version__}'); print(f
 
 ---
 
-## 4. Cơ chế Đặt gạch VRAM (Tránh OOM)
+## 5. Cơ chế Đặt gạch VRAM (Tránh OOM)
 
 Để tránh hiện tượng nhiều job cùng chui vào 1 card gây tràn bộ nhớ GPU (Out-Of-Memory - OOM):
 - Khai báo biến `REQUIRED_VRAM` (đơn vị MB).
@@ -90,12 +111,12 @@ python -c "import torch; print(f'PyTorch Version: {torch.__version__}'); print(f
 
 ---
 
-## 5. Các Lệnh Quản Lý Job Thông Dụng
+## 6. Các Lệnh Quản Lý Job Thông Dụng
 
 ### Gửi và kiểm tra Job:
 ```bash
 # Submit file script lên hàng đợi
-sbatch scripts/test_gpu.sh
+sbatch scripts/generate_la_dataset.sh
 
 # Xem danh sách tất cả các job đang chạy trong cụm
 squeue
@@ -104,10 +125,10 @@ squeue
 squeue -u $USER
 
 # Xem kết quả output theo thời gian thực
-tail -f check_gpu_<jobid>.out
+tail -f scripts/output/<tên script>/log/<jobid>.out
 
 # Xem log lỗi
-cat check_gpu_<jobid>.err
+cat scripts/output/<tên script>/log/<jobid>.err
 ```
 
 ### Hủy Job:
@@ -130,7 +151,7 @@ sacct
 
 ---
 
-## 6. Tài Liệu & Cổng Thông Tin Tham Khảo
+## 7. Tài Liệu & Cổng Thông Tin Tham Khảo
 
 - **Theo dõi Job trực quan (Web Portal):** [https://slurmweb.uit.edu.vn:8081/userportal](https://slurmweb.uit.edu.vn:8081/userportal)
 - **Tài liệu hướng dẫn Slurm UIT (PDF):** [https://slurmweb.uit.edu.vn:8081/userportal/download/user-manual.pdf](https://slurmweb.uit.edu.vn:8081/userportal/download/user-manual.pdf)

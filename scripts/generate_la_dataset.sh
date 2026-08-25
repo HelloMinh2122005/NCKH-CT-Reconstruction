@@ -1,12 +1,12 @@
 #!/bin/bash
-#SBATCH --job-name=LA_CT_DataPrep
-#SBATCH --output=LA_CT_DataPrep_%j.out
-#SBATCH --error=LA_CT_DataPrep_%j.err
+#SBATCH --job-name=generate_la_dataset
+#SBATCH --output=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/generate_la_dataset/log/%j.out
+#SBATCH --error=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/generate_la_dataset/log/%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
-#SBATCH --gres=mps:a100:1
+#SBATCH --gres=mps:a100:2
 #SBATCH --time=24:00:00
 
 set -euo pipefail
@@ -78,7 +78,7 @@ export CUDA_VISIBLE_DEVICES="${BEST_GPU}"
 # ================= RUN DATA GENERATION =================
 echo "[INFO] Launching Limited-Angle CT Data Preparation at $(date)"
 
-cd "$(dirname "$0")/../data"
+cd /datastore/uittogether3/LuuTru/MinhPD/data
 
 # 1. Benchmark 120-degree Limited Angle (64 views, No Noise)
 python -u prepare_data_sinogram_LA.py \

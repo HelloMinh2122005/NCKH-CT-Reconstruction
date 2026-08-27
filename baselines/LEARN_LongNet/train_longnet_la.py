@@ -6,7 +6,7 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
-from data.datamodule_LA import CTDataModule_LA
+from data.datamodule_LA import LimitedAngleCTDataModule
 from baselines.LEARN_LongNet.models import LEARN_LongNet_LA
 
 
@@ -16,28 +16,33 @@ def parse_args():
     """
     parser = argparse.ArgumentParser(description="Huấn luyện mô hình Baseline LEARN_LongNet trên Limited-Angle CT")
     
-    # Dữ liệu
-    parser.add_argument("--data_dir", type=str, default="dataset/limited_angle", help="Đường dẫn thư mục chứa dữ liệu .npy cache")
-    parser.add_argument("--train_patients", nargs="+", default=["L067", "L096", "L109", "L143", "L192", "L286", "L291", "L333"], help="Danh sách mã bệnh nhân huấn luyện")
-    parser.add_argument("--val_patients", nargs="+", default=["L506"], help="Danh sách mã bệnh nhân kiểm định")
+    # 1. Cấu hình Dữ liệu (Data Configuration)
+    parser.add_argument("--dicom_dir", type=str, default="/datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/", help="Đường dẫn thư mục chứa ảnh DICOM gốc AAPM")
+    parser.add_argument("--dataset_dir", "--data_dir", "--cache_dir", dest="cache_dir", type=str, default="/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/", help="Đường dẫn thư mục chứa dữ liệu .npy cache")
+    parser.add_argument("--train_patients", nargs="+", default=None, help="Danh sách mã bệnh nhân huấn luyện")
+    parser.add_argument("--val_patients", nargs="+", default=None, help="Danh sách mã bệnh nhân kiểm định")
     parser.add_argument("--batch_size", type=int, default=1, help="Kích thước batch")
-    parser.add_argument("--num_workers", type=int, default=2, help="Số worker nạp dữ liệu CPU")
+    parser.add_argument("--num_workers", type=int, default=4, help="Số worker nạp dữ liệu CPU")
     
-    # Vật lý CT góc giới hạn
+    # 2. Cấu hình Vật lý CT góc giới hạn (Limited-Angle CT Physics)
+    parser.add_argument("--angle_range_deg", type=float, default=120.0, help="Độ rộng cung quét góc giới hạn (độ)")
+    parser.add_argument("--start_ang_deg", type=float, default=None, help="Góc bắt đầu (độ)")
+    parser.add_argument("--end_ang_deg", type=float, default=None, help="Góc kết thúc (độ)")
     parser.add_argument("--num_view", type=int, default=64, help="Số góc chiếu trong dải góc giới hạn (64 views)")
     parser.add_argument("--num_detectors", type=int, default=512, help="Số detector (512 detectors)")
-    parser.add_argument("--start_ang_deg", type=float, default=-60.0, help="Góc bắt đầu (độ)")
-    parser.add_argument("--end_ang_deg", type=float, default=60.0, help="Góc kết thúc (độ)")
-    parser.add_argument("--noise_level", type=float, default=0.0, help="Mức độ nhiễu bổ sung vào sinogram")
+    parser.add_argument("--input_size", type=int, default=256, help="Kích thước ảnh đầu vào (256x256)")
+    parser.add_argument("--poisson_level", type=float, default=0.0, help="Mức độ nhiễu Poisson")
+    parser.add_argument("--gaussian_level", type=float, default=0.0, help="Mức độ nhiễu Gaussian")
+    parser.add_argument("--use_precomputed", action="store_true", default=True, help="Sử dụng dữ liệu precomputed .npy")
     
-    # Mô hình & Tối ưu hóa
+    # 3. Mô hình & Tối ưu hóa (Model & Optimization)
     parser.add_argument("--n_iterations", type=int, default=14, help="Số giai đoạn unrolling (K = 14)")
-    parser.add_argument("--window_size", type=int, default=2, help="Kích thước patch token (2x2 hoặc 16x16)")
-    parser.add_argument("--initial_lr", type=float, default=1e-4, help="Tốc độ học ban đầu")
+    parser.add_argument("--window_size", type=int, default=2, help="Kích thước cửa sổ Dilated Attention (mặc định = 2)")
+    parser.add_argument("--lr", "--initial_lr", dest="initial_lr", type=float, default=1e-4, help="Tốc độ học ban đầu")
     parser.add_argument("--final_lr", type=float, default=1e-5, help="Tốc độ học tối thiểu")
     parser.add_argument("--max_epochs", type=int, default=50, help="Tổng số epoch huấn luyện")
     parser.add_argument("--log_dir", type=str, default="lightning_logs", help="Thư mục log TensorBoard")
-    parser.add_argument("--checkpoints_dir", type=str, default="checkpoints", help="Thư mục lưu checkpoint")
+    parser.add_argument("--output_dir", "--checkpoints_dir", dest="output_dir", type=str, default="/datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_LongNet/", help="Thư mục lưu checkpoint")
     
     return parser.parse_args()
 
@@ -45,49 +50,78 @@ def parse_args():
 def main():
     args = parse_args()
     
-    start_ang = np.deg2rad(args.start_ang_deg)
-    end_ang = np.deg2rad(args.end_ang_deg)
+    # Tính toán góc quét
+    if args.start_ang_deg is not None and args.end_ang_deg is not None:
+        start_ang_deg = args.start_ang_deg
+        end_ang_deg = args.end_ang_deg
+        angle_range_deg = end_ang_deg - start_ang_deg
+    else:
+        angle_range_deg = args.angle_range_deg
+        start_ang_deg = -angle_range_deg / 2.0
+        end_ang_deg = angle_range_deg / 2.0
+        
+    start_ang = np.deg2rad(start_ang_deg)
+    end_ang = np.deg2rad(end_ang_deg)
+    
+    # Xây dựng setting_tag cache
+    setting_tag = f"limited_ang_{int(angle_range_deg)}deg_numview_{args.num_view}_size_{args.input_size}"
+    if args.poisson_level > 0:
+        setting_tag += f"_poisson_{int(args.poisson_level)}"
+    else:
+        setting_tag += "_noise_0"
     
     print("=" * 70)
     print("🚀 BẮT ĐẦU HUẤN LUYỆN BASELINE: LEARN_LongNet (Limited-Angle CT)")
-    print(f"- Dải góc quét: [{args.start_ang_deg}°, {args.end_ang_deg}°] | {args.num_view} views | {args.num_detectors} detectors")
-    print(f"- Số giai đoạn Unrolling: {args.n_iterations} | Window size: {args.window_size} | Epochs: {args.max_epochs}")
+    print(f"- Dải góc quét: [{start_ang_deg:.1f}°, {end_ang_deg:.1f}°] ({angle_range_deg:.1f}°) | {args.num_view} views | {args.num_detectors} detectors")
+    print(f"- Cấu hình Cache Tag: {setting_tag}")
+    print(f"- Số giai đoạn Unrolling: {args.n_iterations} | Window size: {args.window_size} | Epochs: {args.max_epochs} | Batch size: {args.batch_size}")
+    print(f"- Tốc độ học: {args.initial_lr} -> {args.final_lr}")
+    print(f"- Nơi lưu Checkpoint: {args.output_dir}")
     print("=" * 70)
 
     # 1. Khởi tạo DataModule
-    datamodule = CTDataModule_LA(
-        data_dir=args.data_dir,
-        train_patients=args.train_patients,
-        val_patients=args.val_patients,
-        num_view=args.num_view,
+    datamodule = LimitedAngleCTDataModule(
+        dicom_dir=args.dicom_dir,
+        cache_dir=args.cache_dir,
+        setting_tag=setting_tag,
         start_ang=start_ang,
         end_ang=end_ang,
+        num_view=args.num_view,
         num_detectors=args.num_detectors,
-        noise_level=args.noise_level,
+        input_size=args.input_size,
+        poisson_level=args.poisson_level,
+        gaussian_level=args.gaussian_level,
+        use_precomputed=args.use_precomputed,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
+        train_patients=args.train_patients,
+        val_patients=args.val_patients,
     )
 
     # 2. Khởi tạo Mô hình
     model = LEARN_LongNet_LA(
         n_iterations=args.n_iterations,
+        window_size=args.window_size,
         num_view=args.num_view,
         num_detectors=args.num_detectors,
         start_ang=start_ang,
         end_ang=end_ang,
-        window_size=args.window_size,
+        input_size=args.input_size,
         initial_lr=args.initial_lr,
         final_lr=args.final_lr,
     )
 
-    # 3. Callbacks & Logger
+    # 3. Logger và Checkpoint
+    os.makedirs(args.output_dir, exist_ok=True)
+    os.makedirs(args.log_dir, exist_ok=True)
+    
     logger = TensorBoardLogger(
         save_dir=args.log_dir,
         name="LEARN_LongNet_LA",
     )
     
     checkpoint_callback = ModelCheckpoint(
-        dirpath=os.path.join(args.checkpoints_dir, "LEARN_LongNet_LA"),
+        dirpath=args.output_dir,
         filename="longnet_la-{epoch:02d}-{val_psnr:.2f}-{val_ssim:.4f}",
         save_top_k=3,
         monitor="val_psnr",
@@ -107,7 +141,7 @@ def main():
         log_every_n_steps=10,
     )
 
-    # 5. Khởi chạy
+    # 5. Huấn luyện
     trainer.fit(model, datamodule=datamodule)
     print("🎉 Huấn luyện LEARN_LongNet hoàn thành thành công!")
 

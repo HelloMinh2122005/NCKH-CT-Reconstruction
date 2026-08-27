@@ -273,6 +273,7 @@ class LEARN_Mamba_LA(pl.LightningModule):
         final_lr: float = 1e-5,
     ):
         super().__init__()
+        # Lưu lại toàn bộ siêu tham số vào checkpoint để dễ dàng tái lập thí nghiệm
         self.save_hyperparameters()
 
         self.n_iterations = n_iterations
@@ -284,12 +285,23 @@ class LEARN_Mamba_LA(pl.LightningModule):
         self.initial_lr = initial_lr
         self.final_lr = final_lr
 
-        # Khởi tạo danh sách n_iterations giai đoạn unrolling độc lập
+        # =========================================================================
+        # 1. KHỞI TẠO DANH SÁCH CÁC GIAI ĐOẠN UNROLLING (14 STAGES)
+        # =========================================================================
+        # Mỗi GradientFunction đại diện cho một bước lặp: x_{t+1} = x_t - g_t
+        # Mỗi khối sở hữu mạng nơ-ron điều hòa riêng (RegularizationBlock) 
+        # và một tham số bước nhảy vật lý riêng biệt (alpha_t).
         self.gradient_list = nn.ModuleList(
             [GradientFunction(image_size=input_size) for _ in range(n_iterations)]
         )
 
-        # Xây dựng toán tử Radon và FBP góc giới hạn
+        # =========================================================================
+        # 2. XÂY DỰNG TOÁN TỬ RADON (FORWARD A) VÀ FBP (BACKWARD A^T)
+        # =========================================================================
+        # - radon_curr (A): Mô phỏng máy CT, biến ảnh 2D -> Sinogram đo đạc (B, 1, 64, 512)
+        # - fbp_curr (A^T): Toán tử Chiếu Ngược Có Lọc (Filtered Backprojection - FBP),
+        #   sử dụng bộ lọc Ram-Lak kết hợp phép chiếu ngược Fan-beam để biến 
+        #   vector sai số ở miền Sinogram ngược về lại không gian ảnh 2D (B, 1, 256, 256).
         radon_curr, fbp_curr = self.radon_transform(
             num_view=num_view,
             start_ang=start_ang,
@@ -302,10 +314,24 @@ class LEARN_Mamba_LA(pl.LightningModule):
 
         self.grid: Optional[torch.Tensor] = None
 
+        # In thông tin tổng quan khởi tạo hình học máy CT
+        print("\n" + "=" * 80)
+        print("  🚀 [LEARN_Mamba_LA] ĐÃ KHỞI TẠO MÔ HÌNH VÀ HÌNH HỌC VẬT LÝ THÀNH CÔNG:")
+        print(f"  • Số giai đoạn Unrolling (Stages) : {self.n_iterations} vòng lặp")
+        print(f"  • Dải góc quét (Limited-Angle)    : [{np.rad2deg(start_ang):.1f}°, {np.rad2deg(end_ang):.1f}°] (Cung quét {np.rad2deg(end_ang - start_ang):.1f}°)")
+        print(f"  • Số góc chiếu (Views)            : {self.num_view} views (Bước góc Δθ ≈ {np.rad2deg(end_ang - start_ang)/num_view:.2f}°)")
+        print(f"  • Số cảm biến (Detectors)         : {self.num_detectors} kênh (Dải [-480, 480] mm)")
+        print(f"  • Kích thước ảnh tái tạo          : {self.input_size} x {self.input_size} pixels")
+        print(f"  • Toán tử Chiếu Thuận (A)         : ODL RayTransform ({'GPU astra_cuda' if torch.cuda.is_available() else 'CPU astra_cpu'})")
+        print(f"  • Toán tử Chiếu Ngược (A^T - FBP) : ODL FBP (Filter: Ram-Lak, Frequency Scaling: 0.9, Scale: √2)")
+        print("=" * 80 + "\n")
+
     def forward(self, x_t: torch.Tensor, y: torch.Tensor) -> torch.Tensor:
         """
         Vòng lặp Unrolling 14 giai đoạn:
         x_{t+1} = x_t - GradientFunction_t(x_t, y, A, A^T)
+        GradientFunction_t(x_t, y, A, A^T) chính là phép cộng (tổng hợp lực)
+        của 2 nhánh độc lập: Nhánh Vật Lý Đo Đạc và Nhánh Học Sâu (Deep Prior).
         """
         for i in range(self.n_iterations):
             x_t = x_t - self.gradient_list[i](
@@ -348,6 +374,19 @@ class LEARN_Mamba_LA(pl.LightningModule):
         x_reconstructed = self.forward(fbp_u, sino_noisy)
         loss = F.mse_loss(phantom, x_reconstructed)
         self.log("train_loss", loss, on_step=True, on_epoch=True, prog_bar=True)
+
+        # In giá trị trực quan ở batch đầu tiên (batch_idx == 0) của mỗi Epoch
+        if batch_idx == 0:
+            alphas = [f"{g.alpha.item():.4f}" for g in self.gradient_list]
+            print(f"\n[TRAIN Epoch {self.current_epoch:02d} | Batch {batch_idx:03d}] ------------------------------------")
+            print(f"  • Ground Truth (phantom) : Shape {tuple(phantom.shape)} | Min: {phantom.min().item():.4f}, Max: {phantom.max().item():.4f}, Mean: {phantom.mean().item():.4f}")
+            print(f"  • Đầu vào FBP thô (x_0)  : Shape {tuple(fbp_u.shape)} | Min: {fbp_u.min().item():.4f}, Max: {fbp_u.max().item():.4f}, Mean: {fbp_u.mean().item():.4f}")
+            print(f"  • Sinogram đo đạc (y)    : Shape {tuple(sino_noisy.shape)} | Min: {sino_noisy.min().item():.4f}, Max: {sino_noisy.max().item():.4f}, Mean: {sino_noisy.mean().item():.4f}")
+            print(f"  • Ảnh tái tạo (x_14)     : Shape {tuple(x_reconstructed.shape)} | Min: {x_reconstructed.min().item():.4f}, Max: {x_reconstructed.max().item():.4f}, Mean: {x_reconstructed.mean().item():.4f}")
+            print(f"  • Loss hiện tại (MSE)    : {loss.item():.6f}")
+            print(f"  • Bước nhảy vật lý alpha : [{', '.join(alphas[:5])}, ..., {alphas[-1]}] (Tổng {len(alphas)} stages)")
+            print("-" * 75)
+
         return loss
 
     def validation_step(self, val_batch, batch_idx):
@@ -369,6 +408,16 @@ class LEARN_Mamba_LA(pl.LightningModule):
         self.log("val_ssim", ssim_p, on_step=False, on_epoch=True, prog_bar=True)
         self.log("val_psnr", psnr_p, on_step=False, on_epoch=True, prog_bar=True)
         self.log("val_rmse", rmse_p, on_step=False, on_epoch=True, prog_bar=False)
+
+        # In giá trị nghiệm thu trực quan ở batch kiểm định đầu tiên
+        if batch_idx == 0:
+            print(f"\n>>> [VALIDATION Epoch {self.current_epoch:02d}] ------------------------------------------")
+            print(f"  • Val MSE Loss : {loss.item():.6f}")
+            print(f"  • Val PSNR     : {psnr_p.item():.2f} dB (Càng cao càng sắc nét)")
+            print(f"  • Val SSIM     : {ssim_p.item():.4f} (Độ tương đồng cấu trúc [0 -> 1])")
+            print(f"  • Val RMSE     : {rmse_p.item():.6f}")
+            print(f"  • Dynamic Range: Min = {data_range[0].item():.4f}, Max = {data_range[1].item():.4f}")
+            print(">" * 75 + "\n")
 
         # Lưu ảnh lưới tái tạo để xuất lên TensorBoard
         self.grid = torchvision.utils.make_grid(x_reconstructed.detach().clamp(min=0.0))
@@ -411,7 +460,17 @@ class LEARN_Mamba_LA(pl.LightningModule):
     ):
         """
         Khởi tạo toán tử chiếu Radon và FBP cho bài toán Fan-Beam Limited-Angle CT.
-        Tự động chọn 'astra_cuda' khi chạy trên GPU cluster hoặc fallback 'astra_cpu' khi ở Headnode.
+        
+        Giải thích cơ chế hoạt động của FBP (Filtered Backprojection):
+        -------------------------------------------------------------
+        1. Phép chiếu ngược đơn thuần (Backprojection A^T) gặp nhược điểm: 
+           Nó gây hiện tượng mờ nhòe dạng 1/r do sự tích tụ mật độ khi trải ngược tia X.
+        2. Để khử độ mờ 1/r này, FBP thực hiện 2 bước tuần tự:
+           - Bước 1 (Filtering): Nhân Sinogram trong miền tần số với một bộ lọc cắt cao (High-pass Ramp filter, 
+             ở đây là bộ lọc chuẩn "Ram-Lak" với hệ số frequency_scaling=0.9). Bộ lọc này làm sắc nét các biên cạnh.
+           - Bước 2 (Backprojection): Trải ngược dữ liệu đã lọc theo các góc quét Fan-beam về lưới ảnh 2D.
+        3. Nhân thêm hệ số chuẩn hóa np.sqrt(2) để khớp tỷ lệ năng lượng hình học trong ODL.
+        4. Đóng gói cả Radon Transform (A) và FBP (A^T) thành OperatorModule để PyTorch có thể gọi trực tiếp trên GPU Tensor.
         """
         xx = 200  # Miền vật lý [-200mm, 200mm]
         space = odl.uniform_discr(

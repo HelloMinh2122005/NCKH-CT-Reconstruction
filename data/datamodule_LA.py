@@ -4,6 +4,7 @@ import torchvision.transforms as transforms
 from torch.utils.data import DataLoader
 import pytorch_lightning as pl
 
+# Import Provider dữ liệu linh hoạt (hỗ trợ cả khi chạy từ thư mục gốc hoặc trong subfolder)
 try:
     from data.CTSlice_Provider_LA import LimitedAngleCT_Provider
 except ImportError:
@@ -14,29 +15,35 @@ class LimitedAngleCTDataModule(pl.LightningDataModule):
     """
     PyTorch Lightning DataModule quản lý toàn bộ luồng nạp dữ liệu (DataLoaders)
     cho bài toán Tái tạo ảnh CT góc giới hạn (Limited-Angle CT).
+    
+    DataModule này chịu trách nhiệm:
+    1. Quản lý phân chia tập Train (8 bệnh nhân), Validation (L333), và Test (L310) theo chuẩn AAPM LDCT.
+    2. Nạp song song dữ liệu ảnh gốc DICOM (Ground Truth) và dữ liệu sinogram/FBP đã tính sẵn (.npy cache).
+    3. Cung cấp các DataLoader tối ưu bộ nhớ GPU với cờ pin_memory và đa luồng num_workers.
     """
     def __init__(
         self,
-        dicom_dir: str = "/datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/",
-        cache_dir: str = "/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/",
-        data_dir: str = None,                                               # Tương thích ngược nếu truyền data_dir
-        batch_size: int = 1,                                                # Kích thước batch cho mỗi bước huấn luyện
-        num_workers: int = 4,                                               # Số tiến trình nạp dữ liệu đa luồng
-        setting_tag: str = "limited_ang_120deg_numview_64_size_256_noise_0",# Tên thư mục cấu hình cache dữ liệu
-        start_ang: float = -3.1415926535 / 3,                               # Góc chiếu bắt đầu (-60 độ tính theo Radian)
-        end_ang: float = 3.1415926535 / 3,                                  # Góc chiếu kết thúc (+60 độ tính theo Radian)
-        num_view: int = 64,                                                 # Số góc chiếu trong dải góc giới hạn
-        num_detectors: int = 512,                                           # Số lượng cảm biến detector
-        input_size: int = 256,                                              # Kích thước không gian ảnh (256x256)
-        poisson_level: float = 0.0,                                         # Mức nhiễu Poisson
-        gaussian_level: float = 0.0,                                        # Mức nhiễu Gaussian
-        use_precomputed: bool = True,                                       # Đọc từ cache .npy để tăng tốc
-        train_patients: list = None,
-        val_patients: list = None,
-        test_patients: list = None
+        dicom_dir: str = "/datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/", # Thư mục chứa ảnh DICOM (.IMA) gốc
+        cache_dir: str = "/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/",   # Thư mục chứa file cache .npy (sino và fbp_u)
+        data_dir: str = None,                                               # Tham số tương thích ngược nếu truyền data_dir chung
+        batch_size: int = 1,                                                # Kích thước batch (mặc định = 1 lát cắt mỗi step)
+        num_workers: int = 4,                                               # Số luồng CPU nạp dữ liệu song song
+        setting_tag: str = "limited_ang_120deg_numview_64_size_256_noise_0",# Tên định danh thư mục cache tương ứng với cấu hình vật lý
+        start_ang: float = -3.1415926535 / 3,                               # Góc quét bắt đầu tính theo Radian (-60 độ = -pi/3)
+        end_ang: float = 3.1415926535 / 3,                                  # Góc quét kết thúc tính theo Radian (+60 độ = +pi/3)
+        num_view: int = 64,                                                 # Số góc chiếu (projection views) trong dải quét giới hạn
+        num_detectors: int = 512,                                           # Số lượng phần tử cảm biến trên thanh detector
+        input_size: int = 256,                                              # Kích thước không gian ảnh tái tạo (256x256 pixel)
+        poisson_level: float = 0.0,                                         # Mức photon mô phỏng nhiễu Poisson (0 = không thêm nhiễu)
+        gaussian_level: float = 0.0,                                        # Độ lệch chuẩn mô phỏng nhiễu Gaussian (0 = không thêm nhiễu)
+        use_precomputed: bool = True,                                       # Đọc trực tiếp từ file cache .npy để đạt tốc độ tối đa
+        train_patients: list = None,                                        # Danh sách mã bệnh nhân cho tập huấn luyện (Train)
+        val_patients: list = None,                                          # Danh sách mã bệnh nhân cho tập kiểm định (Validation)
+        test_patients: list = None                                          # Danh sách mã bệnh nhân cho tập kiểm thử độc lập (Test)
     ):
         super().__init__()
-        # Xử lý tương thích ngược
+        
+        # Xử lý tương thích ngược: tự động phát hiện nếu người dùng truyền một thư mục dữ liệu tổng quát
         if data_dir is not None:
             if os.path.exists(os.path.join(data_dir, "train", "L067")):
                 dicom_dir = data_dir
@@ -60,18 +67,19 @@ class LimitedAngleCTDataModule(pl.LightningDataModule):
         self.val_patients = val_patients
         self.test_patients = test_patients
 
-        # Pipeline tiền xử lý: Resize ảnh về kích thước mong muốn
+        # Pipeline biến đổi ảnh: Đảm bảo độ phân giải không gian luôn khớp với input_size (vd: 256x256)
         self.transform = transforms.Compose([
             transforms.Resize((self.input_size, self.input_size))
         ])
 
     def setup(self, stage=None):
         """
-        Khởi tạo các tập Dataset tương ứng với từng giai đoạn (fit: train/val, test: test).
+        Khởi tạo các tập Dataset tương ứng với từng giai đoạn thực thi (fit: Train/Val, test: Test).
+        Được PyTorch Lightning tự động gọi trước khi bắt đầu huấn luyện hoặc đánh giá.
         """
-        # Giai đoạn huấn luyện và kiểm định (fit)
+        # Giai đoạn Huấn luyện & Kiểm định (fit stage)
         if stage == "fit" or stage is None:
-            # 1. Tập Train
+            # 1. Khởi tạo Dataset Huấn luyện (Train Dataset)
             self.train_dataset = LimitedAngleCT_Provider(
                 dicom_dir=self.dicom_dir,
                 cache_dir=self.cache_dir,
@@ -89,7 +97,7 @@ class LimitedAngleCTDataModule(pl.LightningDataModule):
                 test=False,
                 valid=False
             )
-            # 2. Tập Validation
+            # 2. Khởi tạo Dataset Kiểm định (Validation Dataset - mặc định bệnh nhân L333)
             self.val_dataset = LimitedAngleCT_Provider(
                 dicom_dir=self.dicom_dir,
                 cache_dir=self.cache_dir,
@@ -108,9 +116,9 @@ class LimitedAngleCTDataModule(pl.LightningDataModule):
                 valid=True if self.val_patients is None else False
             )
 
-        # Giai đoạn kiểm thử (test)
+        # Giai đoạn Kiểm thử độc lập (test stage)
         if stage == "test" or stage is None:
-            # 3. Tập Test
+            # 3. Khởi tạo Dataset Kiểm thử (Test Dataset - mặc định bệnh nhân L310)
             self.test_dataset = LimitedAngleCT_Provider(
                 dicom_dir=self.dicom_dir,
                 cache_dir=self.cache_dir,
@@ -129,7 +137,11 @@ class LimitedAngleCTDataModule(pl.LightningDataModule):
             )
 
     def train_dataloader(self):
-        """DataLoader cho tập huấn luyện (shuffle=True)."""
+        """
+        DataLoader cho tập huấn luyện:
+        - Bật xáo trộn dữ liệu (shuffle=True) để mô hình học tổng quát hóa.
+        - Bật pin_memory khi có GPU để tăng tốc độ chuyển dữ liệu từ RAM CPU sang VRAM GPU.
+        """
         return DataLoader(
             self.train_dataset,
             batch_size=self.batch_size,
@@ -139,7 +151,10 @@ class LimitedAngleCTDataModule(pl.LightningDataModule):
         )
 
     def val_dataloader(self):
-        """DataLoader cho tập validation (shuffle=False)."""
+        """
+        DataLoader cho tập kiểm định:
+        - Không xáo trộn dữ liệu (shuffle=False) để theo dõi trực quan cố định qua các Epoch.
+        """
         return DataLoader(
             self.val_dataset,
             batch_size=self.batch_size,
@@ -149,7 +164,10 @@ class LimitedAngleCTDataModule(pl.LightningDataModule):
         )
 
     def test_dataloader(self):
-        """DataLoader cho tập kiểm thử (shuffle=False)."""
+        """
+        DataLoader cho tập kiểm thử độc lập:
+        - Không xáo trộn dữ liệu (shuffle=False) để đo lường benchmark PSNR, SSIM chuẩn xác.
+        """
         return DataLoader(
             self.test_dataset,
             batch_size=self.batch_size,
@@ -159,5 +177,5 @@ class LimitedAngleCTDataModule(pl.LightningDataModule):
         )
 
 
-# Alias tương thích ngược
+# Alias tương thích ngược với các script cũ
 CTDataModule_LA = LimitedAngleCTDataModule

@@ -82,14 +82,20 @@
   - **`LEARN_Longformer`:** `models.py`, `train_longformer_la.py`, `test_longformer_la.py`, `scripts/train_longformer_la.sh`.
   - **`LEARN_LongNet`:** `models.py`, `train_longnet_la.py`, `test_longnet_la.py`, `long_net.py`, `scripts/train_longnet_la.sh`.
 - [x] **Xác thực toàn diện môi trường Slurm A100:** Kiểm tra trực tiếp trên cluster `10.204.1.52`, tất cả 14 thư viện lõi đều đạt chuẩn `[OK]`.
-- [x] **Bổ sung chú thích (Comments & Docstrings) chi tiết 100%:** Cho từng hàm, từng khối logic toán học, từng phép toán reshape/permute và từng tham số trong toàn bộ 3 thư mục baseline.
+- [x] **Bổ sung chú thích (Comments & Docstrings) chi tiết 100%:** Cho từng hàm, từng khối logic toán học, từng phép toán reshape/permute và từng tham số trong toàn bộ 3 thư mục baseline và thư mục `data/`.
 - [x] **Chuẩn hóa cấu hình Requirements:** Xóa các file requirements con thừa, tập trung vào [requirements.txt](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/requirements.txt) ở thư mục gốc.
-
+- [x] **Biên soạn Báo cáo Q&A Tạo sinh Dữ liệu & Vật lý CT (Local File):** Lưu tại [`my-research/report-to-proffessor/DATASET_GENERATION_AND_PHYSICS_QA_REPORT.md`](file:///home/phandinhminh/Downloads/kltn/agents-research/my-research/report-to-proffessor/DATASET_GENERATION_AND_PHYSICS_QA_REPORT.md) phục vụ báo cáo với Giáo sư.
 - [x] **Sinh dữ liệu hoàn tất & Nghiệm thu thành công 100% (Job ID `65483`):** Đã tạo đầy đủ cả 2 bộ dữ liệu `120deg` và `90deg` (Train: 1,920 slices, Validation L333: 244 slices, Test L310: 214 slices) tại `/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/`.
-- [x] **Submit 3 Slurm Job huấn luyện Baseline (120-degree LA-CT):**
-  - **`LEARN_Mamba`:** Job ID `65484` (`scripts/output/train_mamba_la/log/%j.out`)
-  - **`LEARN_Longformer`:** Job ID `65485` (`scripts/output/train_longformer_la/log/%j.out`)
-  - **`LEARN_LongNet`:** Job ID `65486` (`scripts/output/train_longnet_la/log/%j.out`)
+- [x] **Submit và Đang Huấn Luyện 3 Slurm Job Baseline (120-degree LA-CT):**
+  - **`LEARN_Mamba`:** Job ID `65484` (`scripts/output/train_mamba_la/log/%j.out`) — *Đang chạy Epoch 0*.
+  - **`LEARN_Longformer`:** Job ID `65485` (`scripts/output/train_longformer_la/log/%j.out`) — *Đang chạy Epoch 0*.
+  - **`LEARN_LongNet`:** Job ID `65486` (`scripts/output/train_longnet_la/log/%j.out`) — *Đang chạy Epoch 0*.
+
+### Quy tắc nghiêm ngặt cho các session sau:
+> [!IMPORTANT]
+> **Quy tắc Bảo toàn Chú thích & Tính Toàn vẹn Mã nguồn:**
+> - Tuyệt đối **KHÔNG ĐƯỢC tự ý xóa, lược bỏ, rút gọn hoặc thay đổi** bất kỳ dòng comment, docstrings tiếng Việt giải thích chi tiết nào trong toàn bộ codebase.
+> - Tuyệt đối **KHÔNG ĐƯỢC viết code sai lệch, làm mâu thuẫn hoặc làm hỏng** các logic và giá trị mặc định đã được giải thích trong comment khi người dùng chưa yêu cầu rõ ràng.
 
 ### Các bước tiếp theo:
 - [ ] Giám sát tiến độ huấn luyện của 3 Job Baseline (`65484`, `65485`, `65486`) trên Slurm cluster.

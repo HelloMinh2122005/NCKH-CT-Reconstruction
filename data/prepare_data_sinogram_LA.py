@@ -1,4 +1,11 @@
 import os
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 import argparse
 import numpy as np
 import torch
@@ -83,6 +90,10 @@ def generate_split(provider, save_sino_path, save_fbp_path):
         sino_file = os.path.join(save_sino_path, f"{stem}.npy")
         fbp_file = os.path.join(save_fbp_path, f"{stem}.npy")
 
+        # Bỏ qua nếu file đã tồn tại để tiết kiệm thời gian
+        if os.path.exists(sino_file) and os.path.exists(fbp_file):
+            continue
+
         # Chuyển đổi PyTorch Tensor sang mảng NumPy để lưu trữ hiệu quả
         sino_np = sino.cpu().numpy() if isinstance(sino, torch.Tensor) else sino
         fbp_np = fbp_u.cpu().numpy() if isinstance(fbp_u, torch.Tensor) else fbp_u
@@ -125,7 +136,7 @@ def main():
     # 2. Xử lý và lưu trữ dữ liệu cho tập TRAIN (8 bệnh nhân)
     # -------------------------------------------------------------
     train_folder = os.path.join(args.output_dir, "train", setting_tag)
-    print(f"\n[1/2] Đang xử lý tập TRAIN -> {train_folder}")
+    print(f"\n[1/3] Đang xử lý tập TRAIN -> {train_folder}")
     train_dataset = LimitedAngleCT_Provider(
         dicom_dir=args.data_dir,
         start_ang=start_ang,
@@ -144,10 +155,31 @@ def main():
     generate_split(train_dataset, os.path.join(train_folder, "sino"), os.path.join(train_folder, "fbp_u"))
 
     # -------------------------------------------------------------
-    # 3. Xử lý và lưu trữ dữ liệu cho tập TEST (Bệnh nhân L310)
+    # 3. Xử lý và lưu trữ dữ liệu cho tập VALIDATION (Bệnh nhân L333)
+    # -------------------------------------------------------------
+    print(f"\n[2/3] Đang xử lý tập VALIDATION (L333) -> {train_folder}")
+    val_dataset = LimitedAngleCT_Provider(
+        dicom_dir=args.data_dir,
+        start_ang=start_ang,
+        end_ang=end_ang,
+        num_view=args.num_view,
+        num_detectors=args.num_detectors,
+        poission_level=args.poisson_level,
+        gaussian_level=args.gaussian_level,
+        input_size=args.input_size,
+        transform=transform,
+        use_precomputed=False,
+        return_path=True,
+        test=False,
+        valid=True
+    )
+    generate_split(val_dataset, os.path.join(train_folder, "sino"), os.path.join(train_folder, "fbp_u"))
+
+    # -------------------------------------------------------------
+    # 4. Xử lý và lưu trữ dữ liệu cho tập TEST (Bệnh nhân L310)
     # -------------------------------------------------------------
     test_folder = os.path.join(args.output_dir, "test", setting_tag)
-    print(f"\n[2/2] Đang xử lý tập TEST -> {test_folder}")
+    print(f"\n[3/3] Đang xử lý tập TEST (L310) -> {test_folder}")
     test_dataset = LimitedAngleCT_Provider(
         dicom_dir=args.data_dir,
         start_ang=start_ang,

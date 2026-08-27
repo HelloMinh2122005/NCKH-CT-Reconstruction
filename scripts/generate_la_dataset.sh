@@ -78,10 +78,11 @@ export CUDA_VISIBLE_DEVICES="${BEST_GPU}"
 # ================= RUN DATA GENERATION =================
 echo "[INFO] Launching Limited-Angle CT Data Preparation at $(date)"
 
-cd /datastore/uittogether3/LuuTru/MinhPD/data
+cd /datastore/uittogether3/LuuTru/MinhPD
+export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
 
 # 1. Benchmark 120-degree Limited Angle (64 views, No Noise)
-python -u prepare_data_sinogram_LA.py \
+python -u data/prepare_data_sinogram_LA.py \
     --data_dir /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ \
     --output_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/ \
     --angle_range_deg 120.0 \
@@ -91,7 +92,7 @@ python -u prepare_data_sinogram_LA.py \
     --gaussian_level 0
 
 # 2. Benchmark 90-degree Limited Angle (64 views, No Noise)
-python -u prepare_data_sinogram_LA.py \
+python -u data/prepare_data_sinogram_LA.py \
     --data_dir /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ \
     --output_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/ \
     --angle_range_deg 90.0 \

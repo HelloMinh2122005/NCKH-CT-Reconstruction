@@ -85,14 +85,13 @@
 - [x] **Bổ sung chú thích (Comments & Docstrings) chi tiết 100%:** Cho từng hàm, từng khối logic toán học, từng phép toán reshape/permute và từng tham số trong toàn bộ 3 thư mục baseline.
 - [x] **Chuẩn hóa cấu hình Requirements:** Xóa các file requirements con thừa, tập trung vào [requirements.txt](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/requirements.txt) ở thư mục gốc.
 
-- [x] **Sinh dữ liệu hoàn tất & Nghiệm thu thành công (Job ID `64295`):** Đã tạo đầy đủ cả 2 bộ dữ liệu `120deg` và `90deg` (Train: 1,920 slices, Test: 214 slices) tại `/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/`.
-- [x] **Chuẩn hóa DataModule & Runner Scripts:** Tách biệt rõ đường dẫn DICOM gốc (`split/`) và Cache Sinogram/FBP (`dataset/limited_angle/`), đồng bộ 100% các đối số CLI giữa bash script và Python code.
+- [x] **Sinh dữ liệu hoàn tất & Nghiệm thu thành công 100% (Job ID `65483`):** Đã tạo đầy đủ cả 2 bộ dữ liệu `120deg` và `90deg` (Train: 1,920 slices, Validation L333: 244 slices, Test L310: 214 slices) tại `/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/`.
 - [x] **Submit 3 Slurm Job huấn luyện Baseline (120-degree LA-CT):**
-  - **`LEARN_Mamba`:** Job ID `65477` (`scripts/output/train_mamba_la/log/%j.out`)
-  - **`LEARN_Longformer`:** Job ID `65478` (`scripts/output/train_longformer_la/log/%j.out`)
-  - **`LEARN_LongNet`:** Job ID `65479` (`scripts/output/train_longnet_la/log/%j.out`)
+  - **`LEARN_Mamba`:** Job ID `65484` (`scripts/output/train_mamba_la/log/%j.out`)
+  - **`LEARN_Longformer`:** Job ID `65485` (`scripts/output/train_longformer_la/log/%j.out`)
+  - **`LEARN_LongNet`:** Job ID `65486` (`scripts/output/train_longnet_la/log/%j.out`)
 
 ### Các bước tiếp theo:
-- [ ] Giám sát tiến độ huấn luyện của 3 Job Baseline (`65477`, `65478`, `65479`) trên Slurm cluster.
+- [ ] Giám sát tiến độ huấn luyện của 3 Job Baseline (`65484`, `65485`, `65486`) trên Slurm cluster.
 - [ ] Thiết kế kiến trúc mô hình mới đề xuất **SOLAR** (Second-Order Dual-Branch Newton-CG Unrolling Network).
 - [ ] Đánh giá đối sánh kết quả Benchmark giữa các baseline và mô hình đề xuất (PSNR, SSIM, RMSE, Visual Reconstruction).

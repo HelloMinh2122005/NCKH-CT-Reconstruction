@@ -1,3 +1,12 @@
+import os
+import sys
+from pathlib import Path
+
+# Đảm bảo thư mục gốc dự án luôn nằm trong sys.path để import các module data/ và baselines/
+PROJECT_ROOT = str(Path(__file__).resolve().parent.parent.parent)
+if PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, PROJECT_ROOT)
+
 import argparse
 import numpy as np
 import torch
@@ -72,7 +81,7 @@ def parse_args():
         "--num_detectors",
         type=int,
         default=512,
-        help="Số lượng cảm biến trên thanh detector"
+        help="Số lượng phần tử cảm biến trên thanh detector"
     )
     parser.add_argument(
         "--input_size",

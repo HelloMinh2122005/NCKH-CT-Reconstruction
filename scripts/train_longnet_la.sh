@@ -79,6 +79,7 @@ export CUDA_VISIBLE_DEVICES="${BEST_GPU}"
 echo "[INFO] Launching LEARN_LongNet Training on Limited-Angle CT at $(date)"
 
 cd /datastore/uittogether3/LuuTru/MinhPD
+export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
 
 python -u baselines/LEARN_LongNet/train_longnet_la.py \
     --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/ \

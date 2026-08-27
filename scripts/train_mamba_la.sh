@@ -79,6 +79,7 @@ export CUDA_VISIBLE_DEVICES="${BEST_GPU}"
 echo "[INFO] Launching LEARN_Mamba Training on Limited-Angle CT at $(date)"
 
 cd /datastore/uittogether3/LuuTru/MinhPD
+export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
 
 python -u baselines/LEARN_Mamba/train_mamba_la.py \
     --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/ \

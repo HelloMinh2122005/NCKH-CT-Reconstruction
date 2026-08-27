@@ -88,11 +88,11 @@
 - [x] **Sinh dữ liệu hoàn tất & Nghiệm thu thành công (Job ID `64295`):** Đã tạo đầy đủ cả 2 bộ dữ liệu `120deg` và `90deg` (Train: 1,920 slices, Test: 214 slices) tại `/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/`.
 - [x] **Chuẩn hóa DataModule & Runner Scripts:** Tách biệt rõ đường dẫn DICOM gốc (`split/`) và Cache Sinogram/FBP (`dataset/limited_angle/`), đồng bộ 100% các đối số CLI giữa bash script và Python code.
 - [x] **Submit 3 Slurm Job huấn luyện Baseline (120-degree LA-CT):**
-  - **`LEARN_Mamba`:** Job ID `65474` (`scripts/output/train_mamba_la/log/%j.out`)
-  - **`LEARN_Longformer`:** Job ID `65475` (`scripts/output/train_longformer_la/log/%j.out`)
-  - **`LEARN_LongNet`:** Job ID `65476` (`scripts/output/train_longnet_la/log/%j.out`)
+  - **`LEARN_Mamba`:** Job ID `65477` (`scripts/output/train_mamba_la/log/%j.out`)
+  - **`LEARN_Longformer`:** Job ID `65478` (`scripts/output/train_longformer_la/log/%j.out`)
+  - **`LEARN_LongNet`:** Job ID `65479` (`scripts/output/train_longnet_la/log/%j.out`)
 
 ### Các bước tiếp theo:
-- [ ] Giám sát tiến độ huấn luyện của 3 Job Baseline (`65474`, `65475`, `65476`) trên Slurm cluster.
+- [ ] Giám sát tiến độ huấn luyện của 3 Job Baseline (`65477`, `65478`, `65479`) trên Slurm cluster.
 - [ ] Thiết kế kiến trúc mô hình mới đề xuất **SOLAR** (Second-Order Dual-Branch Newton-CG Unrolling Network).
 - [ ] Đánh giá đối sánh kết quả Benchmark giữa các baseline và mô hình đề xuất (PSNR, SSIM, RMSE, Visual Reconstruction).

@@ -77,28 +77,31 @@ def parse_args():
 def generate_split(provider, save_sino_path, save_fbp_path):
     """
     Lặp qua toàn bộ lát cắt trong Dataset Provider:
-    - Chiếu thuận Radon tạo Sinogram.
-    - Chiếu ngược FBP tạo ảnh tái tạo ban đầu x_0.
-    - Chuyển đổi PyTorch Tensor sang NumPy array và lưu thành file .npy độc lập.
+    - Kiểm tra trước sự tồn tại của file .npy để bỏ qua tức thì (tiết kiệm thời gian tính toán ODL).
+    - Chỉ thực hiện Chiếu thuận Radon và Chiếu ngược FBP cho các lát cắt chưa được tạo.
+    - Lưu file .npy độc lập cho sinogram và FBP ban đầu.
     """
     os.makedirs(save_sino_path, exist_ok=True)
     os.makedirs(save_fbp_path, exist_ok=True)
 
-    for (slice_path, phantom, fbp_u, sino) in tqdm(provider, desc="Saving .npy slices"):
-        # Lấy tên định danh file gốc (bỏ đuôi mở rộng .IMA)
+    total_slices = len(provider)
+    for i in tqdm(range(total_slices), desc="Generating slices"):
+        slice_path = provider.slices_path[i]
         stem = os.path.basename(slice_path).split(".IMA")[0]
         sino_file = os.path.join(save_sino_path, f"{stem}.npy")
         fbp_file = os.path.join(save_fbp_path, f"{stem}.npy")
 
-        # Bỏ qua nếu file đã tồn tại để tiết kiệm thời gian
+        # Bỏ qua ngay lập tức nếu file đã tồn tại trên đĩa mà không cần tính Radon
         if os.path.exists(sino_file) and os.path.exists(fbp_file):
             continue
 
-        # Chuyển đổi PyTorch Tensor sang mảng NumPy để lưu trữ hiệu quả
+        # Lấy dữ liệu và thực hiện phép chiếu Radon + FBP on-the-fly
+        _, phantom, fbp_u, sino = provider[i]
+
         sino_np = sino.cpu().numpy() if isinstance(sino, torch.Tensor) else sino
         fbp_np = fbp_u.cpu().numpy() if isinstance(fbp_u, torch.Tensor) else fbp_u
 
-        # Lưu file sinogram và FBP góc hạn chế dưới dạng mảng npy
+        # Lưu mảng numpy
         np.save(sino_file, sino_np)
         np.save(fbp_file, fbp_np)
 

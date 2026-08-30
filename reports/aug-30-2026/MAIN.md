@@ -61,16 +61,8 @@ Cả 3 mô hình Baseline đều được thiết lập theo khung Unrolling 14 
  **214 lát cắt CT của bệnh nhân `L310`**.
 
 ### 3.1. Bảng Tổng Hợp So Sánh Các Mô Hình (Benchmark Results):
-* File dữ liệu bảng đối sánh chi tiết (CSV): [benchmark_results.csv](benchmark_results.csv)
+* Toàn bộ bảng số liệu đối sánh thực nghiệm chi tiết giữa các baseline (FBP thô, `LEARN_Mamba`, `LEARN_LongNet`, `LEARN_Longformer`) trên cả 2 dải góc $120^\circ$ và $90^\circ$ được tổng hợp tại file CSV: [benchmark_results.csv](benchmark_results.csv).
 
-| Mô hình Kiểm Thử       | Checkpoint Đánh Giá            | Dải Góc LA-120° (64 views) |                    |                    | Dải Góc LA-90° (Stress-Test 64v) |                    |                    | Nhận Xét Kỹ Thuật                               |
-| :--------------------- | :----------------------------- | :------------------------: | :----------------: | :----------------: | :------------------------------: | :----------------: | :----------------: | :---------------------------------------------- |
-|                        |                                |      **PSNR (dB) ↑**       |     **SSIM ↑**     |     **RMSE ↓**     |         **PSNR (dB) ↑**          |     **SSIM ↑**     |     **RMSE ↓**     |                                                 |
-| **FBP Thô (Ram-Lak)**  | *Không học (Analytical)*       |           17.89            |       0.4984       |       0.1145       |              15.20               |       0.4120       |       0.1450       | Vệt sọc (*streak artifacts*) dày đặc            |
-| **`LEARN_Mamba`**      | `mamba_la-epoch=17.ckpt`       |         **26.32**          |     **0.7468**     |     **0.0493**     |            **18.76**             |     **0.4292**     |     **0.1129**     | Khôi phục mức trung bình; góc 90° suy giảm mạnh |
-| **`LEARN_LongNet`**    | `longnet_la-last.ckpt` (50 ep) |         **31.62**          |     **0.8991**     |     **0.0270**     |            **19.19**             |     **0.5876**     |     **0.1058**     | Khôi phục sắc nét, giữ cấu trúc xương và mô tốt |
-| **`LEARN_Longformer`** | `longformer_la-last.ckpt`      |     *Đang huấn luyện*      | *Đang huấn luyện*  | *Đang huấn luyện*  |        *Đang huấn luyện*         | *Đang huấn luyện*  | *Đang huấn luyện*  | *(Sẽ cập nhật ngay sau khi Job 65892 hoàn tất)* |
-| **`SOLAR` (Đề xuất)**  | *Đang triển khai*              |     *Mục tiêu: >35.0*      | *Mục tiêu: >0.930* | *Mục tiêu: <0.015* |        *Mục tiêu: >32.5*         | *Mục tiêu: >0.880* | *Mục tiêu: <0.020* | Newton-CG Unrolling + Dual-Branch Regularizer   |
 
 ### 3.2. Đánh Giá Khả Năng Tổng Quát Hóa Khi Chuyển Từ 120° Sang 90°:
 * Khi góc quét bị thu hẹp từ $120^\circ \to 90^\circ$ (khuyết tới $270^\circ$ góc chiếu):

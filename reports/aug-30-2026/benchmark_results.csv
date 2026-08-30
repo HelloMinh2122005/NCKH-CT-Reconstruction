@@ -3,4 +3,3 @@ FBP Thô (Ram-Lak),Analytical,17.89,0.4984,0.1145,15.20,0.4120,0.1450,Vệt sọ
 LEARN_Mamba,mamba_la-epoch=17.ckpt,26.32,0.7468,0.0493,18.76,0.4292,0.1129,Khôi phục mức trung bình; góc 90° suy giảm mạnh
 LEARN_LongNet,longnet_la-last.ckpt (50 ep),31.62,0.8991,0.0270,19.19,0.5876,0.1058,Khôi phục sắc nét; giữ cấu trúc xương và mô tốt
 LEARN_Longformer,longformer_la-last.ckpt,Pending,Pending,Pending,Pending,Pending,Pending,Sẽ cập nhật ngay sau khi Job 65892 hoàn tất
-SOLAR (Đề xuất),In Development,>35.0,>0.930,<0.015,>32.5,>0.880,<0.020,Newton-CG Unrolling + Dual-Branch Regularizer

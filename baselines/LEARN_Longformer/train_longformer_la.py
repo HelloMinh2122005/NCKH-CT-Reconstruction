@@ -14,9 +14,17 @@ import pytorch_lightning as pl
 from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
+# Tương thích PyTorch 2.6+ (tránh lỗi WeightsUnpickler khi nạp checkpoint Lightning chứa metadata numpy)
+_orig_torch_load = torch.load
+def _safe_torch_load(*args, **kwargs):
+    kwargs["weights_only"] = False
+    return _orig_torch_load(*args, **kwargs)
+torch.load = _safe_torch_load
+
 # Import DataModule và Mô hình
 from data.datamodule_LA import LimitedAngleCTDataModule
 from baselines.LEARN_Longformer.models import LEARN_Longformer_LA
+
 
 
 def parse_args():
@@ -165,8 +173,16 @@ def parse_args():
         default="/datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Longformer/",
         help="Thư mục lưu trữ checkpoint trọng số mô hình (.ckpt)"
     )
+    parser.add_argument(
+        "--resume_ckpt", "--resume_from_checkpoint",
+        dest="resume_ckpt",
+        type=str,
+        default=None,
+        help="Đường dẫn đến checkpoint .ckpt để tiếp tục huấn luyện (Resume Training)"
+    )
     
     return parser.parse_args()
+
 
 
 def main():
@@ -265,9 +281,10 @@ def main():
         log_every_n_steps=10,
     )
 
-    # Bước 9: Huấn luyện mô hình
-    trainer.fit(model, datamodule=datamodule)
+    # Bước 9: Huấn luyện mô hình (Hỗ trợ Resume từ checkpoint nếu được chỉ định)
+    trainer.fit(model, datamodule=datamodule, ckpt_path=args.resume_ckpt)
     print("\n🎉 Huấn luyện LEARN_Longformer hoàn thành thành công!")
+
 
 
 if __name__ == "__main__":

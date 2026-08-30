@@ -84,6 +84,7 @@ export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
 python -u baselines/LEARN_Longformer/train_longformer_la.py \
     --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/ \
     --output_dir /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Longformer/ \
+    --resume_ckpt /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Longformer/last.ckpt \
     --angle_range_deg 120.0 \
     --num_view 64 \
     --num_detectors 512 \
@@ -96,5 +97,6 @@ python -u baselines/LEARN_Longformer/train_longformer_la.py \
     --lr 1e-4 \
     --num_workers 4 \
     --use_precomputed
+
 
 echo "[INFO] LEARN_Longformer Training finished at $(date)"

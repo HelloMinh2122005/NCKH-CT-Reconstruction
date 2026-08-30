@@ -1,0 +1,8 @@
+[INFO] start at Thu Aug 27 10:26:08 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=65475
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=6
+[INFO] BEST_GPU=6
+[INFO] Launching LEARN_Longformer Training on Limited-Angle CT at Thu Aug 27 10:26:17 PM +07 2026
+[INFO] cleanup rc=1 at Thu Aug 27 10:26:28 PM +07 2026

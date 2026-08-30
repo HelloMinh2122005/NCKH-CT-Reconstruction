@@ -1,0 +1,18 @@
+[INFO] start at Sun Aug 30 05:00:23 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=65889
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=1
+[INFO] BEST_GPU=1
+[INFO] Launching LEARN_LongNet Testing on Limited-Angle CT at Sun Aug 30 05:00:35 PM +07 2026
+================================================================================
+🎯 ĐÁNH GIÁ 1: LEARN_LongNet trên Cấu hình Chuẩn LA-120° (64 views)
+================================================================================
+================================================================================
+📊 TIẾN HÀNH ĐÁNH GIÁ MÔ HÌNH: LEARN_LongNet_LA (Test & Benchmark)
+- Checkpoint nạp: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_LongNet/last.ckpt
+- Bệnh nhân kiểm thử: ['L310']
+- Cung góc quét: [-60.0°, 60.0°] | 64 views | 512 detectors
+- Cấu hình Setting Tag: limited_ang_120deg_numview_64_size_256_noise_0
+================================================================================
+[INFO] cleanup rc=1 at Sun Aug 30 05:00:50 PM +07 2026

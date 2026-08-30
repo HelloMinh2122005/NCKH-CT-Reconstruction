@@ -1,0 +1,45 @@
+[INFO] start at Thu Aug 27 10:39:17 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=65483
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=6
+[INFO] BEST_GPU=6
+[INFO] Launching Limited-Angle CT Data Preparation at Thu Aug 27 10:39:21 PM +07 2026
+======================================================================
+🚀 BẮT ĐẦU TẠO SINH DATASET LIMITED-ANGLE CT
+- Cung góc quét: [-60.0°, +60.0°] (120.0° total)
+- Số góc chiếu (Views): 64 | Detectors: 512
+- Độ phân giải không gian: 256x256
+- Cấu hình lưu trữ (Tag): limited_ang_120deg_numview_64_size_256_noise_0
+======================================================================
+
+[1/3] Đang xử lý tập TRAIN -> /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/train/limited_ang_120deg_numview_64_size_256_noise_0
+[TRAIN] Loaded 1920 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: train).
+
+[2/3] Đang xử lý tập VALIDATION (L333) -> /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/train/limited_ang_120deg_numview_64_size_256_noise_0
+[VALID] Loaded 244 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: train).
+
+[3/3] Đang xử lý tập TEST (L310) -> /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/test/limited_ang_120deg_numview_64_size_256_noise_0
+[TEST] Loaded 214 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: test).
+
+🎉 Tạo sinh và lưu cache toàn bộ dataset Limited-Angle CT hoàn thành thành công!
+======================================================================
+🚀 BẮT ĐẦU TẠO SINH DATASET LIMITED-ANGLE CT
+- Cung góc quét: [-45.0°, +45.0°] (90.0° total)
+- Số góc chiếu (Views): 64 | Detectors: 512
+- Độ phân giải không gian: 256x256
+- Cấu hình lưu trữ (Tag): limited_ang_90deg_numview_64_size_256_noise_0
+======================================================================
+
+[1/3] Đang xử lý tập TRAIN -> /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/train/limited_ang_90deg_numview_64_size_256_noise_0
+[TRAIN] Loaded 1920 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: train).
+
+[2/3] Đang xử lý tập VALIDATION (L333) -> /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/train/limited_ang_90deg_numview_64_size_256_noise_0
+[VALID] Loaded 244 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: train).
+
+[3/3] Đang xử lý tập TEST (L310) -> /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/test/limited_ang_90deg_numview_64_size_256_noise_0
+[TEST] Loaded 214 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: test).
+
+🎉 Tạo sinh và lưu cache toàn bộ dataset Limited-Angle CT hoàn thành thành công!
+[INFO] All Limited-Angle CT data preparation finished at Thu Aug 27 10:41:04 PM +07 2026
+[INFO] cleanup rc=0 at Thu Aug 27 10:41:04 PM +07 2026

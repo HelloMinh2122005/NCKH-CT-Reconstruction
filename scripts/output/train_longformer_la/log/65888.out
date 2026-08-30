@@ -1,0 +1,19 @@
+[INFO] start at Sun Aug 30 05:00:23 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=65888
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=1
+[INFO] BEST_GPU=1
+[INFO] Launching LEARN_Longformer Training on Limited-Angle CT at Sun Aug 30 05:00:33 PM +07 2026
+================================================================================
+🚀 BẮT ĐẦU HUẤN LUYỆN BASELINE: LEARN_Longformer (Limited-Angle CT)
+- Dải góc quét: [-60.0°, 60.0°] (Cung quét 120.0°)
+- Số views: 64 | Detectors: 512 | Kích thước ảnh: 256x256
+- Cấu hình Cache Tag: limited_ang_120deg_numview_64_size_256_noise_0
+- Số giai đoạn Unrolling: 14 stages | Max Epochs: 50 | Batch size: 1
+- Tốc độ học: 0.0001 -> 1e-05
+- Checkpoint lưu tại: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Longformer/
+================================================================================
+[TRAIN] Loaded 1920 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: train).
+[VALID] Loaded 244 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: train).
+[INFO] cleanup rc=1 at Sun Aug 30 05:00:49 PM +07 2026

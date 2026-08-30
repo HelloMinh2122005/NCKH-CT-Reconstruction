@@ -30,7 +30,7 @@ data/raw/
 data/processed/
 datasets/
 
-# Model Checkpoints & Logs
+# Model Checkpoints & WandB
 *.pt
 *.pth
 *.ckpt
@@ -40,10 +40,10 @@ lightning_logs/
 wandb/
 runs/
 checkpoints/
-logs/
-*.log
-*.out
+
+# Ignore Slurm Error logs (keep *.out for benchmark tracking)
 *.err
+
 
 # Virtual environments
 .env

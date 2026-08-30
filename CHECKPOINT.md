@@ -86,10 +86,15 @@
 - [x] **Chuẩn hóa cấu hình Requirements:** Xóa các file requirements con thừa, tập trung vào [requirements.txt](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/requirements.txt) ở thư mục gốc.
 - [x] **Biên soạn Báo cáo Q&A Tạo sinh Dữ liệu & Vật lý CT (Local File):** Lưu tại [`my-research/report-to-proffessor/DATASET_GENERATION_AND_PHYSICS_QA_REPORT.md`](file:///home/phandinhminh/Downloads/kltn/agents-research/my-research/report-to-proffessor/DATASET_GENERATION_AND_PHYSICS_QA_REPORT.md) phục vụ báo cáo với Giáo sư.
 - [x] **Sinh dữ liệu hoàn tất & Nghiệm thu thành công 100% (Job ID `65483`):** Đã tạo đầy đủ cả 2 bộ dữ liệu `120deg` và `90deg` (Train: 1,920 slices, Validation L333: 244 slices, Test L310: 214 slices) tại `/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/`.
-- [x] **Submit và Đang Huấn Luyện 3 Slurm Job Baseline (120-degree LA-CT):**
-  - **`LEARN_Mamba`:** Job ID `65484` (`scripts/output/train_mamba_la/log/%j.out`) — *Đang chạy Epoch 0*.
-  - **`LEARN_Longformer`:** Job ID `65485` (`scripts/output/train_longformer_la/log/%j.out`) — *Đang chạy Epoch 0*.
-  - **`LEARN_LongNet`:** Job ID `65486` (`scripts/output/train_longnet_la/log/%j.out`) — *Đang chạy Epoch 0*.
+- [x] **Nghiệm thu kết quả Huấn luyện 3 Slurm Job Baseline (120-degree LA-CT):**
+  - Xem bảng chi tiết và phân tích tại: [EXPERIMENT_RESULTS.md](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/EXPERIMENT_RESULTS.md)
+  - **`LEARN_LongNet`:** Job ID `65486` (`scripts/output/train_longnet_la/log/65486.out`) — ✅ **Hoàn thành 100% (50/50 Epochs)**. Best Val: **PSNR = 33.37 dB**, **SSIM = 0.9090** (Checkpoint: `longnet_la-epoch=45-val_psnr=33.37-val_ssim=0.9090.ckpt`).
+  - **`LEARN_Longformer`:** Job ID `65485` / Resume Job ID `65892` (`scripts/output/train_longformer_la/log/65892.out`) — ⏱️ Chạy ổn định, đang tiếp tục huấn luyện từ Epoch 17 trên A100 GPU. Best Val trước đó: **PSNR = 32.80 dB**, **SSIM = 0.9109** (`epoch=15`).
+  - **`LEARN_Mamba`:** Job ID `65484` (`scripts/output/train_mamba_la/log/65484.out`) — ⏱️ Chạy 41/50 Epochs (đạt Time Limit 24h). Sử dụng Best Checkpoint: `mamba_la-epoch=17-val_psnr=27.66-val_ssim=0.7373.ckpt` (do sau Epoch 20 xuất hiện mất ổn định gradient/NaN theo đúng lý thuyết).
+- [x] **Đánh giá Test Benchmark Độc Lập (Patient L310 - 214 Slices) & Trực Quan Hóa:**
+  - **Script Test Định lượng:** `baselines/LEARN_LongNet/test_longnet_la.py`, `baselines/LEARN_Mamba/test_mamba_la.py`, `baselines/LEARN_Longformer/test_longformer_la.py`.
+  - **Script Trực quan hóa & Kết xuất ảnh đối sánh:** [visualize_benchmark.py](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/visualize_benchmark.py) (Slurm Batch Script: [scripts/visualize_benchmark.sh](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/scripts/visualize_benchmark.sh)).
+  - **Thư mục ảnh PNG đã xuất:** `visualizations/120deg/` và `visualizations/90deg/` (chứa các folder `slice_050`, `slice_100`, `slice_150` với từng file ảnh PNG riêng biệt và ảnh tổng hợp `comparison_summary.png`).
 
 ### Quy tắc nghiêm ngặt cho các session sau:
 > [!IMPORTANT]
@@ -98,6 +103,9 @@
 > - Tuyệt đối **KHÔNG ĐƯỢC viết code sai lệch, làm mâu thuẫn hoặc làm hỏng** các logic và giá trị mặc định đã được giải thích trong comment khi người dùng chưa yêu cầu rõ ràng.
 
 ### Các bước tiếp theo:
-- [ ] Giám sát tiến độ huấn luyện của 3 Job Baseline (`65484`, `65485`, `65486`) trên Slurm cluster.
+- [x] Giám sát tiến độ huấn luyện của 3 Job Baseline (`65484`, `65485`, `65486`) trên Slurm cluster.
+- [x] Chạy đánh giá Test Set (`test_*_la.py`) và Trực quan hóa (`visualize_benchmark.py`) cho các checkpoint Baseline.
 - [ ] Thiết kế kiến trúc mô hình mới đề xuất **SOLAR** (Second-Order Dual-Branch Newton-CG Unrolling Network).
 - [ ] Đánh giá đối sánh kết quả Benchmark giữa các baseline và mô hình đề xuất (PSNR, SSIM, RMSE, Visual Reconstruction).
+
+

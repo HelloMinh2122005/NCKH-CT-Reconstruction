@@ -1,0 +1,19 @@
+[INFO] start at Thu Aug 27 10:35:36 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=65479
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=6
+[INFO] BEST_GPU=6
+[INFO] Launching LEARN_LongNet Training on Limited-Angle CT at Thu Aug 27 10:35:42 PM +07 2026
+================================================================================
+🚀 BẮT ĐẦU HUẤN LUYỆN BASELINE: LEARN_LongNet (Limited-Angle CT)
+- Dải góc quét: [-60.0°, 60.0°] (Cung quét 120.0°)
+- Số views: 64 | Detectors: 512 | Kích thước ảnh: 256x256
+- Cấu hình Cache Tag: limited_ang_120deg_numview_64_size_256_noise_0
+- Số giai đoạn Unrolling: 14 stages | Window size: 2 | Max Epochs: 50 | Batch size: 1
+- Tốc độ học: 0.0001 -> 1e-05
+- Checkpoint lưu tại: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_LongNet/
+================================================================================
+[TRAIN] Loaded 1920 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: train).
+[VALID] Loaded 244 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: train).
+Sanity Checking: |          | 0/? [00:00<?, ?it/s]                                                  [INFO] cleanup rc=1 at Thu Aug 27 10:36:00 PM +07 2026

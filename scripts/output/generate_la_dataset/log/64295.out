@@ -1,0 +1,39 @@
+[INFO] start at Tue Aug 25 10:51:38 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=64295
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=3
+[INFO] BEST_GPU=3
+[INFO] Launching Limited-Angle CT Data Preparation at Tue Aug 25 10:51:45 PM +07 2026
+======================================================================
+Generating Limited-Angle CT Dataset
+Angle Range: [-60.0°, +60.0°] (120.0° total)
+Number of Views: 64
+Image Resolution: 256x256
+Setting Tag: limited_ang_120deg_numview_64_size_256_noise_0
+======================================================================
+
+[1/2] Processing TRAIN set -> /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/train/limited_ang_120deg_numview_64_size_256_noise_0
+[TRAIN] Loaded 1920 CT slices.
+
+[2/2] Processing TEST set -> /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/test/limited_ang_120deg_numview_64_size_256_noise_0
+[TEST] Loaded 214 CT slices.
+
+Dataset preparation completed successfully!
+======================================================================
+Generating Limited-Angle CT Dataset
+Angle Range: [-45.0°, +45.0°] (90.0° total)
+Number of Views: 64
+Image Resolution: 256x256
+Setting Tag: limited_ang_90deg_numview_64_size_256_noise_0
+======================================================================
+
+[1/2] Processing TRAIN set -> /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/train/limited_ang_90deg_numview_64_size_256_noise_0
+[TRAIN] Loaded 1920 CT slices.
+
+[2/2] Processing TEST set -> /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/test/limited_ang_90deg_numview_64_size_256_noise_0
+[TEST] Loaded 214 CT slices.
+
+Dataset preparation completed successfully!
+[INFO] All Limited-Angle CT data preparation finished at Tue Aug 25 11:10:19 PM +07 2026
+[INFO] cleanup rc=0 at Tue Aug 25 11:10:19 PM +07 2026

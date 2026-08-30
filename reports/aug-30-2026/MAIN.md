@@ -61,6 +61,7 @@ Cả 3 mô hình Baseline đều được thiết lập theo khung Unrolling 14 
  **214 lát cắt CT của bệnh nhân `L310`**.
 
 ### 3.1. Bảng Tổng Hợp So Sánh Các Mô Hình (Benchmark Results):
+* File dữ liệu bảng đối sánh chi tiết (CSV): [benchmark_results.csv](benchmark_results.csv)
 
 | Mô hình Kiểm Thử       | Checkpoint Đánh Giá            | Dải Góc LA-120° (64 views) |                    |                    | Dải Góc LA-90° (Stress-Test 64v) |                    |                    | Nhận Xét Kỹ Thuật                               |
 | :--------------------- | :----------------------------- | :------------------------: | :----------------: | :----------------: | :------------------------------: | :----------------: | :----------------: | :---------------------------------------------- |

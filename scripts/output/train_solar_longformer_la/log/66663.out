@@ -1,0 +1,19 @@
+[INFO] start at Wed Sep  2 09:41:01 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=66663
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=4
+[INFO] BEST_GPU=4
+[INFO] Launching SOLAR_Longformer Training on Limited-Angle CT at Wed Sep  2 09:41:10 PM +07 2026
+================================================================================
+🚀 BẮT ĐẦU HUẤN LUYỆN: SOLAR_Longformer (Limited-Angle CT)
+- Dải góc quét: [-60.0°, 60.0°] (Cung quét 120.0°)
+- Số views: 64 | Detectors: 512 | Kích thước ảnh: 256x256
+- Cấu hình Cache Tag: limited_ang_120deg_numview_64_size_256_noise_0
+- Unrolling Bậc 2: 8 stages | Số bước CG mỗi stage: 4 steps
+- Max Epochs: 50 | Batch size: 1 | LR: 0.0001 -> 1e-05
+- Checkpoint lưu tại: /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Longformer/
+================================================================================
+[TRAIN] Loaded 1920 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: train).
+[VALID] Loaded 244 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: train).
+Sanity Checking: |          | 0/? [00:00<?, ?it/s]Sanity Checking: |          | 0/? [00:00<?, ?it/s]Sanity Checking DataLoader 0:   0%|          | 0/2 [00:00<?, ?it/s]                                                                   [INFO] cleanup rc=1 at Wed Sep  2 09:41:27 PM +07 2026

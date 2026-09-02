@@ -22,8 +22,11 @@ Mọi mô hình được huấn luyện và đánh giá trên bộ dữ liệu c
 | STT | Tên Mô hình | Động cơ Chuỗi Dài / Attention | Dữ liệu Huấn Luyện | Số Epochs | Best Val PSNR (dB) | Best Val SSIM | Đường dẫn Best Checkpoint | Trạng thái Job & Ghi chú Kỹ thuật |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: | :--- | :--- |
 | **1** | **`LEARN_LongNet`** | Multi-Scale Dilated Attention | **LA-120° (64v)** | **50 / 50** | **33.37** | **0.9090** | `saved_models/LEARN_LongNet/longnet_la-epoch=45-val_psnr=33.37-val_ssim=0.9090.ckpt` | ✅ **Hoàn thành 100% (50/50 epochs)**. Tăng trưởng đều đặn, ổn định xuất sắc trên toàn bộ tiến trình. |
-| **2** | **`LEARN_Longformer`**| Sliding-Chunks Self-Attention + Global Tokens | **LA-120° (64v)** | **19 / 50** | **32.80** | **0.9109** | `saved_models/LEARN_Longformer/longformer_la-epoch=15-val_psnr=32.80-val_ssim=0.9109.ckpt` | ⏱️ **Đạt Time Limit 24h ở Epoch 19**. Đạt SSIM cao nhất trong các baseline ($0.9109$ ở Epoch 15). Đang tiến hành resume từ `last.ckpt`. |
+| **2** | **`LEARN_Longformer`**| Sliding-Chunks Self-Attention + Global Tokens | **LA-120° (64v)** | **37 / 50 (Running)** | **34.38** | **0.9323** | `saved_models/LEARN_Longformer/longformer_la-epoch=36-val_psnr=34.38-val_ssim=0.9323.ckpt` | 🚀 **Đang chạy huấn luyện nốt các Epochs cuối (Job `66652`)**. Đạt kết quả SOTA cao nhất trong toàn bộ baseline (**PSNR = 34.38 dB**, **SSIM = 0.9323** ở Epoch 36). |
 | **3** | **`LEARN_Mamba`** | Selective SSM ($\mathcal{O}(N)$) | **LA-120° (64v)** | **41 / 50** | **27.66** | **0.7373** | `saved_models/LEARN_Mamba/mamba_la-epoch=17-val_psnr=27.66-val_ssim=0.7373.ckpt` | ⚠️ **Sử dụng Checkpoint Epoch 17**. Đạt đỉnh ở Epoch 17; sau Epoch 20 xuất hiện bùng nổ gradient / NaN do đặc tính quét 1D trên Hessian suy biến của LA-CT. |
+| **4** | **`SOLAR_LongNet` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Dilated Attention** | **LA-120° (64v)** | **0 / 50 (Running)** | *Đang huấn luyện...* | *Đang huấn luyện...* | `saved_models/SOLAR_LongNet/` | 🚀 **Đang chạy huấn luyện (Job `66662`)**. 8 stages Newton-CG Matrix-Free, K_CG=4, Recurrent Weight Sharing ~0.27M params. |
+| **5** | **`SOLAR_Longformer` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Sliding-Chunks Attention** | **LA-120° (64v)** | **0 / 50 (Running)** | *Đang huấn luyện...* | *Đang huấn luyện...* | `saved_models/SOLAR_Longformer/` | 🚀 **Đang chạy huấn luyện (Job `66665`)**. 8 stages Newton-CG Matrix-Free, K_CG=4, Recurrent Weight Sharing ~0.34M params. |
+| **6** | **`SOLAR_Mamba` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Selective SSM** | **LA-120° (64v)** | **0 / 50 (Running)** | *Đang huấn luyện...* | *Đang huấn luyện...* | `saved_models/SOLAR_Mamba/` | 🚀 **Đang chạy huấn luyện (Job `66664`)**. 8 stages Newton-CG Matrix-Free, K_CG=4, Recurrent Weight Sharing ~0.27M params. Cứu cánh Mamba khỏi lỗi NaN. |
 
 ---
 
@@ -34,10 +37,10 @@ Mọi mô hình được huấn luyện và đánh giá trên bộ dữ liệu c
 * **Đánh giá:** Chỉ số SSIM đạt $0.9090$ và PSNR $33.37\text{ dB}$, chất lượng tái tạo ổn định nhất và hoàn toàn không gặp lỗi số học.
 * **Checkpoint sử dụng:** `saved_models/LEARN_LongNet/last.ckpt` (tương đương kết quả hội tụ tại cuối epoch 49-50) và `epoch=45` (đỉnh PSNR cao nhất).
 
-### 3.2. `LEARN_Longformer` — Tiến hành Resume Training từ `last.ckpt`
-* **Đặc tính:** Mô hình học rất mượt và có độ tương đồng cấu trúc cao nhất (SSIM đạt $0.9109$ chỉ sau 15 epochs).
-* **Lý do dừng:** Do cơ chế chú ý sliding-chunks tính toán kỹ lưỡng, thời gian chạy ~52 phút/epoch $\to$ hết hạn 24h Slurm tại Epoch 19.
-* **Xử lý:** Kích hoạt tính năng `--resume_ckpt` nạp `saved_models/LEARN_Longformer/last.ckpt` để tiếp tục huấn luyện lên 40-50 epochs.
+### 3.2. `LEARN_Longformer` — Checkpoint `epoch=36` & Tùy chọn Resume
+* **Đặc tính:** Mô hình học rất mượt và có độ tương đồng cấu trúc cũng như chất lượng tái tạo cao nhất trong tất cả các baseline (SSIM đạt $0.9323$, PSNR $34.38\text{ dB}$ tại Epoch 36).
+* **Trạng thái:** Job resume `65892` đã chạy từ Epoch 17 đến Epoch 41 và dừng do Time Limit 24h trên DGX-A100.
+* **Checkpoint sử dụng:** `saved_models/LEARN_Longformer/longformer_la-epoch=36-val_psnr=34.38-val_ssim=0.9323.ckpt` (Best Checkpoint) hoặc `saved_models/LEARN_Longformer/last.ckpt` nếu muốn tiếp tục chạy nốt 9 epochs còn lại (41 -> 50).
 
 ### 3.3. `LEARN_Mamba` — Bắt buộc cố định Checkpoint tại Epoch 17
 * **Hiện tượng:** Mô hình chạy rất nhanh (~25 phút/epoch) nhưng sau Epoch 20 bị mất ổn định số học và xuất hiện giá trị `NaN` trong 14 vòng unrolling.

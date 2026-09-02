@@ -89,12 +89,21 @@
 - [x] **Nghiệm thu kết quả Huấn luyện 3 Slurm Job Baseline (120-degree LA-CT):**
   - Xem bảng chi tiết và phân tích tại: [EXPERIMENT_RESULTS.md](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/EXPERIMENT_RESULTS.md)
   - **`LEARN_LongNet`:** Job ID `65486` (`scripts/output/train_longnet_la/log/65486.out`) — ✅ **Hoàn thành 100% (50/50 Epochs)**. Best Val: **PSNR = 33.37 dB**, **SSIM = 0.9090** (Checkpoint: `longnet_la-epoch=45-val_psnr=33.37-val_ssim=0.9090.ckpt`).
-  - **`LEARN_Longformer`:** Job ID `65485` / Resume Job ID `65892` (`scripts/output/train_longformer_la/log/65892.out`) — ⏱️ Chạy ổn định, đang tiếp tục huấn luyện từ Epoch 17 trên A100 GPU. Best Val trước đó: **PSNR = 32.80 dB**, **SSIM = 0.9109** (`epoch=15`).
+  - **`LEARN_Longformer`:** Job ID `65485` / Resume Jobs `65892`, `66652` (`scripts/output/train_longformer_la/log/66652.out`) — 🚀 **Đang tiếp tục huấn luyện nốt các Epochs cuối (hướng tới 50/50)** trên A100 GPU (`DGX-A100`). Best Val hiện tại: **PSNR = 34.38 dB, SSIM = 0.9323** tại Epoch 36 (Checkpoint: `longformer_la-epoch=36-val_psnr=34.38-val_ssim=0.9323.ckpt`).
   - **`LEARN_Mamba`:** Job ID `65484` (`scripts/output/train_mamba_la/log/65484.out`) — ⏱️ Chạy 41/50 Epochs (đạt Time Limit 24h). Sử dụng Best Checkpoint: `mamba_la-epoch=17-val_psnr=27.66-val_ssim=0.7373.ckpt` (do sau Epoch 20 xuất hiện mất ổn định gradient/NaN theo đúng lý thuyết).
 - [x] **Đánh giá Test Benchmark Độc Lập (Patient L310 - 214 Slices) & Trực Quan Hóa:**
   - **Script Test Định lượng:** `baselines/LEARN_LongNet/test_longnet_la.py`, `baselines/LEARN_Mamba/test_mamba_la.py`, `baselines/LEARN_Longformer/test_longformer_la.py`.
   - **Script Trực quan hóa & Kết xuất ảnh đối sánh:** [visualize_benchmark.py](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/visualize_benchmark.py) (Slurm Batch Script: [scripts/visualize_benchmark.sh](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/scripts/visualize_benchmark.sh)).
   - **Thư mục ảnh PNG đã xuất:** `visualizations/120deg/` và `visualizations/90deg/` (chứa các folder `slice_050`, `slice_100`, `slice_150` với từng file ảnh PNG riêng biệt và ảnh tổng hợp `comparison_summary.png`).
+
+- [x] **Hiện thực hóa 3 Biến thể Kiến trúc Đề xuất SOLAR theo Cấu trúc Baseline Chuẩn Hóa:**
+  - **`baselines/SOLAR_LongNet/`:** Tối ưu hóa bậc 2 Newton-CG + Nhánh kép Res-CNN & Dilated Attention (LongNet). Script: `train_solar_longnet_la.py`, `test_solar_longnet_la.py`, `scripts/train_solar_longnet_la.sh`.
+  - **`baselines/SOLAR_Longformer/`:** Tối ưu hóa bậc 2 Newton-CG + Nhánh kép Res-CNN & Sliding-Chunks Attention (Longformer). Script: `train_solar_longformer_la.py`, `test_solar_longformer_la.py`, `scripts/train_solar_longformer_la.sh`.
+  - **`baselines/SOLAR_Mamba/`:** Tối ưu hóa bậc 2 Newton-CG + Nhánh kép Res-CNN & Selective SSM (Mamba). Script: `train_solar_mamba_la.py`, `test_solar_mamba_la.py`, `scripts/train_solar_mamba_la.sh`.
+- [x] **Khởi chạy Huấn luyện Đồng thời Toàn bộ Mô hình SOLAR trên Slurm HPC (DGX-A100):**
+  - **`SOLAR_LongNet` (120°):** **Job ID `66662`** (`scripts/output/train_solar_longnet_la/log/66662.out`) — 🚀 **Đang chạy (Epoch 0/50)**.
+  - **`SOLAR_Longformer` (120°):** **Job ID `66665`** (`scripts/output/train_solar_longformer_la/log/66665.out`) — 🚀 **Đang chạy (Epoch 0/50)**.
+  - **`SOLAR_Mamba` (120°):** **Job ID `66664`** (`scripts/output/train_solar_mamba_la/log/66664.out`) — 🚀 **Đang chạy (Epoch 0/50)**.
 
 ### Quy tắc nghiêm ngặt cho các session sau:
 > [!IMPORTANT]
@@ -103,9 +112,10 @@
 > - Tuyệt đối **KHÔNG ĐƯỢC viết code sai lệch, làm mâu thuẫn hoặc làm hỏng** các logic và giá trị mặc định đã được giải thích trong comment khi người dùng chưa yêu cầu rõ ràng.
 
 ### Các bước tiếp theo:
-- [x] Giám sát tiến độ huấn luyện của 3 Job Baseline (`65484`, `65485`, `65486`) trên Slurm cluster.
-- [x] Chạy đánh giá Test Set (`test_*_la.py`) và Trực quan hóa (`visualize_benchmark.py`) cho các checkpoint Baseline.
-- [ ] Thiết kế kiến trúc mô hình mới đề xuất **SOLAR** (Second-Order Dual-Branch Newton-CG Unrolling Network).
-- [ ] Đánh giá đối sánh kết quả Benchmark giữa các baseline và mô hình đề xuất (PSNR, SSIM, RMSE, Visual Reconstruction).
+- [ ] Giám sát tiến độ 4 Job đang chạy đồng thời trên Slurm cluster: `LEARN_Longformer` (Job `66652`), `SOLAR_LongNet` (Job `66662`), `SOLAR_Longformer` (Job `66665`), `SOLAR_Mamba` (Job `66664`).
+- [ ] Chạy đánh giá Test Set (`test_solar_*_la.py`) và Trực quan hóa (`visualize_benchmark.py`) cho các checkpoint của 3 mô hình SOLAR.
+- [ ] Tổng hợp ma trận đối sánh 1-1 toàn diện giữa 3 Baseline Bậc 1 (LEARN) và 3 Mô hình Đề xuất Bậc 2 (SOLAR).
+
+
 
 

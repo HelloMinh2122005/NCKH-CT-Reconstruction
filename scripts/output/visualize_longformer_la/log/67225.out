@@ -1,0 +1,109 @@
+[INFO] start at Thu Sep  3 09:37:21 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=67225
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=4
+[INFO] BEST_GPU=4
+[INFO] Launching LEARN_Longformer Visualization Pipeline at Thu Sep  3 09:37:28 PM +07 2026
+================================================================================
+🎯 KẾT XUẤT ẢNH TRỰC QUAN HÓA CẤU HÌNH LA-120° (Slices 50, 100, 150)
+   (Bao gồm ảnh tái tạo, Error Map và Panel đối sánh chứa LEARN_Longformer)
+================================================================================
+================================================================================
+🎨 BẮT ĐẦU KẾT XUẤT ẢNH TRỰC QUAN HÓA (VISUALIZATION PIPELINE)
+- Thiết bị tính toán: cuda
+- Cung quét góc: 120.0° (Views: 64)
+- Các lát cắt chỉ định: [50, 100, 150]
+- Thư mục xuất ảnh: /datastore/uittogether3/LuuTru/MinhPD/visualizations/
+================================================================================
+[TEST] Loaded 214 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: test).
+📦 Đang nạp LEARN_LongNet từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_LongNet/last.ckpt
+📦 Đang nạp LEARN_Mamba từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Mamba/mamba_la-epoch=17-val_psnr=27.66-val_ssim=0.7373.ckpt
+
+================================================================================
+  🚀 [LEARN_Mamba_LA] ĐÃ KHỞI TẠO MÔ HÌNH VÀ HÌNH HỌC VẬT LÝ THÀNH CÔNG:
+  • Số giai đoạn Unrolling (Stages) : 14 vòng lặp
+  • Dải góc quét (Limited-Angle)    : [-60.0°, 60.0°] (Cung quét 120.0°)
+  • Số góc chiếu (Views)            : 64 views (Bước góc Δθ ≈ 1.87°)
+  • Số cảm biến (Detectors)         : 512 kênh (Dải [-480, 480] mm)
+  • Kích thước ảnh tái tạo          : 256 x 256 pixels
+  • Toán tử Chiếu Thuận (A)         : ODL RayTransform (GPU astra_cuda)
+  • Toán tử Chiếu Ngược (A^T - FBP) : ODL FBP (Filter: Ram-Lak, Frequency Scaling: 0.9, Scale: √2)
+================================================================================
+
+📦 Đang nạp LEARN_Longformer từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Longformer/longformer_la-epoch=45-val_psnr=34.77-val_ssim=0.9383.ckpt
+
+🖼️ Đang xử lý Lát cắt #50 (Bệnh nhân L310)...
+  • [LongNet] PSNR: 32.60 dB | SSIM: 0.8921 -> Đã lưu PNG.
+  • [Mamba] PSNR: 23.89 dB | SSIM: 0.6722 -> Đã lưu PNG.
+  • [Longformer] PSNR: 33.71 dB | SSIM: 0.9090 -> Đã lưu PNG.
+  ✨ Đã lưu file tổng hợp: /datastore/uittogether3/LuuTru/MinhPD/visualizations/120deg/slice_050/comparison_summary.png
+
+🖼️ Đang xử lý Lát cắt #100 (Bệnh nhân L310)...
+  • [LongNet] PSNR: 32.36 dB | SSIM: 0.9170 -> Đã lưu PNG.
+  • [Mamba] PSNR: 27.41 dB | SSIM: 0.7325 -> Đã lưu PNG.
+  • [Longformer] PSNR: 34.59 dB | SSIM: 0.9363 -> Đã lưu PNG.
+  ✨ Đã lưu file tổng hợp: /datastore/uittogether3/LuuTru/MinhPD/visualizations/120deg/slice_100/comparison_summary.png
+
+🖼️ Đang xử lý Lát cắt #150 (Bệnh nhân L310)...
+  • [LongNet] PSNR: 32.75 dB | SSIM: 0.9149 -> Đã lưu PNG.
+  • [Mamba] PSNR: 27.49 dB | SSIM: 0.7255 -> Đã lưu PNG.
+  • [Longformer] PSNR: 33.81 dB | SSIM: 0.9390 -> Đã lưu PNG.
+  ✨ Đã lưu file tổng hợp: /datastore/uittogether3/LuuTru/MinhPD/visualizations/120deg/slice_150/comparison_summary.png
+
+================================================================================
+🎉 HOÀN TẤT KẾT XUẤT ẢNH TRỰC QUAN HÓA TẠI: /datastore/uittogether3/LuuTru/MinhPD/visualizations/
+================================================================================
+
+================================================================================
+🎯 KẾT XUẤT ẢNH TRỰC QUAN HÓA CẤU HÌNH LA-90° (Slices 50, 100, 150)
+   (Đánh giá khả năng bù đắp nêm khuyết 270° của LEARN_Longformer)
+================================================================================
+================================================================================
+🎨 BẮT ĐẦU KẾT XUẤT ẢNH TRỰC QUAN HÓA (VISUALIZATION PIPELINE)
+- Thiết bị tính toán: cuda
+- Cung quét góc: 90.0° (Views: 64)
+- Các lát cắt chỉ định: [50, 100, 150]
+- Thư mục xuất ảnh: /datastore/uittogether3/LuuTru/MinhPD/visualizations/
+================================================================================
+[TEST] Loaded 214 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: test).
+📦 Đang nạp LEARN_LongNet từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_LongNet/last.ckpt
+📦 Đang nạp LEARN_Mamba từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Mamba/mamba_la-epoch=17-val_psnr=27.66-val_ssim=0.7373.ckpt
+
+================================================================================
+  🚀 [LEARN_Mamba_LA] ĐÃ KHỞI TẠO MÔ HÌNH VÀ HÌNH HỌC VẬT LÝ THÀNH CÔNG:
+  • Số giai đoạn Unrolling (Stages) : 14 vòng lặp
+  • Dải góc quét (Limited-Angle)    : [-60.0°, 60.0°] (Cung quét 120.0°)
+  • Số góc chiếu (Views)            : 64 views (Bước góc Δθ ≈ 1.87°)
+  • Số cảm biến (Detectors)         : 512 kênh (Dải [-480, 480] mm)
+  • Kích thước ảnh tái tạo          : 256 x 256 pixels
+  • Toán tử Chiếu Thuận (A)         : ODL RayTransform (GPU astra_cuda)
+  • Toán tử Chiếu Ngược (A^T - FBP) : ODL FBP (Filter: Ram-Lak, Frequency Scaling: 0.9, Scale: √2)
+================================================================================
+
+📦 Đang nạp LEARN_Longformer từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Longformer/longformer_la-epoch=45-val_psnr=34.77-val_ssim=0.9383.ckpt
+
+🖼️ Đang xử lý Lát cắt #50 (Bệnh nhân L310)...
+  • [LongNet] PSNR: 20.63 dB | SSIM: 0.5949 -> Đã lưu PNG.
+  • [Mamba] PSNR: 18.33 dB | SSIM: 0.3607 -> Đã lưu PNG.
+  • [Longformer] PSNR: 20.52 dB | SSIM: 0.6272 -> Đã lưu PNG.
+  ✨ Đã lưu file tổng hợp: /datastore/uittogether3/LuuTru/MinhPD/visualizations/90deg/slice_050/comparison_summary.png
+
+🖼️ Đang xử lý Lát cắt #100 (Bệnh nhân L310)...
+  • [LongNet] PSNR: 20.70 dB | SSIM: 0.6453 -> Đã lưu PNG.
+  • [Mamba] PSNR: 20.06 dB | SSIM: 0.4278 -> Đã lưu PNG.
+  • [Longformer] PSNR: 20.24 dB | SSIM: 0.6622 -> Đã lưu PNG.
+  ✨ Đã lưu file tổng hợp: /datastore/uittogether3/LuuTru/MinhPD/visualizations/90deg/slice_100/comparison_summary.png
+
+🖼️ Đang xử lý Lát cắt #150 (Bệnh nhân L310)...
+  • [LongNet] PSNR: 19.23 dB | SSIM: 0.5724 -> Đã lưu PNG.
+  • [Mamba] PSNR: 19.24 dB | SSIM: 0.3666 -> Đã lưu PNG.
+  • [Longformer] PSNR: 19.13 dB | SSIM: 0.6095 -> Đã lưu PNG.
+  ✨ Đã lưu file tổng hợp: /datastore/uittogether3/LuuTru/MinhPD/visualizations/90deg/slice_150/comparison_summary.png
+
+================================================================================
+🎉 HOÀN TẤT KẾT XUẤT ẢNH TRỰC QUAN HÓA TẠI: /datastore/uittogether3/LuuTru/MinhPD/visualizations/
+================================================================================
+
+[INFO] LEARN_Longformer Visualization finished at Thu Sep  3 09:39:01 PM +07 2026
+[INFO] cleanup rc=0 at Thu Sep  3 09:39:01 PM +07 2026

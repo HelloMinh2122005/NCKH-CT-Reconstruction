@@ -20,3 +20,9 @@ Khi bắt đầu một session mới trong dự án này:
 
 4. **Cập nhật Checkpoint:**
    Sau khi hoàn thành hoặc có thay đổi quan trọng trong session (tạo mô hình mới, chạy thí nghiệm, sửa lỗi), luôn cập nhật lại mục *6. Trạng Thái & Tiến Độ Dự Án* trong file `CHECKPOINT.md`.
+
+5. **Quy tắc Viết Báo Cáo Tiến Độ (Reports):**
+   - Báo cáo định kỳ trong `reports/<thời-gian>/MAIN.md` phải viết **ngắn gọn, trực diện, súc tích**.
+   - **Tuyệt đối KHÔNG lặp lại** các thông tin đã được báo cáo trong các phiên trước (như mô tả chi tiết lại dataset, kiến trúc đã chạy, lý thuyết cũ...).
+   - Chỉ tập trung báo cáo những mốc mới hoàn thành trong ngày (mô hình nào vừa train xong, checkpoint đạt đỉnh, kết quả test và visualize mới).
+   - Mọi số liệu đo lường định lượng chi tiết phải đưa vào file `benchmark_results.csv` và dẫn link trực tiếp (`[benchmark_results.csv](benchmark_results.csv)`), không trình bày bảng biểu dài dòng trùng lặp trong `MAIN.md`.

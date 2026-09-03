@@ -43,6 +43,7 @@ from torchmetrics.functional.image import (
 from data.datamodule_LA import LimitedAngleCTDataModule
 from baselines.LEARN_LongNet.models import LEARN_LongNet_LA
 from baselines.LEARN_Mamba.models import LEARN_Mamba_LA
+from baselines.LEARN_Longformer.models import LEARN_Longformer_LA
 
 
 def parse_args():
@@ -125,6 +126,18 @@ def parse_args():
         default="/datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Mamba/mamba_la-epoch=17-val_psnr=27.66-val_ssim=0.7373.ckpt",
         help="Đường dẫn file trọng số LEARN_Mamba"
     )
+    parser.add_argument(
+        "--longformer_ckpt",
+        type=str,
+        default="/datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Longformer/longformer_la-epoch=45-val_psnr=34.77-val_ssim=0.9383.ckpt",
+        help="Đường dẫn file trọng số LEARN_Longformer"
+    )
+    parser.add_argument(
+        "--models",
+        nargs="+",
+        default=None,
+        help="Danh sách tên mô hình cần kết xuất ảnh (vd: --models Longformer hoặc --models LongNet Mamba Longformer. Mặc định: nạp toàn bộ các mô hình có checkpoint)"
+    )
     
     return parser.parse_args()
 
@@ -187,25 +200,48 @@ def main():
     test_loader = datamodule.test_dataloader()
     test_dataset = test_loader.dataset
 
-    # Bước 2: Nạp các mô hình đã huấn luyện
+    # Bước 2: Nạp các mô hình đã huấn luyện (theo danh sách chỉ định hoặc toàn bộ)
     models = {}
-    if os.path.exists(args.longnet_ckpt):
-        print(f"📦 Đang nạp LEARN_LongNet từ: {args.longnet_ckpt}")
-        model_ln = LEARN_LongNet_LA.load_from_checkpoint(args.longnet_ckpt, map_location=device)
-        model_ln.to(device)
-        model_ln.eval()
-        models["LongNet"] = model_ln
-    else:
-        print(f"⚠️ Không tìm thấy checkpoint LongNet tại: {args.longnet_ckpt}")
+    selected_models = [m.strip().lower() for m in args.models] if args.models else None
 
-    if os.path.exists(args.mamba_ckpt):
-        print(f"📦 Đang nạp LEARN_Mamba từ: {args.mamba_ckpt}")
-        model_mb = LEARN_Mamba_LA.load_from_checkpoint(args.mamba_ckpt, map_location=device)
-        model_mb.to(device)
-        model_mb.eval()
-        models["Mamba"] = model_mb
-    else:
-        print(f"⚠️ Không tìm thấy checkpoint Mamba tại: {args.mamba_ckpt}")
+    # 2.1. Nạp LEARN_LongNet
+    if selected_models is None or "longnet" in selected_models:
+        if os.path.exists(args.longnet_ckpt):
+            print(f"📦 Đang nạp LEARN_LongNet từ: {args.longnet_ckpt}")
+            model_ln = LEARN_LongNet_LA.load_from_checkpoint(args.longnet_ckpt, map_location=device)
+            model_ln.to(device)
+            model_ln.eval()
+            models["LongNet"] = model_ln
+        else:
+            print(f"⚠️ Không tìm thấy checkpoint LongNet tại: {args.longnet_ckpt}")
+
+    # 2.2. Nạp LEARN_Mamba
+    if selected_models is None or "mamba" in selected_models:
+        if os.path.exists(args.mamba_ckpt):
+            print(f"📦 Đang nạp LEARN_Mamba từ: {args.mamba_ckpt}")
+            model_mb = LEARN_Mamba_LA.load_from_checkpoint(args.mamba_ckpt, map_location=device)
+            model_mb.to(device)
+            model_mb.eval()
+            models["Mamba"] = model_mb
+        else:
+            print(f"⚠️ Không tìm thấy checkpoint Mamba tại: {args.mamba_ckpt}")
+
+    # 2.3. Nạp LEARN_Longformer (ưu tiên checkpoint chỉ định, fallback sang last.ckpt)
+    if selected_models is None or "longformer" in selected_models:
+        lf_ckpt = args.longformer_ckpt
+        if not os.path.exists(lf_ckpt):
+            fallback_lf = "/datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Longformer/last.ckpt"
+            if os.path.exists(fallback_lf):
+                lf_ckpt = fallback_lf
+
+        if os.path.exists(lf_ckpt):
+            print(f"📦 Đang nạp LEARN_Longformer từ: {lf_ckpt}")
+            model_lf = LEARN_Longformer_LA.load_from_checkpoint(lf_ckpt, map_location=device)
+            model_lf.to(device)
+            model_lf.eval()
+            models["Longformer"] = model_lf
+        else:
+            print(f"⚠️ Không tìm thấy checkpoint Longformer tại: {args.longformer_ckpt}")
 
     angle_tag = f"{int(args.angle_range_deg)}deg"
 

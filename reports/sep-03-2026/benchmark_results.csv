@@ -1,0 +1,8 @@
+Model,Checkpoint,LA_120_PSNR_dB,LA_120_SSIM,LA_120_RMSE,LA_90_PSNR_dB,LA_90_SSIM,LA_90_RMSE,Notes
+FBP Thô (Ram-Lak),Analytical,17.89,0.4984,0.1145,15.20,0.4120,0.1450,Vệt sọc (streak artifacts) dày đặc do thiếu thông tin hình học góc quét
+LEARN_Mamba,mamba_la-epoch=17.ckpt (41 ep),26.32,0.7468,0.0493,18.76,0.4292,0.1129,Khôi phục trung bình; suy giảm mạnh ở 90° do cơ chế quét 1D không thích nghi nêm khuyết 2D
+LEARN_LongNet,longnet_la-last.ckpt (50 ep),31.62,0.8991,0.0270,19.19,0.5876,0.1058,Khôi phục sắc nét; trường chú ý giãn nở đa tỷ lệ giúp giữ cấu trúc xương và mô tốt
+LEARN_Longformer,longformer_la-epoch=45.ckpt (50 ep),33.10,0.9237,0.0224,19.16,0.6097,0.1055,SOTA cao nhất toàn bộ Baseline; cơ chế Sliding-Chunks + Global Tokens bảo toàn SSIM vượt trội
+SOLAR_LongNet (Đề xuất),solar_longnet_la-epoch=12.ckpt,Pending,Pending,Pending,Pending,Pending,Pending,Đang huấn luyện (Job 66662 - Epoch 13); Newton-CG 8 stages Matrix-Free
+SOLAR_Mamba (Đề xuất),solar_mamba_la-epoch=11.ckpt,Pending,Pending,Pending,Pending,Pending,Pending,Đang huấn luyện (Job 66664 - Epoch 12); ổn định số học 100% khắc phục triệt để lỗi NaN
+SOLAR_Longformer (Đề xuất),last.ckpt (Ep 08),Pending,Pending,Pending,Pending,Pending,Pending,Tạm dừng ở Epoch 8 do ASTRA texture OOM (Job 66665); sẵn sàng resume

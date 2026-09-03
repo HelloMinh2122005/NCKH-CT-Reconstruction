@@ -337,6 +337,16 @@ class SOLAR_Longformer_LA(pl.LightningModule):
         self.grid = torchvision.utils.make_grid(x_reconstructed.detach().clamp(min=0.0))
         return {"val_loss": loss, "val_ssim": ssim_p, "val_psnr": psnr_p, "val_rmse": rmse_p}
 
+    def on_train_epoch_end(self):
+        # Giải phóng bộ nhớ đệm CUDA định kỳ nhằm tránh tràn bộ nhớ Texture của ASTRA Toolbox (createTextureObject2D)
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
+    def on_validation_epoch_end(self):
+        # Giải phóng bộ nhớ đệm CUDA sau bước kiểm định
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+
     def test_step(self, batch, batch_idx):
         phantom, fbp_u, sino_noisy = batch
         x_reconstructed = self.forward(fbp_u, sino_noisy)

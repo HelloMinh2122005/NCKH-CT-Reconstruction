@@ -106,7 +106,7 @@
 - [x] **Theo dõi Tiến độ Huấn luyện Các Mô hình SOLAR trên Slurm HPC (DGX-A100):**
   - **`SOLAR_LongNet` (120°):** **Job ID `66662`** (`scripts/output/train_solar_longnet_la/log/66662.out`) — 🚀 **Đang chạy ổn định (Epoch 13/50)**. Best Val hiện tại: **PSNR = 31.90 dB, SSIM = 0.8884** tại Epoch 12.
   - **`SOLAR_Mamba` (120°):** **Job ID `66664`** (`scripts/output/train_solar_mamba_la/log/66664.out`) — 🚀 **Đang chạy ổn định (Epoch 12/50)**. Best Val hiện tại: **PSNR = 31.86 dB, SSIM = 0.8775** tại Epoch 11 (khắc phục hoàn toàn lỗi NaN của LEARN_Mamba).
-  - **`SOLAR_Longformer` (120°):** **Job ID `66665`** (`scripts/output/train_solar_longformer_la/log/66665.out`) — ⚠️ **Tạm dừng ở Epoch 8/50** do lỗi bộ nhớ ASTRA texture OOM. Best Val: **PSNR = 29.91 dB, SSIM = 0.8348** tại Epoch 4. Checkpoint `last.ckpt` sẵn sàng để resume.
+  - **`SOLAR_Longformer` (120°):** Job ID `66665` / Resume Job **`67231`** (`scripts/output/train_solar_longformer_la/log/67231.out`) — 🚀 **Đã resume thành công từ `last.ckpt` (Đang chạy Epoch 7/50)** trên DGX-A100. Best Val hiện tại: **PSNR = 29.91 dB, SSIM = 0.8348** tại Epoch 4.
 
 - [x] **Biên soạn Báo cáo Tiến độ & Benchmark Định lượng (Ngày 03/09/2026):** Lưu tại [`reports/sep-03-2026/MAIN.md`](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/reports/sep-03-2026/MAIN.md) và bảng dữ liệu [`reports/sep-03-2026/benchmark_results.csv`](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/reports/sep-03-2026/benchmark_results.csv).
 
@@ -117,8 +117,7 @@
 > - Tuyệt đối **KHÔNG ĐƯỢC viết code sai lệch, làm mâu thuẫn hoặc làm hỏng** các logic và giá trị mặc định đã được giải thích trong comment khi người dùng chưa yêu cầu rõ ràng.
 
 ### Các bước tiếp theo:
-- [ ] Giám sát tiến độ hoàn tất 2 Job đang chạy trên Slurm cluster: `SOLAR_LongNet` (Job `66662`) và `SOLAR_Mamba` (Job `66664`).
-- [ ] Resume lại job huấn luyện `SOLAR_Longformer` từ `last.ckpt` (Job `66665`).
+- [ ] Giám sát tiến độ huấn luyện của mô hình `SOLAR_Longformer` đang chạy resume trên DGX-A100 (Job `67231`).
 - [ ] Chạy đánh giá Test Set (`test_solar_*_la.py`) và Trực quan hóa (`visualize_benchmark.py`) cho các checkpoint của 3 mô hình SOLAR.
 - [ ] Tổng hợp ma trận đối sánh 1-1 toàn diện giữa 3 Baseline Bậc 1 (LEARN) và 3 Mô hình Đề xuất Bậc 2 (SOLAR).
 

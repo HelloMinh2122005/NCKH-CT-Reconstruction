@@ -99,7 +99,7 @@ Toàn bộ 4 thành phần trụ cột của MVA đều bộc lộ điểm ngh�
 * **Giải thích và nêu lý do không tương thích với Limited-Angle CT:**
   1. **Tồn tại Không gian Hạt nhân Khổng lồ (Null Space Blindness):**
      Do góc quét chỉ nằm trong $[-60^\circ, +60^\circ]$, toán tử chiếu $A$ chỉ nhìn được theo các chùm tia này. Bất kỳ thành phần sai lệch nào của ảnh $x$ có phương Fourier nằm trong nêm khuyết $240^\circ$ đều bị toán tử $A$ triệt tiêu thành $0$:
-     $$A(x_{\text{lỗi\_nêm}}) \approx 0 \implies \Delta y = A(x_{\text{lỗi\_nêm}}) \equiv 0 \implies A^T(Ax - y) \equiv \mathbf{0}$$
+     $$A(x_{\text{null}}) \approx 0 \implies \Delta y = A(x_{\text{null}}) \equiv 0 \implies A^T(Ax - y) \equiv \mathbf{0}$$
      **Nhánh vật lý hoàn toàn bị "MÙ"** trước toàn bộ sự đứt gãy, biến dạng của các mô nằm theo phương ngang!
   2. **Hệ số vô hướng $\alpha_t \in \mathbb{R}^1$ không có tính thích nghi hướng:**
      Năng lượng gradient phân bố cực kỳ bất đẳng hướng. Một số vô hướng $\alpha_t$ không thể vừa "kìm hãm" gradient cực mạnh ở hướng có tia, vừa "khuếch đại" gradient bằng $0$ ở hướng khuyết.

@@ -1,0 +1,154 @@
+[INFO] start at Sat Sep  5 11:03:12 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=67830
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=3
+[INFO] BEST_GPU=3
+[INFO] Launching SOLAR Benchmark Visualization Pipeline at Sat Sep  5 11:03:22 PM +07 2026
+================================================================================
+🎯 KẾT XUẤT ẢNH TRỰC QUAN HÓA CẤU HÌNH LA-120° (Slices 50, 100, 150)
+   (Bao gồm 3 biến thể SOLAR: SOLAR_LongNet, SOLAR_Mamba, SOLAR_Longformer)
+   (Và các Panel đối sánh trực tiếp với Baseline LEARN)
+================================================================================
+================================================================================
+🎨 BẮT ĐẦU KẾT XUẤT ẢNH TRỰC QUAN HÓA CHO 3 BIẾN THỂ SOLAR
+- Thiết bị tính toán: cuda
+- Cung quét góc: 120.0° (Views: 64)
+- Các lát cắt chỉ định: [50, 100, 150]
+- Thư mục xuất ảnh: /datastore/uittogether3/LuuTru/MinhPD/visualizations/
+- Thư mục báo cáo đồng bộ: /datastore/uittogether3/LuuTru/MinhPD/reports/sep-05-2026/visualizations/
+================================================================================
+[TEST] Loaded 214 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: test).
+✅ Đã nạp thành công tập kiểm thử Patient L310: 214 lát cắt.
+📦 Đang nạp SOLAR_LongNet từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_LongNet/solar_longnet_la-epoch=29-val_psnr=32.26-val_ssim=0.8935.ckpt
+📦 Đang nạp SOLAR_Mamba từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Mamba/solar_mamba_la-epoch=27-val_psnr=33.22-val_ssim=0.9018.ckpt
+📦 Đang nạp SOLAR_Longformer từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Longformer/solar_longformer_la-epoch=35-val_psnr=33.62-val_ssim=0.9079.ckpt
+
+--- Nạp các mô hình đối chứng LEARN (Baseline Bậc 1) ---
+📦 Đang nạp LEARN_LongNet từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_LongNet/last.ckpt
+📦 Đang nạp LEARN_Mamba từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Mamba/mamba_la-epoch=17-val_psnr=27.66-val_ssim=0.7373.ckpt
+
+================================================================================
+  🚀 [LEARN_Mamba_LA] ĐÃ KHỞI TẠO MÔ HÌNH VÀ HÌNH HỌC VẬT LÝ THÀNH CÔNG:
+  • Số giai đoạn Unrolling (Stages) : 14 vòng lặp
+  • Dải góc quét (Limited-Angle)    : [-60.0°, 60.0°] (Cung quét 120.0°)
+  • Số góc chiếu (Views)            : 64 views (Bước góc Δθ ≈ 1.87°)
+  • Số cảm biến (Detectors)         : 512 kênh (Dải [-480, 480] mm)
+  • Kích thước ảnh tái tạo          : 256 x 256 pixels
+  • Toán tử Chiếu Thuận (A)         : ODL RayTransform (GPU astra_cuda)
+  • Toán tử Chiếu Ngược (A^T - FBP) : ODL FBP (Filter: Ram-Lak, Frequency Scaling: 0.9, Scale: √2)
+================================================================================
+
+📦 Đang nạp LEARN_Longformer từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Longformer/longformer_la-epoch=45-val_psnr=34.77-val_ssim=0.9383.ckpt
+
+🖼️ ĐANG XỬ LÝ LÁT CẮT #050 (BỆNH NHÂN L310, GÓC QUÉT 120°)...
+  🌟 [SOLAR_LongNet] PSNR: 29.62 dB | SSIM: 0.8682 -> Đã lưu ảnh.
+  🌟 [SOLAR_Mamba] PSNR: 28.00 dB | SSIM: 0.8646 -> Đã lưu ảnh.
+  🌟 [SOLAR_Longformer] PSNR: 31.22 dB | SSIM: 0.8897 -> Đã lưu ảnh.
+  📌 [LEARN_LongNet] PSNR: 32.60 dB | SSIM: 0.8921 -> Đã lưu ảnh.
+  📌 [LEARN_Mamba] PSNR: 23.89 dB | SSIM: 0.6722 -> Đã lưu ảnh.
+  📌 [LEARN_Longformer] PSNR: 33.71 dB | SSIM: 0.9090 -> Đã lưu ảnh.
+  ✨ Đã lưu Panel SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/120deg/slice_050/comparison_solar_summary.png
+  🏆 Đã lưu Panel Đối Sánh Baseline vs SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/120deg/slice_050/comparison_baseline_vs_solar.png
+
+🖼️ ĐANG XỬ LÝ LÁT CẮT #100 (BỆNH NHÂN L310, GÓC QUÉT 120°)...
+  🌟 [SOLAR_LongNet] PSNR: 32.27 dB | SSIM: 0.9149 -> Đã lưu ảnh.
+  🌟 [SOLAR_Mamba] PSNR: 34.17 dB | SSIM: 0.9265 -> Đã lưu ảnh.
+  🌟 [SOLAR_Longformer] PSNR: 33.94 dB | SSIM: 0.9291 -> Đã lưu ảnh.
+  📌 [LEARN_LongNet] PSNR: 32.36 dB | SSIM: 0.9170 -> Đã lưu ảnh.
+  📌 [LEARN_Mamba] PSNR: 27.41 dB | SSIM: 0.7325 -> Đã lưu ảnh.
+  📌 [LEARN_Longformer] PSNR: 34.59 dB | SSIM: 0.9363 -> Đã lưu ảnh.
+  ✨ Đã lưu Panel SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/120deg/slice_100/comparison_solar_summary.png
+  🏆 Đã lưu Panel Đối Sánh Baseline vs SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/120deg/slice_100/comparison_baseline_vs_solar.png
+
+🖼️ ĐANG XỬ LÝ LÁT CẮT #150 (BỆNH NHÂN L310, GÓC QUÉT 120°)...
+  🌟 [SOLAR_LongNet] PSNR: 32.61 dB | SSIM: 0.9233 -> Đã lưu ảnh.
+  🌟 [SOLAR_Mamba] PSNR: 33.83 dB | SSIM: 0.9309 -> Đã lưu ảnh.
+  🌟 [SOLAR_Longformer] PSNR: 34.13 dB | SSIM: 0.9334 -> Đã lưu ảnh.
+  📌 [LEARN_LongNet] PSNR: 32.75 dB | SSIM: 0.9149 -> Đã lưu ảnh.
+  📌 [LEARN_Mamba] PSNR: 27.49 dB | SSIM: 0.7255 -> Đã lưu ảnh.
+  📌 [LEARN_Longformer] PSNR: 33.81 dB | SSIM: 0.9390 -> Đã lưu ảnh.
+  ✨ Đã lưu Panel SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/120deg/slice_150/comparison_solar_summary.png
+  🏆 Đã lưu Panel Đối Sánh Baseline vs SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/120deg/slice_150/comparison_baseline_vs_solar.png
+
+🔄 Đang đồng bộ ảnh trực quan hóa sang thư mục báo cáo: /datastore/uittogether3/LuuTru/MinhPD/reports/sep-05-2026/visualizations/...
+✅ Đã đồng bộ hoàn tất vào /datastore/uittogether3/LuuTru/MinhPD/reports/sep-05-2026/visualizations/
+
+================================================================================
+🎉 HOÀN TẤT KẾT XUẤT ẢNH TRỰC QUAN HÓA TẠI: /datastore/uittogether3/LuuTru/MinhPD/visualizations/
+================================================================================
+
+================================================================================
+🎯 KẾT XUẤT ẢNH TRỰC QUAN HÓA CẤU HÌNH LA-90° (Slices 50, 100, 150)
+   (Minh chứng khả năng tái tạo vượt trội của SOLAR khi nêm khuyết mở rộng 270°)
+================================================================================
+================================================================================
+🎨 BẮT ĐẦU KẾT XUẤT ẢNH TRỰC QUAN HÓA CHO 3 BIẾN THỂ SOLAR
+- Thiết bị tính toán: cuda
+- Cung quét góc: 90.0° (Views: 64)
+- Các lát cắt chỉ định: [50, 100, 150]
+- Thư mục xuất ảnh: /datastore/uittogether3/LuuTru/MinhPD/visualizations/
+- Thư mục báo cáo đồng bộ: /datastore/uittogether3/LuuTru/MinhPD/reports/sep-05-2026/visualizations/
+================================================================================
+[TEST] Loaded 214 CT slices from /datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/ (split: test).
+✅ Đã nạp thành công tập kiểm thử Patient L310: 214 lát cắt.
+📦 Đang nạp SOLAR_LongNet từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_LongNet/solar_longnet_la-epoch=29-val_psnr=32.26-val_ssim=0.8935.ckpt
+📦 Đang nạp SOLAR_Mamba từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Mamba/solar_mamba_la-epoch=27-val_psnr=33.22-val_ssim=0.9018.ckpt
+📦 Đang nạp SOLAR_Longformer từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Longformer/solar_longformer_la-epoch=35-val_psnr=33.62-val_ssim=0.9079.ckpt
+
+--- Nạp các mô hình đối chứng LEARN (Baseline Bậc 1) ---
+📦 Đang nạp LEARN_LongNet từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_LongNet/last.ckpt
+📦 Đang nạp LEARN_Mamba từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Mamba/mamba_la-epoch=17-val_psnr=27.66-val_ssim=0.7373.ckpt
+
+================================================================================
+  🚀 [LEARN_Mamba_LA] ĐÃ KHỞI TẠO MÔ HÌNH VÀ HÌNH HỌC VẬT LÝ THÀNH CÔNG:
+  • Số giai đoạn Unrolling (Stages) : 14 vòng lặp
+  • Dải góc quét (Limited-Angle)    : [-60.0°, 60.0°] (Cung quét 120.0°)
+  • Số góc chiếu (Views)            : 64 views (Bước góc Δθ ≈ 1.87°)
+  • Số cảm biến (Detectors)         : 512 kênh (Dải [-480, 480] mm)
+  • Kích thước ảnh tái tạo          : 256 x 256 pixels
+  • Toán tử Chiếu Thuận (A)         : ODL RayTransform (GPU astra_cuda)
+  • Toán tử Chiếu Ngược (A^T - FBP) : ODL FBP (Filter: Ram-Lak, Frequency Scaling: 0.9, Scale: √2)
+================================================================================
+
+📦 Đang nạp LEARN_Longformer từ: /datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Longformer/longformer_la-epoch=45-val_psnr=34.77-val_ssim=0.9383.ckpt
+
+🖼️ ĐANG XỬ LÝ LÁT CẮT #050 (BỆNH NHÂN L310, GÓC QUÉT 90°)...
+  🌟 [SOLAR_LongNet] PSNR: 23.51 dB | SSIM: 0.8211 -> Đã lưu ảnh.
+  🌟 [SOLAR_Mamba] PSNR: 22.89 dB | SSIM: 0.8208 -> Đã lưu ảnh.
+  🌟 [SOLAR_Longformer] PSNR: 24.55 dB | SSIM: 0.8324 -> Đã lưu ảnh.
+  📌 [LEARN_LongNet] PSNR: 20.63 dB | SSIM: 0.5949 -> Đã lưu ảnh.
+  📌 [LEARN_Mamba] PSNR: 18.33 dB | SSIM: 0.3607 -> Đã lưu ảnh.
+  📌 [LEARN_Longformer] PSNR: 20.52 dB | SSIM: 0.6272 -> Đã lưu ảnh.
+  ✨ Đã lưu Panel SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/90deg/slice_050/comparison_solar_summary.png
+  🏆 Đã lưu Panel Đối Sánh Baseline vs SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/90deg/slice_050/comparison_baseline_vs_solar.png
+
+🖼️ ĐANG XỬ LÝ LÁT CẮT #100 (BỆNH NHÂN L310, GÓC QUÉT 90°)...
+  🌟 [SOLAR_LongNet] PSNR: 30.12 dB | SSIM: 0.8991 -> Đã lưu ảnh.
+  🌟 [SOLAR_Mamba] PSNR: 30.50 dB | SSIM: 0.9018 -> Đã lưu ảnh.
+  🌟 [SOLAR_Longformer] PSNR: 31.72 dB | SSIM: 0.9100 -> Đã lưu ảnh.
+  📌 [LEARN_LongNet] PSNR: 20.70 dB | SSIM: 0.6453 -> Đã lưu ảnh.
+  📌 [LEARN_Mamba] PSNR: 20.06 dB | SSIM: 0.4278 -> Đã lưu ảnh.
+  📌 [LEARN_Longformer] PSNR: 20.24 dB | SSIM: 0.6622 -> Đã lưu ảnh.
+  ✨ Đã lưu Panel SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/90deg/slice_100/comparison_solar_summary.png
+  🏆 Đã lưu Panel Đối Sánh Baseline vs SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/90deg/slice_100/comparison_baseline_vs_solar.png
+
+🖼️ ĐANG XỬ LÝ LÁT CẮT #150 (BỆNH NHÂN L310, GÓC QUÉT 90°)...
+  🌟 [SOLAR_LongNet] PSNR: 29.01 dB | SSIM: 0.9004 -> Đã lưu ảnh.
+  🌟 [SOLAR_Mamba] PSNR: 29.58 dB | SSIM: 0.9069 -> Đã lưu ảnh.
+  🌟 [SOLAR_Longformer] PSNR: 29.56 dB | SSIM: 0.9074 -> Đã lưu ảnh.
+  📌 [LEARN_LongNet] PSNR: 19.23 dB | SSIM: 0.5724 -> Đã lưu ảnh.
+  📌 [LEARN_Mamba] PSNR: 19.24 dB | SSIM: 0.3666 -> Đã lưu ảnh.
+  📌 [LEARN_Longformer] PSNR: 19.13 dB | SSIM: 0.6095 -> Đã lưu ảnh.
+  ✨ Đã lưu Panel SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/90deg/slice_150/comparison_solar_summary.png
+  🏆 Đã lưu Panel Đối Sánh Baseline vs SOLAR: /datastore/uittogether3/LuuTru/MinhPD/visualizations/90deg/slice_150/comparison_baseline_vs_solar.png
+
+🔄 Đang đồng bộ ảnh trực quan hóa sang thư mục báo cáo: /datastore/uittogether3/LuuTru/MinhPD/reports/sep-05-2026/visualizations/...
+✅ Đã đồng bộ hoàn tất vào /datastore/uittogether3/LuuTru/MinhPD/reports/sep-05-2026/visualizations/
+
+================================================================================
+🎉 HOÀN TẤT KẾT XUẤT ẢNH TRỰC QUAN HÓA TẠI: /datastore/uittogether3/LuuTru/MinhPD/visualizations/
+================================================================================
+
+[INFO] SOLAR Benchmark Visualization completed successfully at Sat Sep  5 11:07:37 PM +07 2026
+[INFO] cleanup rc=0 at Sat Sep  5 11:07:37 PM +07 2026

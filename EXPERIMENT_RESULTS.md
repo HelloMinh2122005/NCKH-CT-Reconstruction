@@ -24,9 +24,9 @@ Mọi mô hình được huấn luyện và đánh giá trên bộ dữ liệu c
 | **1** | **`LEARN_LongNet`** | Multi-Scale Dilated Attention | **LA-120° (64v)** | **50 / 50** | **33.37** | **0.9090** | `saved_models/LEARN_LongNet/longnet_la-epoch=45-val_psnr=33.37-val_ssim=0.9090.ckpt` | ✅ **Hoàn thành 100% (50/50 epochs)**. Tăng trưởng đều đặn, ổn định xuất sắc trên toàn bộ tiến trình. |
 | **2** | **`LEARN_Longformer`**| Sliding-Chunks Self-Attention + Global Tokens | **LA-120° (64v)** | **50 / 50** | **34.77** | **0.9383** | `saved_models/LEARN_Longformer/longformer_la-epoch=45-val_psnr=34.77-val_ssim=0.9383.ckpt` | ✅ **Hoàn thành 100% (50/50 epochs - Job `66652`)**. Đạt kết quả SOTA cao nhất trong toàn bộ baseline (**PSNR = 34.77 dB**, **SSIM = 0.9383** ở Epoch 45). |
 | **3** | **`LEARN_Mamba`** | Selective SSM ($\mathcal{O}(N)$) | **LA-120° (64v)** | **41 / 50** | **27.66** | **0.7373** | `saved_models/LEARN_Mamba/mamba_la-epoch=17-val_psnr=27.66-val_ssim=0.7373.ckpt` | ⚠️ **Sử dụng Checkpoint Epoch 17**. Đạt đỉnh ở Epoch 17; sau Epoch 20 xuất hiện bùng nổ gradient / NaN do đặc tính quét 1D trên Hessian suy biến của LA-CT. |
-| **4** | **`SOLAR_LongNet` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Dilated Attention** | **LA-120° (64v)** | **13 / 50 (Running)** | **31.90** | **0.8884** | `saved_models/SOLAR_LongNet/solar_longnet_la-epoch=12-val_psnr=31.90-val_ssim=0.8884.ckpt` | 🚀 **Đang chạy huấn luyện (Job `66662`)**. 8 stages Newton-CG Matrix-Free, K_CG=4. Tăng trưởng ổn định, không lỗi GPU. |
-| **5** | **`SOLAR_Longformer` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Sliding-Chunks Attention** | **LA-120° (64v)** | **8 / 50 (Paused OOM)** | **29.91** | **0.8348** | `saved_models/SOLAR_Longformer/solar_longformer_la-epoch=04-val_psnr=29.91-val_ssim=0.8348.ckpt` | ⚠️ **Tạm dừng ở Epoch 8 (Job `66665`)** do ASTRA Texture OOM. Checkpoint `last.ckpt` sẵn sàng để resume. |
-| **6** | **`SOLAR_Mamba` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Selective SSM** | **LA-120° (64v)** | **12 / 50 (Running)** | **31.86** | **0.8775** | `saved_models/SOLAR_Mamba/solar_mamba_la-epoch=11-val_psnr=31.86-val_ssim=0.8775.ckpt` | 🚀 **Đang chạy huấn luyện (Job `66664`)**. Khắc phục hoàn toàn lỗi NaN của LEARN_Mamba, tăng trưởng vượt trội đạt 31.86 dB ở Epoch 11. |
+| **4** | **`SOLAR_LongNet` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Dilated Attention** | **LA-120° (64v)** | **31 / 50 (Paused)** | **32.26** | **0.8935** | `saved_models/SOLAR_LongNet/solar_longnet_la-epoch=29-val_psnr=32.26-val_ssim=0.8935.ckpt` | 🎯 **Đã hoàn thành đánh giá Test Benchmark (Job `67823`)**. Vượt trội ngoạn mục ở góc hẹp LA-90° (PSNR 27.19 dB, SSIM 0.8639). |
+| **5** | **`SOLAR_Longformer` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Sliding-Chunks Attention** | **LA-120° (64v)** | **36 / 50 (Running)** | **33.62** | **0.9079** | `saved_models/SOLAR_Longformer/solar_longformer_la-epoch=35-val_psnr=33.62-val_ssim=0.9079.ckpt` | 🚀 **Đang chạy huấn luyện resume (Job `67820`)** từ Epoch 36 trên DGX-A100. |
+| **6** | **`SOLAR_Mamba` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Selective SSM** | **LA-120° (64v)** | **27 / 50 (Running)** | **33.19** | **0.8975** | `saved_models/SOLAR_Mamba/solar_mamba_la-epoch=25-val_psnr=33.19-val_ssim=0.8975.ckpt` | 🚀 **Đang chạy huấn luyện resume (Job `67821`)** từ Epoch 27 trên DGX-A100 (100% ổn định số học, không NaN). |
 
 ---
 
@@ -61,7 +61,9 @@ Mọi mô hình được huấn luyện và đánh giá trên bộ dữ liệu c
 | **`LEARN_Mamba`** | `mamba_la-epoch=17` | **26.32** | **0.7468** | **0.0493** | $\approx 12\text{ ms}$ | Baseline Selective SSM (Epoch 17) |
 | **`LEARN_LongNet`** | `longnet_la-last.ckpt` | **31.62** | **0.8991** | **0.0270** | $\approx 28\text{ ms}$ | Baseline Dilated Attention (50 ep) |
 | **`LEARN_Longformer`**| `longformer_la-epoch=45` | **33.10** | **0.9237** | **0.0224** | $\approx 45\text{ ms}$ | Baseline Sliding-Chunks (50 ep - Best Ep 45) |
-| **`SOLAR` (Đề xuất)** | *Đang triển khai* | *Mục tiêu: > 35.0 dB* | *Mục tiêu: > 0.9300* | *Mục tiêu: < 0.0150* | $\approx 20\text{ ms}$ | Newton-CG Unrolling + Dual-Branch |
+| **`SOLAR_LongNet` (Đề xuất)** | `solar_longnet_la-epoch=29` | **31.03** | **0.8958** | **0.0294** | $\approx 25\text{ ms}$ | Newton-CG 8 stages + Dilated Attention (31 ep, Job `67823`) |
+| **`SOLAR_Mamba` (Đề xuất)** | `solar_mamba_la-epoch=25` | **31.21** | **0.8982** | **0.0291** | $\approx 18\text{ ms}$ | Newton-CG 8 stages + Selective SSM (29 ep, Job `67829`); +4.89 dB so với LEARN_Mamba |
+| **`SOLAR_Longformer` (Đề xuất)**| `solar_longformer_la-epoch=35` | **32.51** | **0.9101** | **0.0239** | $\approx 35\text{ ms}$ | Newton-CG 8 stages + Sliding-Chunks (36 ep, Job `67828`) |
 
 ### 4.2. Stress Test trên Cung Quét Khắc Nghiệt: LA-90° (64 views, $256 \times 256$, `noise_0`)
 *(Đánh giá khả năng bù đắp nêm khuyết khi mô hình được thử thách trên dải góc hẹp hơn)*
@@ -72,5 +74,23 @@ Mọi mô hình được huấn luyện và đánh giá trên bộ dữ liệu c
 | **`LEARN_Mamba`** | `mamba_la-epoch=17` | **18.76** | **0.4292** | **0.1129** | Giảm mạnh do SSM 1D không tổng quát tốt khi nêm khuyết mở rộng |
 | **`LEARN_LongNet`** | `longnet_la-last.ckpt` | **19.19** | **0.5876** | **0.1058** | Giữ được cấu trúc tốt hơn Mamba nhờ Dilated Attention đa tỷ lệ |
 | **`LEARN_Longformer`**| `longformer_la-epoch=45` | **19.16** | **0.6097** | **0.1055** | SSIM cao nhất baseline nhờ cơ chế sliding-chunks + global tokens |
-| **`SOLAR` (Đề xuất)** | *Đang triển khai* | *Mục tiêu: > 32.5 dB* | *Mục tiêu: > 0.8800* | *Mục tiêu: < 0.0200* | Damping thích nghi theo hướng khuyết |
+| **`SOLAR_LongNet` (Đề xuất)** | `solar_longnet_la-epoch=29` | **27.19** | **0.8639** | **0.0462** | 🚀 **Vượt trội đột phá (+8.00 dB PSNR, +0.2763 SSIM)** so với LEARN_LongNet |
+| **`SOLAR_Mamba` (Đề xuất)** | `solar_mamba_la-epoch=25` | **27.16** | **0.8620** | **0.0472** | 🚀 **Vượt trội đột phá (+8.40 dB PSNR, +0.4328 SSIM)** so với LEARN_Mamba (+100.8% SSIM) |
+| **`SOLAR_Longformer` (Đề xuất)**| `solar_longformer_la-epoch=35` | **27.92** | **0.8736** | **0.0416** | 🏆 **SOTA Toàn diện ở góc 90° (+8.76 dB PSNR, +0.2639 SSIM)** so với LEARN_Longformer |
+
+---
+
+## 5. Trực Quan Hóa & Kết Xuất Ảnh Đối Sánh (Visualizations - Slurm Job `67830`)
+
+Toàn bộ quá trình trực quan hóa đã được thực thi tự động qua Slurm Job `67830` (trên cụm DGX-A100) trên 3 lát cắt y tế độc lập (`slice_050`, `slice_100`, `slice_150`) của bệnh nhân `Patient L310` cho cả 2 cung quét $120^\circ$ và $90^\circ$:
+
+* **Thư mục lưu trữ ảnh:** [`reports/sep-05-2026/visualizations/`](reports/sep-05-2026/visualizations/) và [`visualizations/`](visualizations/).
+* **Các sản phẩm ảnh kết xuất đạt chuẩn 300 DPI:**
+  1. `1_ground_truth.png` & `2_fbp_input.png`: Ảnh tham chiếu CT chuẩn y tế và ảnh FBP thô đầu vào.
+  2. `3_recon_*.png` & `4_error_map_*.png`: Ảnh tái tạo và bản đồ sai số khuếch đại $\times 5$ của cả 6 mô hình (`SOLAR_LongNet`, `SOLAR_Mamba`, `SOLAR_Longformer`, `LEARN_LongNet`, `LEARN_Mamba`, `LEARN_Longformer`).
+  3. `comparison_solar_summary.png`: Panel đối sánh đa khung hình giữa Ground Truth, FBP và 3 biến thể đề xuất SOLAR.
+  4. `comparison_baseline_vs_solar.png`: Panel lưới $2\times 4$ đối sánh trực diện 1-1 giữa Baseline Bậc 1 và Đề xuất Bậc 2.
+
+
+
 

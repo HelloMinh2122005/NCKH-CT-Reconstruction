@@ -152,7 +152,7 @@ $$x_{t+1} = x_t - \underbrace{\alpha_t A^T(Ax_t - y)}_{\text{Lực lượng Vậ
 
 # PHẦN 1: PHÂN TÍCH CHI TIẾT KIẾN TRÚC HIỆN TẠI CỦA MVA
 
-Mô hình MVA hiện tại được cài đặt trong tệp [`CT-Reconstruction-Thanh-Repo/LEARN_Nystromformer/models2_9M.py`](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/CT-Reconstruction-Thanh-Repo/LEARN_Nystromformer/models2_9M.py).
+Mô hình MVA hiện tại được cài đặt trong tệp `CT-Reconstruction-Thanh-Repo/LEARN_Nystromformer/models2_9M.py`.
 
 ### 1.1. Sơ đồ Luồng Dữ liệu Toàn cục (Dataflow Diagram)
 

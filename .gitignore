@@ -28,6 +28,7 @@ minideeplesion/
 data/raw/
 data/processed/
 datasets/
+/visualizations/
 
 # Model Checkpoints & WandB
 *.pt

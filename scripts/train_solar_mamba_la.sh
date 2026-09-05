@@ -81,6 +81,13 @@ echo "[INFO] Launching SOLAR_Mamba Training on Limited-Angle CT at $(date)"
 cd /datastore/uittogether3/LuuTru/MinhPD
 export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
 
+RESUME_CKPT="/datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Mamba/last.ckpt"
+EXTRA_ARGS=""
+if [ -f "$RESUME_CKPT" ]; then
+    echo "[INFO] Tìm thấy checkpoint để resume: $RESUME_CKPT"
+    EXTRA_ARGS="--resume_ckpt $RESUME_CKPT"
+fi
+
 python -u baselines/SOLAR_Mamba/train_solar_mamba_la.py \
     --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/ \
     --output_dir /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Mamba/ \
@@ -98,7 +105,8 @@ python -u baselines/SOLAR_Mamba/train_solar_mamba_la.py \
     --max_epochs 50 \
     --lr 1e-4 \
     --num_workers 4 \
-    --use_precomputed
+    --use_precomputed \
+    $EXTRA_ARGS
 
 
 echo "[INFO] SOLAR_Mamba Training finished at $(date)"

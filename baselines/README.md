@@ -61,7 +61,7 @@ conda activate /datastore/uittogether3/tools/miniconda3/envs/LongNet
 *(Các script Slurm trong `scripts/train_*.sh` đã tự động tích hợp sẵn các dòng kích hoạt này).*
 
 ### Tệp `requirements.txt` dùng khi nào?
-File [requirements.txt](file:///home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD/requirements.txt) ở thư mục gốc được dùng để làm tài liệu chuẩn hóa kỹ thuật và phục vụ cài đặt (`pip install -r requirements.txt`) nếu bạn muốn triển khai dự án trên một máy trạm cá nhân hoặc máy chủ ngoài khác.
+File [requirements.txt](../requirements.txt) ở thư mục gốc được dùng để làm tài liệu chuẩn hóa kỹ thuật và phục vụ cài đặt (`pip install -r requirements.txt`) nếu bạn muốn triển khai dự án trên một máy trạm cá nhân hoặc máy chủ ngoài khác.
 
 ---
 

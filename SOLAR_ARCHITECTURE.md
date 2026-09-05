@@ -206,7 +206,7 @@ Toàn bộ 4 thành phần trụ cột của MVA đều bộc lộ điểm ngh�
 
 ### 🌟 Module 1: Động cơ Tối ưu hóa Bậc 2 Safe Matrix-Free Conjugate Gradient (`SafeCGSolver`)
 * **Bản chất Toán học:** Thay vì bước nhảy trừ gradient thô sơ, ta tìm nghiệm cực tiểu của hàm mục tiêu toàn cục bậc 2 tại vòng lặp $t$:
-  $$\min_{x} \left\{ \frac{\lambda_t}{2} \|Ax - y\|_2^2 + \frac{\mu_t}{2} \|x - x_t\|_2^2 + \langle x, \nabla\mathcal{R}(x_t) \rangle \right\}$$
+  $$\min_{x} \left[ \frac{\lambda_t}{2} \|Ax - y\|_2^2 + \frac{\mu_t}{2} \|x - x_t\|_2^2 + \langle x, \nabla\mathcal{R}(x_t) \rangle \right]$$
   Lấy đạo hàm bậc 1 và đặt bằng $0$, ta thu được hệ phương trình tuyến tính chuẩn mực:
   $$\mathbf{H}_t x_{t+1} = \mathbf{b}_t \iff \left( \lambda_t A^T A + \mu_t I \right) x_{t+1} = \lambda_t A^T y + \mu_t x_t - \nabla\mathcal{R}(x_t)$$
 * **Thuật toán CG Matrix-Free:** Với kích thước ảnh $256 \times 256$, ma trận $A^TA$ có kích thước $65.536 \times 65.536$. Nếu lưu dạng ma trận dầy float32, nó tốn tới **$17.18\text{ GB}$ (cho 1 ảnh)** và **$274\text{ GB}$** cho một batch huấn luyện. Thuật toán Safe CG **hoàn toàn không tạo ma trận Hessian**, mà chỉ tính tích ma trận - vector thông qua 1 lần chiếu thuận $A(p)$ và 1 lần chiếu ngược $A^T(\cdot)$ trên GPU.

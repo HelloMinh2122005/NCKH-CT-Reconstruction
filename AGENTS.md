@@ -27,7 +27,15 @@ Khi bắt đầu một session mới trong dự án này:
    - Chỉ tập trung báo cáo những mốc mới hoàn thành trong ngày (mô hình nào vừa train xong, checkpoint đạt đỉnh, kết quả test và visualize mới).
    - Mọi số liệu đo lường định lượng chi tiết phải đưa vào file `benchmark_results.csv` và dẫn link trực tiếp (`[benchmark_results.csv](benchmark_results.csv)`), không trình bày bảng biểu dài dòng trùng lặp trong `MAIN.md`.
 
-6. **Quy tắc Thao Tác Git & GitHub (BẮT BUỘC - LOCAL EXECUTION):**
-   - Khi thực hiện các lệnh Git (`status`, `add`, `commit`, `push`, `pull`, v.v.): **Bắt buộc thực hiện trực tiếp trên môi trường Local** tại thư mục đã mount (`/home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD`).
-   - **Tuyệt đối KHÔNG SSH lên server để thao tác Git**: Thư mục server đã được mount về máy local (`mount-uit`), chạy local nhanh hơn, sử dụng trực tiếp cấu hình SSH/GitHub credential của máy cá nhân và tránh tắc nghẽn terminal cluster.
+6. **Quy tắc Thao Tác Git & GitHub (BẮT BUỘC - CD TRÊN LOCAL, KHÔNG DÙNG SSH):**
+   - **Thao tác trực tiếp trên Local:** Đối với tất cả thao tác GitHub / Git (`status`, `add`, `commit`, `push`, `pull`, v.v.), **bắt buộc `cd` trên local** vào thư mục mount:
+     ```bash
+     cd /home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD
+     ```
+   - **Tuyệt đối KHÔNG SSH lên server để thao tác Git:** Thư mục của server đã được mount sẵn tới máy local qua SSHFS (`mount-uit`), do đó mọi thay đổi file đều đã sẵn sàng trên local.
+   - **Lý do & Lợi thế vượt trội:**
+     - **Tốc độ nhanh hơn rất nhiều:** Không mất thời gian kết nối/bắt tay SSH lên server, tránh gián đoạn hay nghẽn terminal cluster.
+     - **Tự động dùng credential/SSH key cá nhân:** Sử dụng ngay GitHub token/SSH key đã cấu hình sẵn trên máy local mà không cần đẩy key bí mật lên cluster.
+     - **Mẹo tối ưu hiệu năng qua SSHFS:** Khi kiểm tra trạng thái Git, nên dùng `git status -uno` hoặc chỉ định file cụ thể để tránh tốn thời gian duyệt đệ quy các thư mục chứa dữ liệu ảnh lớn.
+
 

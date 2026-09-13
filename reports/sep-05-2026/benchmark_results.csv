@@ -4,5 +4,6 @@ LEARN_Mamba,mamba_la-epoch=17.ckpt (41 ep),26.32,0.7468,0.0493,18.76,0.4292,0.11
 LEARN_LongNet,longnet_la-last.ckpt (50 ep),31.62,0.8991,0.0270,19.19,0.5876,0.1058,Khôi phục sắc nét; trường chú ý giãn nở đa tỷ lệ giúp giữ cấu trúc xương và mô tốt
 LEARN_Longformer,longformer_la-epoch=45.ckpt (50 ep),33.10,0.9237,0.0224,19.16,0.6097,0.1055,SOTA cao nhất toàn bộ Baseline; cơ chế Sliding-Chunks + Global Tokens bảo toàn SSIM vượt trội
 SOLAR_LongNet (Đề xuất),solar_longnet_la-epoch=29.ckpt (31 ep),31.03,0.8958,0.0294,27.19,0.8639,0.0462,Đánh giá Test Job 67823: Vượt trội ngoạn mục ở LA-90° (+8.00 dB PSNR và +0.2763 SSIM so với baseline)
-SOLAR_Mamba (Đề xuất),solar_mamba_la-epoch=25.ckpt (29 ep),31.21,0.8982,0.0291,27.16,0.8620,0.0472,Đánh giá Test Job 67829: Vượt trội ngoạn mục ở LA-90° (+8.40 dB PSNR và +0.4328 SSIM so với LEARN_Mamba)
-SOLAR_Longformer (Đề xuất),solar_longformer_la-epoch=35.ckpt (36 ep),32.51,0.9101,0.0239,27.92,0.8736,0.0416,Đánh giá Test Job 67828: SOTA toàn diện ở LA-90° (27.92 dB PSNR và 0.8736 SSIM; +8.76 dB so với baseline)
+SOLAR_Mamba (Đề xuất),solar_mamba_la-epoch=45.ckpt (50 ep),31.90,0.9114,0.0268,27.53,0.8760,0.0447,Đánh giá Test Job 68552 (50 ep): Vượt trội ngoạn mục ở LA-90° (+8.77 dB PSNR và +0.4468 SSIM so với LEARN_Mamba)
+SOLAR_Longformer (Đề xuất),solar_longformer_la-epoch=45.ckpt (50 ep),32.95,0.9155,0.0228,28.05,0.8774,0.0412,Đánh giá Test Job 68551 (50 ep): SOTA toàn diện ở LA-90° (28.05 dB PSNR và 0.8774 SSIM; +8.89 dB so với baseline)
+LEARN_Mamba (NIH DeepLesion),mamba_la-epoch=23.ckpt (50 ep),26.69,0.7132,0.0486,18.59,0.3913,0.1211,Đánh giá Test Job 71392 trên NIH DeepLesion (300 lát cắt test); suy giảm mạnh ở 90° (PSNR -8.10 dB và SSIM -0.3219)

@@ -19,8 +19,8 @@ def _safe_torch_load(*args, **kwargs):
     return _orig_torch_load(*args, **kwargs)
 torch.load = _safe_torch_load
 
-# Import DataModule và Mô hình
-from data.datamodule_LA import LimitedAngleCTDataModule
+# Import DataModule Factory và Mô hình
+from data.datamodule_factory import get_datamodule
 from baselines.LEARN_Mamba.models import LEARN_Mamba_LA
 
 
@@ -39,7 +39,15 @@ def parse_args():
         help="Đường dẫn tới file trọng số .ckpt đã huấn luyện hoàn tất"
     )
     
-    # Cấu hình dữ liệu
+    # Cấu hình dữ liệu đa tập hợp (AAPM, DeepLesion, LIDC)
+    parser.add_argument(
+        "--dataset_type", "--dataset_name",
+        dest="dataset_type",
+        type=str,
+        choices=["aapm", "deeplesion", "lidc"],
+        default="aapm",
+        help="Lựa chọn tập dữ liệu kiểm thử: 'aapm', 'deeplesion' hoặc 'lidc' (mặc định: 'aapm')"
+    )
     parser.add_argument(
         "--dicom_dir",
         type=str,
@@ -50,14 +58,14 @@ def parse_args():
         "--dataset_dir", "--data_dir", "--cache_dir",
         dest="cache_dir",
         type=str,
-        default="/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/",
-        help="Đường dẫn thư mục chứa dữ liệu .npy cache"
+        default=None,
+        help="Đường dẫn thư mục chứa dữ liệu .npy cache (mặc định tự động theo dataset_type)"
     )
     parser.add_argument(
         "--test_patients",
         nargs="+",
         default=["L310"],
-        help="Danh sách mã bệnh nhân kiểm thử độc lập (mặc định: bệnh nhân L310)"
+        help="Danh sách mã bệnh nhân kiểm thử độc lập (mặc định: bệnh nhân L310 cho AAPM)"
     )
     
     # Cấu hình hình học & vật lý CT
@@ -161,8 +169,9 @@ def main():
     model = LEARN_Mamba_LA.load_from_checkpoint(args.checkpoint_path)
     model.eval()
 
-    # Bước 5: Khởi tạo DataModule cho tập kiểm thử độc lập
-    datamodule = LimitedAngleCTDataModule(
+    # Bước 5: Khởi tạo DataModule cho tập kiểm thử độc lập (hỗ trợ AAPM, DeepLesion, LIDC)
+    datamodule = get_datamodule(
+        dataset_type=args.dataset_type,
         dicom_dir=args.dicom_dir,
         cache_dir=args.cache_dir,
         setting_tag=setting_tag,

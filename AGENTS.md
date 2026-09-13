@@ -26,3 +26,8 @@ Khi bắt đầu một session mới trong dự án này:
    - **Tuyệt đối KHÔNG lặp lại** các thông tin đã được báo cáo trong các phiên trước (như mô tả chi tiết lại dataset, kiến trúc đã chạy, lý thuyết cũ...).
    - Chỉ tập trung báo cáo những mốc mới hoàn thành trong ngày (mô hình nào vừa train xong, checkpoint đạt đỉnh, kết quả test và visualize mới).
    - Mọi số liệu đo lường định lượng chi tiết phải đưa vào file `benchmark_results.csv` và dẫn link trực tiếp (`[benchmark_results.csv](benchmark_results.csv)`), không trình bày bảng biểu dài dòng trùng lặp trong `MAIN.md`.
+
+6. **Quy tắc Thao Tác Git & GitHub (BẮT BUỘC - LOCAL EXECUTION):**
+   - Khi thực hiện các lệnh Git (`status`, `add`, `commit`, `push`, `pull`, v.v.): **Bắt buộc thực hiện trực tiếp trên môi trường Local** tại thư mục đã mount (`/home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD`).
+   - **Tuyệt đối KHÔNG SSH lên server để thao tác Git**: Thư mục server đã được mount về máy local (`mount-uit`), chạy local nhanh hơn, sử dụng trực tiếp cấu hình SSH/GitHub credential của máy cá nhân và tránh tắc nghẽn terminal cluster.
+

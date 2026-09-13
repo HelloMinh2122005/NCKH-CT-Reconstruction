@@ -105,31 +105,139 @@
   - **`baselines/SOLAR_Mamba/`:** Tối ưu hóa bậc 2 Newton-CG + Nhánh kép Res-CNN & Selective SSM (Mamba). Script: `train_solar_mamba_la.py`, `test_solar_mamba_la.py`, `scripts/train_solar_mamba_la.sh`.
 - [x] **Theo dõi & Resume Tiến độ Huấn luyện 3 Mô hình Đề xuất SOLAR trên Slurm HPC (DGX-A100):**
   - Đã chuẩn hóa cơ chế tự động phát hiện `last.ckpt` (`--resume_ckpt`) trong toàn bộ 3 script sbatch (`train_solar_longformer_la.sh`, `train_solar_longnet_la.sh`, `train_solar_mamba_la.sh`).
-  - **`SOLAR_Longformer` (120°):** Job `67505` đạt mốc 24h Time Limit tại Epoch 36 (Best Val: **PSNR = 33.62 dB, SSIM = 0.9079** ở Epoch 35, checkpoint `solar_longformer_la-epoch=35-val_psnr=33.62-val_ssim=0.9079.ckpt`). Đang tiếp tục train resume (**Job ID `67820`** từ Epoch 36/50). ✅ **Đã hoàn thành 100% Test Benchmark trên Patient L310 (214 lát cắt) - Job ID `67828`**:
+  - **`SOLAR_Longformer` (120°):** Job `67505` đạt mốc 24h Time Limit tại Epoch 36. Tiến trình resume (**Job ID `67820`**) đang chạy ở Epoch 48/50 và đã xác lập **ĐỈNH MỚI KỶ LỤC** tại **Epoch 45: Val PSNR = 34.18 dB, Val SSIM = 0.9165** (Checkpoint: `solar_longformer_la-epoch=45-val_psnr=34.18-val_ssim=0.9165.ckpt`). Đánh giá test trước đó ở Epoch 35 (Job `67828`):
     - *Cung quét chuẩn LA-120°:* **PSNR = 32.51 dB**, **SSIM = 0.9101**, **RMSE = 0.0239**.
     - *Stress test LA-90° (góc khuyết 270°):* **PSNR = 27.92 dB**, **SSIM = 0.8736**, **RMSE = 0.0416** (🏆 **SOTA Toàn diện ở góc hẹp 90°: +8.76 dB PSNR và +0.2639 SSIM** so với LEARN_Longformer).
-  - **`SOLAR_Mamba` (120°):** Job `67507` đạt mốc 24h Time Limit tại Epoch 29 (Best Val: **PSNR = 33.19 dB, SSIM = 0.8975** ở Epoch 25, checkpoint `solar_mamba_la-epoch=25-val_psnr=33.19-val_ssim=0.8975.ckpt`). Đang tiếp tục train resume (**Job ID `67821`** từ Epoch 27/50). ✅ **Đã hoàn thành 100% Test Benchmark trên Patient L310 (214 lát cắt) - Job ID `67829`**:
+  - **`SOLAR_Mamba` (120°):** Job `67507` đạt mốc 24h Time Limit tại Epoch 29. Tiến trình resume (**Job ID `67821`**) đang chạy ở Epoch 42/50, 100% ổn định số học không NaN, và đã xác lập **ĐỈNH MỚI KỶ LỤC** tại **Epoch 35: Val PSNR = 33.69 dB, Val SSIM = 0.9062** (Checkpoint: `solar_mamba_la-epoch=35-val_psnr=33.69-val_ssim=0.9062.ckpt`). Đánh giá test trước đó ở Epoch 25 (Job `67829`):
     - *Cung quét chuẩn LA-120°:* **PSNR = 31.21 dB**, **SSIM = 0.8982**, **RMSE = 0.0291** (🚀 **+4.89 dB PSNR và +0.1514 SSIM** so với LEARN_Mamba).
     - *Stress test LA-90° (góc khuyết 270°):* **PSNR = 27.16 dB**, **SSIM = 0.8620**, **RMSE = 0.0472** (🚀 **+8.40 dB PSNR và +0.4328 SSIM (+100.8%)** so với LEARN_Mamba).
   - **`SOLAR_LongNet` (120°):** Job `67506` đạt mốc 24h Time Limit tại Epoch 31 (Best Val: **PSNR = 32.26 dB, SSIM = 0.8935** ở Epoch 29, checkpoint `solar_longnet_la-epoch=29-val_psnr=32.26-val_ssim=0.8935.ckpt`). Đang tạm dừng theo yêu cầu của người dùng. ✅ **Đã hoàn thành 100% Test Benchmark trên Patient L310 (214 lát cắt) - Job ID `67823`**:
     - *Cung quét chuẩn LA-120°:* **PSNR = 31.03 dB**, **SSIM = 0.8958**, **RMSE = 0.0294** (áp sát baseline LEARN_LongNet 50 epoch).
-    - *Stress test LA-90° (góc khuyết 270°):* **PSNR = 27.19 dB**, **SSIM = 0.8639**, **RMSE = 0.0462** (🚀 **+8.00 dB PSNR và +0.2763 SSIM (+47.0%)** so với LEARN_LongNet). Minh chứng thành công mỹ mãn cho tính ưu việt của tối ưu hóa bậc 2 Newton-CG Matrix-Free!
+    - *Stress test LA-90° (góc khuyết 270°):* **PSNR = 27.19 dB**, **SSIM = 0.8639**, **RMSE = 0.0462** (🚀 **+8.00 dB PSNR và +0.2763 SSIM (+47.0%)** so với LEARN_LongNet).
 
 - [x] **Biên soạn Báo cáo Tiến độ & Benchmark Định lượng (Ngày 03/09/2026):** Lưu tại [`reports/sep-03-2026/MAIN.md`](reports/sep-03-2026/MAIN.md) và bảng dữ liệu [`reports/sep-03-2026/benchmark_results.csv`](reports/sep-03-2026/benchmark_results.csv).
 - [x] **Biên soạn Báo cáo Tiến độ & Đột phá SOLAR (Ngày 05/09/2026):** Lưu tại [`reports/sep-05-2026/MAIN.md`](reports/sep-05-2026/MAIN.md), bảng dữ liệu [`reports/sep-05-2026/benchmark_results.csv`](reports/sep-05-2026/benchmark_results.csv) và kiến trúc [`SOLAR_ARCHITECTURE.md`](SOLAR_ARCHITECTURE.md).
-- [x] **Hoàn thành Trực quan hóa & Kết xuất ảnh Đối sánh 3 biến thể SOLAR (Job ID `67830`):** Đã kết xuất ảnh tái tạo, Error Map, Panel đối sánh 3 biến thể SOLAR (`comparison_solar_summary.png`) và Panel đối sánh trực diện Baseline vs SOLAR (`comparison_baseline_vs_solar.png`) trên 3 lát cắt 50, 100, 150 cho cả 120° và 90°. Lưu tại [`reports/sep-05-2026/visualizations/`](reports/sep-05-2026/visualizations/) và [`visualizations/`](visualizations/).
+- [x] **- [x] **Hoàn thành Tải Dữ liệu CT Lồng ngực LIDC-IDRI từ TCIA REST API:**
+  - Đã tải và giải nén thành công 1,975 lát cắt DICOM trên 12 bệnh nhân tiêu biểu.
+  - Phân chia tập hợp đã lưu tại: `dataset/lidc_idri/splits_summary.json` (train: 8 bệnh nhân, val: 2 bệnh nhân, test: 2 bệnh nhân).
+- [x] **Khởi chạy Sinh Dữ liệu Limited-Angle CT LIDC-IDRI (Job Slurm ID `67943`):**
+  - Đã submit job `sbatch scripts/generate_la_dataset_lidc.sh` chạy trên node `DGX-A100`.
+  - Sinh toàn bộ sinogram và FBP cho cả 2 cung quét $120^\circ$ và $90^\circ$ (64 views, 512 detectors, $256 \times 256$, `noise_0`) cho Train, Val, Test. Lưu tại: `dataset/lidc_idri/limited_angle/`.
+- [x] **Khởi tạo Bản thảo Bài báo Hội nghị SOICT 2026 (`papers/soict2026/`):**
+  - **Định hướng chiến lược từ Giáo sư:** Tuyệt đối giữ bí mật và để dành kiến trúc **SOLAR** (Second-Order Preconditioning) cho bài báo Journal đỉnh cao (IEEE TMI / MedIA, Q1, IF > 10). Bài báo SOICT 2026 chỉ tập trung vào nghiên cứu thực nghiệm đánh giá đối sánh các cơ chế chuỗi dài (Longformer vs LongNet vs Mamba) bên trong mạng Deep Unrolling (khung LEARN) dựa trên kết quả đã hoàn thiện tại [`reports/sep-03-2026/benchmark_results.csv`](reports/sep-03-2026/benchmark_results.csv).
+  - Đã thiết lập cấu trúc bài báo chuẩn Springer LNCS (`llncs.cls`, `splncs04.bst`) từ gói `_MICCAI_CLIMEM2026__Tran_Minh_Vu___CL_for_survival_analysis`.
+  - Đã hoàn thành bản thảo toàn diện [`papers/soict2026/main.tex`](papers/soict2026/main.tex), bao gồm Abstract, Introduction, Formulation toán học, phân tích 3 cơ chế chuỗi dài, tách 2 Bảng thực nghiệm đối sánh (Table 1 cho 120°, Table 2 cho 90° kèm số tham số Params), và thảo luận sâu sắc về sự suy giảm của Mamba ở góc $90^\circ$.
+  - Đã tích hợp hoàn chỉnh hình ảnh Kiến trúc đề xuất Fig. 1 ([`papers/soict2026/figures/methodology.png`](papers/soict2026/figures/methodology.png)), Lưới đối sánh trực quan đa chế độ với ô phóng đại ROI màu vàng Fig. 2 ([`papers/soict2026/figures/visual_comparison_roi.png`](papers/soict2026/figures/visual_comparison_roi.png)), và Bản đồ sai số dư Fig. 3 ([`papers/soict2026/figures/err_...png`](papers/soict2026/figures/)).
+  - Đã thiết lập trích dẫn đầy đủ tại [`papers/soict2026/refs.bib`](papers/soict2026/refs.bib).
+- [x] **Trích xuất Attention Maps 14 Tầng của LEARN_Longformer (Job Slurm ID `67967`):**
+  - Đã xuất thành công 2 ảnh panel Attention Evolution cho $120^\circ$ và $90^\circ$ (Slice 050) tại `visualizations/attention_maps/` và đã tích hợp trực tiếp vào Fig. 4 của bài báo SOICT 2026.
+- [x] **Hoàn thành 100% Huấn luyện 50 Epochs cho SOLAR_Longformer (Job `67820`) & SOLAR_Mamba (Job `67821`):**
+  - Cả hai mô hình đã hoàn tất trọn vẹn 50/50 Epochs trên cụm `DGX-A100` mà không gặp bất kỳ lỗi số học hay NaN nào.
+  - Các checkpoint đỉnh mới đã được lưu:
+    - `SOLAR_Longformer`: `solar_longformer_la-epoch=45-val_psnr=34.18-val_ssim=0.9165.ckpt`
+    - `SOLAR_Mamba`: `solar_mamba_la-epoch=45-val_psnr=34.00-val_ssim=0.9089.ckpt` (và `epoch=46: val_ssim=0.9112`)
+- [x] **Tái cấu trúc thư mục Dataset chuẩn hóa & Tạo Symlink an toàn:**
+  - Đã chuyển dữ liệu AAPM về thư mục chuẩn: `dataset/aapm/limited_angle/`.
+  - Đã tạo liên kết mềm (Symbolic link) `dataset/limited_angle -> dataset/aapm/limited_angle` đảm bảo tương thích ngược 100% cho toàn bộ hệ thống.
+  - Xây dựng DataModule Factory thống nhất tại [`data/datamodule_factory.py`](data/datamodule_factory.py) hỗ trợ tự động nạp cả 3 dataset: AAPM, NIH DeepLesion, và LIDC-IDRI.
+- [x] **Cập nhật & Khởi chạy Test Benchmark 50 Epochs + Visualization Tự động:**
+  - Đã cập nhật 2 checkpoint đỉnh 50-epoch vào `scripts/test_solar_longformer_la.sh` và `scripts/test_solar_mamba_la.sh`.
+  - **Job ID `68551`**: `test_solar_longformer_la.sh`
+  - **Job ID `68552`**: `test_solar_mamba_la.sh`
+  - **Job ID `68553`**: `visualize_solar_la.sh` (cấu hình Slurm `--dependency=afterok:68551:68552` tự động kích hoạt ngay khi 2 job test hoàn thành).
+- [x] **Cấu hình & Khởi chạy Huấn luyện 6 Mô hình trên 2 Dataset Mới (NIH DeepLesion & LIDC-IDRI):**
+  - Đã tích hợp tham số `--dataset_type` cho cả 6 mô hình (`LEARN_Longformer`, `LEARN_LongNet`, `LEARN_Mamba`, `SOLAR_Longformer`, `SOLAR_LongNet`, `SOLAR_Mamba`).
+  - Đã sinh đầy đủ 12 script sbatch chuẩn NVIDIA MPS, kiểm tra VRAM, log và thư mục lưu checkpoint riêng biệt.
+  - **NIH DeepLesion (Jobs `68557` - `68562`):** `train_longformer_deeplesion.sh`, `train_longnet_deeplesion.sh`, `train_mamba_deeplesion.sh`, `train_solar_longformer_deeplesion.sh`, `train_solar_longnet_deeplesion.sh`, `train_solar_mamba_deeplesion.sh`.
+  - **LIDC-IDRI (Jobs `68563` - `68568`):** `train_longformer_lidc.sh`, `train_longnet_lidc.sh`, `train_mamba_lidc.sh`, `train_solar_longformer_lidc.sh`, `train_solar_longnet_lidc.sh`, `train_solar_mamba_lidc.sh`.
 
 ### Quy tắc nghiêm ngặt cho các session sau:
 > [!IMPORTANT]
 > **Quy tắc Bảo toàn Chú thích & Tính Toàn vẹn Mã nguồn:**
 > - Tuyệt đối **KHÔNG ĐƯỢC tự ý xóa, lược bỏ, rút gọn hoặc thay đổi** bất kỳ dòng comment, docstrings tiếng Việt giải thích chi tiết nào trong toàn bộ codebase.
 > - Tuyệt đối **KHÔNG ĐƯỢC viết code sai lệch, làm mâu thuẫn hoặc làm hỏng** các logic và giá trị mặc định đã được giải thích trong comment khi người dùng chưa yêu cầu rõ ràng.
+> - Tuyệt đối tuân thủ phân tách ranh giới khoa học: **SOLAR** dành riêng cho bài Journal; bài **SOICT** chỉ sử dụng các mô hình Baseline (`LEARN_Longformer`, `LEARN_LongNet`, `LEARN_Mamba`, `FBP`).
 
-### Các bước tiếp theo:
-- [ ] Giám sát tiến độ huấn luyện tiếp theo của 2 mô hình SOLAR đang chạy trên DGX-A100 (Jobs `67820`, `67821`).
-- [ ] Cập nhật đồ thị hội tụ Loss/PSNR/SSIM và bảng so sánh toàn diện vào bản thảo bài báo/luận văn tốt nghiệp.
+### Các bước tiếp theo (Actionable TODOs dành cho các Session LLM tiếp theo):
 
+- [x] **1. THEO DÕI & CẬP NHẬT KẾT QUẢ TEST BENCHMARK 50 EPOCHS CỦA SOLAR:**
+  - **Job đã nghiệm thu:** Job `68551` (`test_solar_longformer_la.sh`) và Job `68552` (`test_solar_mamba_la.sh`) ✅ **Hoàn thành 100%**.
+  - **Kết quả định lượng đã trích xuất trên Patient L310 (214 lát cắt):**
+    - **`SOLAR_Longformer` (50 ep - Job `68551`):**
+      - LA-120°: **PSNR = 32.95 dB**, **SSIM = 0.9155**, **RMSE = 0.0228**
+      - LA-90°: **PSNR = 28.05 dB**, **SSIM = 0.8774**, **RMSE = 0.0412** (🏆 **SOTA Toàn diện ở góc 90°: +8.89 dB PSNR và +0.2677 SSIM** so với baseline)
+    - **`SOLAR_Mamba` (50 ep - Job `68552`):**
+      - LA-120°: **PSNR = 31.90 dB**, **SSIM = 0.9114**, **RMSE = 0.0268** (+5.58 dB so với LEARN_Mamba)
+      - LA-90°: **PSNR = 27.53 dB**, **SSIM = 0.8760**, **RMSE = 0.0447** (🚀 **+8.77 dB PSNR và +0.4468 SSIM (+104.1%)** so với LEARN_Mamba)
+  - Đã cập nhật đầy đủ vào:
+    - [`reports/sep-05-2026/benchmark_results.csv`](reports/sep-05-2026/benchmark_results.csv).
+    - [`EXPERIMENT_RESULTS.md`](EXPERIMENT_RESULTS.md).
 
+- [x] **2. KIỂM TRA JOB TỰ ĐỘNG HÓA TRỰC QUAN HÓA (VISUALIZATION):**
+  - **Job ID:** `68553` (`visualize_solar_la.sh`) ✅ **Hoàn thành 100%**.
+  - Đã tự động kích hoạt sau khi 2 job test kết thúc qua `--dependency=afterok:68551:68552`.
+  - Đã kết xuất đầy đủ ảnh thành phần và các panel đối sánh chất lượng cao ($300\text{ DPI}$) trên 3 lát cắt y tế độc lập (`slice_050`, `slice_100`, `slice_150`) cho cả 2 cung quét $120^\circ$ và $90^\circ$ tại [`visualizations/`](visualizations/) và [`reports/sep-05-2026/visualizations/`](reports/sep-05-2026/visualizations/).
 
+- [ ] **3. THEO DÕI 12 SLURM JOB HUẤN LUYỆN ĐA DATASET (DEEPLESION & LIDC-IDRI):**
+  - **Kết quả nghiệm thu & kiểm tra chi tiết (Thời điểm kiểm tra 13/09/2026):**
+    - *NIH DeepLesion (Jobs `69545` - `69550`):*
+      - `69545` (`LEARN_Mamba`): ✅ **COMPLETED 100% (50/50 Epochs)** vào ngày 09/09/2026. Checkpoint đỉnh: `mamba_la-epoch=23-val_psnr=26.18-val_ssim=0.7009.ckpt`, `last.ckpt` tại `saved_models/deeplesion/LEARN_Mamba/`.
+      - `69546` (`LEARN_Longformer`): ❌ **FAILED tại Epoch 10 (chạy 8h49m)** do lỗi ASTRA Toolbox CUDA OOM (`Error: createTextureObject2D malloc: CUDA error 2: out of memory`). Đã lưu checkpoint đến Epoch 09 (`longformer_la-epoch=09-val_psnr=29.41-val_ssim=0.8387.ckpt`) và `last.ckpt` tại `saved_models/deeplesion/LEARN_Longformer/`.
+      - `69547` (`LEARN_LongNet`): ❌ **FAILED ở 00:01:54** do PyTorch CUDA OOM khi cấp phát bộ nhớ.
+      - `69548` (`SOLAR_Mamba`): ❌ **FAILED tại Epoch 3 (chạy 6h04m)** do lỗi ASTRA Toolbox CUDA OOM (`createTextureObject2D malloc`). Đã lưu checkpoint đến Epoch 02 (`solar_mamba_la-epoch=02-val_psnr=28.91-val_ssim=0.7645.ckpt`) và `last.ckpt` tại `saved_models/deeplesion/SOLAR_Mamba/`.
+      - `69549` (`SOLAR_Longformer`): ⚠️ **CANCELLED ngay khi start** (ExitCode 0:0, 00:00:01) do `gpu_check.sh` báo không đủ 20000MB VRAM khả dụng.
+      - `69550` (`SOLAR_LongNet`): ⚠️ **CANCELLED ngay khi start** (ExitCode 0:0, 00:00:01) do `gpu_check.sh` báo không đủ 20000MB VRAM khả dụng.
+    - *LIDC-IDRI (Jobs `69551` - `69556`):*
+      - Cả 6 jobs `69551` -> `69556` (`LEARN_Mamba`, `LEARN_Longformer`, `LEARN_LongNet`, `SOLAR_Mamba`, `SOLAR_Longformer`, `SOLAR_LongNet`) đều bị ⚠️ **CANCELLED ngay lập tức khi khởi động** (ngày 09/09/2026) do `gpu_check.sh` kiểm tra không đủ ngưỡng 20000MB VRAM tại thời điểm đó. Chưa có tiến trình train nào được thực thi.
+  - **Hướng xử lý & Tiến độ mới nhất (13/09/2026):**
+    - ✅ **Đánh giá Test Benchmark cho LEARN_Mamba trên DeepLesion:** **Job ID `71392`** (`scripts/test_mamba_deeplesion.sh`) **Hoàn thành 100%**:
+      - *Cung quét chuẩn LA-120°:* **PSNR = 26.69 dB**, **SSIM = 0.7132**, **RMSE = 0.0486**, **Loss = 0.0025**.
+      - *Stress test LA-90°:* **PSNR = 18.59 dB**, **SSIM = 0.3913**, **RMSE = 0.1211**, **Loss = 0.0150**.
+    - 📌 **TODO BẮT BUỘC 1: CẬP NHẬT KẾT QUẢ TEST & TRỰC QUAN HÓA (VISUALIZATION):**
+      - [x] Ghi các chỉ số trên của `LEARN_Mamba` trên DeepLesion vào file [`reports/sep-05-2026/benchmark_results.csv`](reports/sep-05-2026/benchmark_results.csv) phục vụ báo cáo.
+      - [ ] Chạy pipeline tạo ảnh trực quan hóa (Visualization) đối sánh ảnh tái tạo của LEARN_Mamba trên tập DeepLesion.
+    - 📌 **TODO BẮT BUỘC 2: CHẠY LẠI (RESUBMIT) TOÀN BỘ CÁC JOB HUẤN LUYỆN ĐA DATASET:**
+      - **A. Tập dữ liệu NIH DeepLesion (5 mô hình cần chạy lại sau khi LEARN_Mamba đã hoàn thành 50 epochs):**
+        - [ ] `LEARN_Longformer` (`scripts/train_longformer_deeplesion.sh`): Tự động resume từ Checkpoint Epoch 09 (`last.ckpt`), áp dụng cơ chế dọn cache ASTRA hoặc cấu hình VRAM tối ưu chống OOM.
+        - [ ] `LEARN_LongNet` (`scripts/train_longnet_deeplesion.sh`): Tối ưu VRAM và submit lại.
+        - [ ] `SOLAR_Mamba` (`scripts/train_solar_mamba_deeplesion.sh`): Tự động resume từ Checkpoint Epoch 02 (`last.ckpt`).
+        - [ ] `SOLAR_Longformer` (`scripts/train_solar_longformer_deeplesion.sh`): Hạ `REQUIRED_VRAM=15000` và submit lại.
+        - [ ] `SOLAR_LongNet` (`scripts/train_solar_longnet_deeplesion.sh`): Hạ `REQUIRED_VRAM=15000` và submit lại.
+      - **B. Tập dữ liệu LIDC-IDRI (Cả 6 mô hình cần submit lại sau khi tối ưu VRAM):**
+        - [ ] Cập nhật 6 script sbatch `scripts/train_*_lidc.sh`: Điều chỉnh `REQUIRED_VRAM` từ 20000MB xuống 12000MB - 15000MB (tránh bị hủy job oan tương tự như AAPM).
+        - [ ] Submit lần lượt 6 mô hình khi có slot GPU:
+          - [ ] `LEARN_Mamba` (`scripts/train_mamba_lidc.sh`)
+          - [ ] `LEARN_Longformer` (`scripts/train_longformer_lidc.sh`)
+          - [ ] `LEARN_LongNet` (`scripts/train_longnet_lidc.sh`)
+          - [ ] `SOLAR_Mamba` (`scripts/train_solar_mamba_lidc.sh`)
+          - [ ] `SOLAR_Longformer` (`scripts/train_solar_longformer_lidc.sh`)
+          - [ ] `SOLAR_LongNet` (`scripts/train_solar_longnet_lidc.sh`)
+
+- [ ] **4. LƯU Ý ĐẶC BIỆT VỀ BÀI BÁO SOICT 2026 (`papers/soict2026/main.tex`):**
+  - > [!WARNING]
+    > **TUYỆT ĐỐI KHÔNG ĐƯA KẾT QUẢ CỦA MÔ HÌNH SOLAR VÀO BÀI BÁO SOICT 2026.**
+    > - Bài báo SOICT 2026 chỉ so sánh đối chứng các mô hình Baseline unrolling bậc 1 (`LEARN_Longformer`, `LEARN_LongNet`, `LEARN_Mamba`, và `FBP`).
+    > - Toàn bộ bảng Table 1 và Table 2 trong `main.tex` đã được chốt và đồng bộ 100% với baseline hoàn chỉnh.
+    > - Kiến trúc đề xuất **SOLAR** cùng kết quả test vượt trội của nó được giữ bí mật để phục vụ riêng cho bài báo Journal Q1 đỉnh cao (IEEE TMI / MedIA, IF > 10).
+  - Nhiệm vụ còn lại của bài SOICT 2026: Biên dịch PDF trên Overleaf/TeX Live, kiểm tra số trang quy định (12-15 trang) và rà soát định dạng Springer LNCS.
+
+- [ ] **5. THEO DÕI TIẾN ĐỘ & ĐÁNH GIÁ 3 SLURM JOBS BASELINE MỚI (LEARN, REGFORMER, DUDOTRANS):**
+  - **Bối cảnh & Mã nguồn:** Kế thừa công trình nghiên cứu của Thành (`Thanhld`) từ paper MVA sang bài toán Limited-Angle CT (LA-120°). Đã triển khai hoàn tất tại:
+    - [`baselines/LEARN/`](baselines/LEARN/): Model mở cuộn 14 stages với CNN 3 tầng thuần túy (841,372 params).
+    - [`baselines/RegFormer/`](baselines/RegFormer/): Model điều hòa kép Local CNN + Non-local Swin Transformer (1,228,948 params).
+    - [`baselines/DuDoTrans/`](baselines/DuDoTrans/): Model biến đổi đa miền Sinogram Transformer + FBP vi phân + Image Refinement (129,554 params).
+  - **Danh sách Job ID đang chạy (Đã Resubmit ngày 13/09/2026 sau khi tối ưu REQUIRED_VRAM):**
+    - **`LEARN`:** Job ID **`71393`** (`scripts/train_learn_la.sh` - VRAM=12GB) 🟢 **RUNNING trên DGX-A100**.
+    - **`RegFormer`:** Job ID **`71394`** (`scripts/train_regformer_la.sh` - VRAM=15GB) 🟢 **RUNNING trên DGX-A100**.
+    - **`DuDoTrans`:** Job ID **`71395`** (`scripts/train_dudotrans_la.sh` - VRAM=12GB) 🟢 **RUNNING trên DGX-A100**.
+  - **Hướng dẫn & Hành động kế tiếp:**
+    1. Theo dõi tiến độ huấn luyện thời gian thực qua log tại `scripts/output/train_<model>_la/log/%j.out`.
+    2. Khi job hoàn thành (`COMPLETED`), chạy đánh giá Test trên Patient L310 qua các script:
+       ```bash
+       python baselines/LEARN/test_learn_la.py --ckpt_path <path_to_best_model>
+       python baselines/RegFormer/test_regformer_la.py --ckpt_path <path_to_best_model>
+       python baselines/DuDoTrans/test_dudotrans_la.py --ckpt_path <path_to_best_model>
+       ```
+    3. Cập nhật số liệu định lượng (PSNR, SSIM, RMSE) vào [`reports/sep-05-2026/benchmark_results.csv`](reports/sep-05-2026/benchmark_results.csv) và [`EXPERIMENT_RESULTS.md`](EXPERIMENT_RESULTS.md).
 
 

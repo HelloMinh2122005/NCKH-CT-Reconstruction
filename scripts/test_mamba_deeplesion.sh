@@ -1,27 +1,27 @@
 #!/bin/bash
-#SBATCH --job-name=test_solar_mamba_la
-#SBATCH --output=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/test_solar_mamba_la/log/%j.out
-#SBATCH --error=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/test_solar_mamba_la/log/%j.err
+#SBATCH --job-name=test_mamba_dl
+#SBATCH --output=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/test_mamba_deeplesion/log/%j.out
+#SBATCH --error=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/test_mamba_deeplesion/log/%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
 #SBATCH --gres=mps:a100:2
-#SBATCH --time=02:00:00
+#SBATCH --time=01:00:00
 
 # ==============================================================================
-# SCRIPT ĐÁNH GIÁ (TEST BENCHMARK) MÔ HÌNH ĐỀ XUẤT SOLAR_MAMBA
-# Đề tài: Tái tạo ảnh cắt lớp CT góc giới hạn (Limited-Angle CT Reconstruction)
+# SCRIPT ĐÁNH GIÁ (TEST BENCHMARK): LEARN_Mamba trên NIH DeepLesion CT
+# Cung quét: LA-120° (64 views, 512 detectors, 256x256, noise_0)
 # Tác giả: MinhPD - VNU-HCM UIT
 # Cụm máy chủ: Slurm HPC GPU A100/L40 với NVIDIA MPS
 # ==============================================================================
 
 set -euo pipefail
 
-# Ngưỡng VRAM yêu cầu tối thiểu (MB) cho quá trình Test suy luận (Inference)
-REQUIRED_VRAM=15000
+# Ngưỡng VRAM yêu cầu tối thiểu (MB)
+REQUIRED_VRAM=12000
 
-# Hàm dọn dẹp tài nguyên NVIDIA MPS khi kết thúc job hoặc bị ngắt đột ngột
+# Hàm dọn dẹp tài nguyên NVIDIA MPS
 cleanup() {
     local rc=$?
     echo "[INFO] cleanup rc=$rc at $(date)"
@@ -47,13 +47,13 @@ source /datastore/uittogether3/tools/miniconda3/etc/profile.d/conda.sh
 
 export NVCC_PREPEND_FLAGS="${NVCC_PREPEND_FLAGS:-}"
 export NVCC_APPEND_FLAGS="${NVCC_APPEND_FLAGS:-}"
+export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
 
 set +u
 conda activate /datastore/uittogether3/tools/miniconda3/envs/LongNet
 set -u
 
-# ================= GPU CHECK (Admin Policy) =================
-# Kiểm tra tài nguyên GPU và VRAM khả dụng theo quy định của Quản trị hệ thống
+# ================= GPU CHECK =================
 unset CUDA_VISIBLE_DEVICES
 
 set +e
@@ -78,8 +78,7 @@ fi
 BEST_GPU="$CHECK_OUT"
 echo "[INFO] BEST_GPU=$BEST_GPU"
 
-# ================= NVIDIA MPS CONFIGURATION =================
-# Cấu hình đường dẫn pipe và log riêng biệt cho tiến trình MPS của Job này
+# ================= MPS SETUP =================
 export CUDA_MPS_PIPE_DIRECTORY="/tmp/nvidia-mps-job${SLURM_JOB_ID}"
 export CUDA_MPS_LOG_DIRECTORY="/tmp/nvidia-mps-log-job${SLURM_JOB_ID}"
 
@@ -88,26 +87,25 @@ mkdir -p "${CUDA_MPS_PIPE_DIRECTORY}" "${CUDA_MPS_LOG_DIRECTORY}"
 
 export CUDA_VISIBLE_DEVICES="${BEST_GPU}"
 
-# ================= TIẾN HÀNH ĐÁNH GIÁ (TESTING) =================
-echo "[INFO] Launching SOLAR_Mamba Testing on Limited-Angle CT at $(date)"
+# ================= RUN TESTING =================
+echo "[INFO] Launching LEARN_Mamba Testing on NIH DeepLesion CT at $(date)"
 
 cd /datastore/uittogether3/LuuTru/MinhPD
 export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
 
-# Xác định Checkpoint tốt nhất (ưu tiên epoch=45 hoàn tất 50 epochs đạt đỉnh kỷ lục PSNR 34.00 dB, SSIM 0.9089, sau đó đến last.ckpt)
-CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Mamba/solar_mamba_la-epoch=45-val_psnr=34.00-val_ssim=0.9089.ckpt"
+CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/deeplesion/LEARN_Mamba/mamba_la-epoch=23-val_psnr=26.18-val_ssim=0.7009.ckpt"
 if [ ! -f "$CKPT_PATH" ]; then
-    CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Mamba/last.ckpt"
+    CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/deeplesion/LEARN_Mamba/last.ckpt"
 fi
-echo "[INFO] Selected Checkpoint: $CKPT_PATH"
 
 echo "================================================================================"
-echo "🎯 ĐÁNH GIÁ 1: SOLAR_Mamba trên Cấu hình Chuẩn LA-120° (64 views)"
-echo "   (Tập kiểm thử độc lập Patient L310: 214 lát cắt CT)"
+echo "🎯 ĐÁNH GIÁ 1: LEARN_Mamba trên DeepLesion LA-120° (64 views)"
+echo "   Checkpoint: $CKPT_PATH"
 echo "================================================================================"
-python -u baselines/SOLAR_Mamba/test_solar_mamba_la.py \
+python -u baselines/LEARN_Mamba/test_mamba_la.py \
     --checkpoint_path "$CKPT_PATH" \
-    --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/aapm/limited_angle/ \
+    --dataset_type deeplesion \
+    --cache_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/nih_deep_lesion/limited_angle/ \
     --angle_range_deg 120.0 \
     --num_view 64 \
     --num_detectors 512 \
@@ -115,16 +113,16 @@ python -u baselines/SOLAR_Mamba/test_solar_mamba_la.py \
     --poisson_level 0 \
     --gaussian_level 0 \
     --batch_size 1 \
-    --num_workers 4 \
-    --test_patients L310
+    --num_workers 4
 
 echo "================================================================================"
-echo "🎯 ĐÁNH GIÁ 2: SOLAR_Mamba trên Cấu hình Khắc nghiệt LA-90° (64 views)"
-echo "   (Đánh giá khả năng bù đắp góc khuyết mở rộng 270° của Selective SSM & Newton-CG)"
+echo "🎯 ĐÁNH GIÁ 2: LEARN_Mamba trên DeepLesion LA-90° (64 views)"
+echo "   Checkpoint: $CKPT_PATH"
 echo "================================================================================"
-python -u baselines/SOLAR_Mamba/test_solar_mamba_la.py \
+python -u baselines/LEARN_Mamba/test_mamba_la.py \
     --checkpoint_path "$CKPT_PATH" \
-    --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/aapm/limited_angle/ \
+    --dataset_type deeplesion \
+    --cache_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/nih_deep_lesion/limited_angle/ \
     --angle_range_deg 90.0 \
     --num_view 64 \
     --num_detectors 512 \
@@ -132,7 +130,6 @@ python -u baselines/SOLAR_Mamba/test_solar_mamba_la.py \
     --poisson_level 0 \
     --gaussian_level 0 \
     --batch_size 1 \
-    --num_workers 4 \
-    --test_patients L310
+    --num_workers 4
 
-echo "[INFO] SOLAR_Mamba Testing finished at $(date)"
+echo "[INFO] LEARN_Mamba DeepLesion Testing finished at $(date)"

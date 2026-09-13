@@ -94,8 +94,8 @@ echo "[INFO] Launching SOLAR_Longformer Testing on Limited-Angle CT at $(date)"
 cd /datastore/uittogether3/LuuTru/MinhPD
 export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
 
-# Xác định Checkpoint tốt nhất (ưu tiên epoch=35 đạt đỉnh PSNR 33.62 dB, sau đó đến last.ckpt)
-CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Longformer/solar_longformer_la-epoch=35-val_psnr=33.62-val_ssim=0.9079.ckpt"
+# Xác định Checkpoint tốt nhất (ưu tiên epoch=45 hoàn tất 50 epochs đạt đỉnh kỷ lục PSNR 34.18 dB, SSIM 0.9165, sau đó đến last.ckpt)
+CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Longformer/solar_longformer_la-epoch=45-val_psnr=34.18-val_ssim=0.9165.ckpt"
 if [ ! -f "$CKPT_PATH" ]; then
     CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_Longformer/last.ckpt"
 fi
@@ -107,7 +107,7 @@ echo "   (Tập kiểm thử độc lập Patient L310: 214 lát cắt CT)"
 echo "================================================================================"
 python -u baselines/SOLAR_Longformer/test_solar_longformer_la.py \
     --checkpoint_path "$CKPT_PATH" \
-    --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/ \
+    --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/aapm/limited_angle/ \
     --angle_range_deg 120.0 \
     --num_view 64 \
     --num_detectors 512 \
@@ -124,7 +124,7 @@ echo "   (Đánh giá khả năng bù đắp góc khuyết mở rộng 270° c�
 echo "================================================================================"
 python -u baselines/SOLAR_Longformer/test_solar_longformer_la.py \
     --checkpoint_path "$CKPT_PATH" \
-    --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/ \
+    --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/aapm/limited_angle/ \
     --angle_range_deg 90.0 \
     --num_view 64 \
     --num_detectors 512 \

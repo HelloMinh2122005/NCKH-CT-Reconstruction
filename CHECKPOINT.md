@@ -249,10 +249,13 @@
     - [`baselines/SOLAR_RegFormer/models.py`](baselines/SOLAR_RegFormer/models.py): Định nghĩa `SafeCGSolver`, `WindowAttention` (W-MSA với $B_{\text{rel}}$), `SwinTransformerBlock`, `LocalCNNBranch`, `RegFormerDualBranchRegularizer` và LightningModule `SOLAR_RegFormer_LA` (8 stages, Softplus strictly SPD, Recurrent Weight Sharing $\sim 0.28\text{ M}$ params).
     - [`baselines/SOLAR_RegFormer/train_solar_regformer_la.py`](baselines/SOLAR_RegFormer/train_solar_regformer_la.py): Script huấn luyện với DataModule factory (hỗ trợ AAPM), ModelCheckpoint theo `val_psnr`, CosineAnnealingLR.
     - [`baselines/SOLAR_RegFormer/test_solar_regformer_la.py`](baselines/SOLAR_RegFormer/test_solar_regformer_la.py): Script kiểm thử độc lập cho cả 2 cung quét LA-120° và LA-90° trên Patient L310.
-  - **Script Slurm Cluster:**
+  - **Script Slurm Cluster & Trạng Thái Thực Thi:**
     - [`scripts/train_solar_regformer_la.sh`](scripts/train_solar_regformer_la.sh): Cấu hình sbatch, kiểm tra VRAM `REQUIRED_VRAM=16000`, NVIDIA MPS, tự động resume `last.ckpt` nếu có.
+      - **Job ID Slurm Đang Chạy:** **`71632`** (Submit lúc 21:46 ngày 14/09/2026 trên node `DGX-A100`).
+      - File log: `scripts/output/train_solar_regformer_la/log/71632.out` và `%j.err`.
     - [`scripts/test_solar_regformer_la.sh`](scripts/test_solar_regformer_la.sh): Cấu hình sbatch test benchmark tự động dò tìm checkpoint tốt nhất.
   - **Tài liệu đặc tả kiến trúc:** Toàn bộ công thức toán học, sơ đồ luồng dữ liệu ASCII, chứng minh tính xác định dương nghiêm ngặt và phân tích cơ chế giam hãm nhiễu vệt đã được cập nhật đầy đủ tại [Mục 7, 8, 9 của SOLAR_ARCHITECTURE.md](SOLAR_ARCHITECTURE.md).
+
 
 
 

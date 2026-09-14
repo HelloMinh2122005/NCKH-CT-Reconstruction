@@ -221,23 +221,38 @@
     > - Kiến trúc đề xuất **SOLAR** cùng kết quả test vượt trội của nó được giữ bí mật để phục vụ riêng cho bài báo Journal Q1 đỉnh cao (IEEE TMI / MedIA, IF > 10).
   - Nhiệm vụ còn lại của bài SOICT 2026: Biên dịch PDF trên Overleaf/TeX Live, kiểm tra số trang quy định (12-15 trang) và rà soát định dạng Springer LNCS.
 
-- [ ] **5. THEO DÕI TIẾN ĐỘ & ĐÁNH GIÁ 3 SLURM JOBS BASELINE MỚI (LEARN, REGFORMER, DUDOTRANS):**
+- [x] **5. THEO DÕI TIẾN ĐỘ & ĐÁNH GIÁ 3 SLURM JOBS BASELINE MỚI (LEARN, REGFORMER, DUDOTRANS):**
   - **Bối cảnh & Mã nguồn:** Kế thừa công trình nghiên cứu của Thành (`Thanhld`) từ paper MVA sang bài toán Limited-Angle CT (LA-120°). Đã triển khai hoàn tất tại:
     - [`baselines/LEARN/`](baselines/LEARN/): Model mở cuộn 14 stages với CNN 3 tầng thuần túy (841,372 params).
     - [`baselines/RegFormer/`](baselines/RegFormer/): Model điều hòa kép Local CNN + Non-local Swin Transformer (1,228,948 params).
     - [`baselines/DuDoTrans/`](baselines/DuDoTrans/): Model biến đổi đa miền Sinogram Transformer + FBP vi phân + Image Refinement (129,554 params).
-  - **Danh sách Job ID đang chạy (Đã Resubmit ngày 13/09/2026 sau khi tối ưu REQUIRED_VRAM):**
-    - **`LEARN`:** Job ID **`71393`** (`scripts/train_learn_la.sh` - VRAM=12GB) 🟢 **RUNNING trên DGX-A100**.
-    - **`RegFormer`:** Job ID **`71394`** (`scripts/train_regformer_la.sh` - VRAM=15GB) 🟢 **RUNNING trên DGX-A100**.
-    - **`DuDoTrans`:** Job ID **`71395`** (`scripts/train_dudotrans_la.sh` - VRAM=12GB) 🟢 **RUNNING trên DGX-A100**.
-  - **Hướng dẫn & Hành động kế tiếp:**
-    1. Theo dõi tiến độ huấn luyện thời gian thực qua log tại `scripts/output/train_<model>_la/log/%j.out`.
-    2. Khi job hoàn thành (`COMPLETED`), chạy đánh giá Test trên Patient L310 qua các script:
-       ```bash
-       python baselines/LEARN/test_learn_la.py --ckpt_path <path_to_best_model>
-       python baselines/RegFormer/test_regformer_la.py --ckpt_path <path_to_best_model>
-       python baselines/DuDoTrans/test_dudotrans_la.py --ckpt_path <path_to_best_model>
-       ```
-    3. Cập nhật số liệu định lượng (PSNR, SSIM, RMSE) vào [`reports/sep-05-2026/benchmark_results.csv`](reports/sep-05-2026/benchmark_results.csv) và [`EXPERIMENT_RESULTS.md`](EXPERIMENT_RESULTS.md).
+  - **Kết quả Huấn luyện (Completed 100% 50/50 Epochs vào ngày 14/09/2026):**
+    - **`LEARN`:** Job ID **`71393`** (`scripts/train_learn_la.sh`) ✅ **COMPLETED 100% (50/50 Epochs)**. Best Val: **PSNR = 36.2681 dB**, checkpoint: `saved_models/LEARN/LEARN_AAPM_LA_120deg_view64/epoch=46-val_psnr=36.2681.ckpt`.
+    - **`RegFormer`:** Job ID **`71394`** (`scripts/train_regformer_la.sh`) ✅ **COMPLETED 100% (50/50 Epochs)**. Best Val: **PSNR = 36.0533 dB**, checkpoint: `saved_models/RegFormer/RegFormer_AAPM_LA_120deg_view64/epoch=46-val_psnr=36.0533.ckpt`.
+    - **`DuDoTrans`:** Job ID **`71395`** (`scripts/train_dudotrans_la.sh`) ✅ **COMPLETED 100% (50/50 Epochs)**. Best Val: **PSNR = 25.7300 dB**, checkpoint: `saved_models/DuDoTrans/DuDoTrans_AAPM_LA_120deg_view64/epoch=38-val_psnr=25.7300.ckpt`.
+  - **Kết quả Đánh giá Test Benchmark trên Patient L310 (214 lát cắt) - Hoàn thành 100% ngày 14/09/2026:**
+    - **`LEARN` (Job `71615` - `scripts/test_learn_la.sh`):**
+      - LA-120°: **PSNR = 32.29 dB**, **SSIM = 0.9383**, **RMSE = 0.0246**, **Loss = 0.000686**
+      - LA-90°: **PSNR = 28.03 dB**, **SSIM = 0.8793**, **RMSE = 0.0411**, **Loss = 0.002033**
+    - **`RegFormer` (Job `71616` - `scripts/test_regformer_la.sh`):**
+      - LA-120°: **PSNR = 32.82 dB**, **SSIM = 0.9398**, **RMSE = 0.0234**, **Loss = 0.000634**
+      - LA-90°: **PSNR = 28.20 dB**, **SSIM = 0.8814**, **RMSE = 0.0405**, **Loss = 0.001976**
+    - **`DuDoTrans` (Job `71617` - `scripts/test_dudotrans_la.sh`):**
+      - LA-120°: **PSNR = 25.15 dB**, **SSIM = 0.7447**, **RMSE = 0.0650**, **Loss = 0.004833**
+      - LA-90°: **PSNR = 21.81 dB**, **SSIM = 0.6738**, **RMSE = 0.0842**, **Loss = 0.007804**
+  - **Đồng bộ dữ liệu:** Đã cập nhật đầy đủ số liệu vào [`reports/sep-05-2026/benchmark_results.csv`](reports/sep-05-2026/benchmark_results.csv), [`reports/sep-14-2026/benchmark_results.csv`](reports/sep-14-2026/benchmark_results.csv) và [`EXPERIMENT_RESULTS.md`](EXPERIMENT_RESULTS.md).
+
+- [x] **6. TRIỂN KHAI KIẾN TRÚC ĐỘT PHÁ SOTA: SOLAR-RegFormer TRÊN TẬP DỮ LIỆU AAPM:**
+  - **Bối cảnh & Động lực:** Dựa trên kết quả benchmark ngày 14/09/2026, RegFormer chứng minh khả năng giam hãm streak artifacts vượt trội tại LA-90° (28.20 dB) nhờ Shifted Window Attention, nhưng còn bị kẹt bởi unrolling bậc 1 (14 stages, 2.70M params). Đề xuất đột phá kết hợp RegFormer vào động cơ tối ưu hóa bậc 2 Newton-CG (SOLAR) được xác lập là trọng tâm bài báo Journal Q1 (IEEE TMI / MedIA).
+  - **Mã nguồn hoàn chỉnh:**
+    - [`baselines/SOLAR_RegFormer/__init__.py`](baselines/SOLAR_RegFormer/__init__.py): Gói export module.
+    - [`baselines/SOLAR_RegFormer/models.py`](baselines/SOLAR_RegFormer/models.py): Định nghĩa `SafeCGSolver`, `WindowAttention` (W-MSA với $B_{\text{rel}}$), `SwinTransformerBlock`, `LocalCNNBranch`, `RegFormerDualBranchRegularizer` và LightningModule `SOLAR_RegFormer_LA` (8 stages, Softplus strictly SPD, Recurrent Weight Sharing $\sim 0.28\text{ M}$ params).
+    - [`baselines/SOLAR_RegFormer/train_solar_regformer_la.py`](baselines/SOLAR_RegFormer/train_solar_regformer_la.py): Script huấn luyện với DataModule factory (hỗ trợ AAPM), ModelCheckpoint theo `val_psnr`, CosineAnnealingLR.
+    - [`baselines/SOLAR_RegFormer/test_solar_regformer_la.py`](baselines/SOLAR_RegFormer/test_solar_regformer_la.py): Script kiểm thử độc lập cho cả 2 cung quét LA-120° và LA-90° trên Patient L310.
+  - **Script Slurm Cluster:**
+    - [`scripts/train_solar_regformer_la.sh`](scripts/train_solar_regformer_la.sh): Cấu hình sbatch, kiểm tra VRAM `REQUIRED_VRAM=16000`, NVIDIA MPS, tự động resume `last.ckpt` nếu có.
+    - [`scripts/test_solar_regformer_la.sh`](scripts/test_solar_regformer_la.sh): Cấu hình sbatch test benchmark tự động dò tìm checkpoint tốt nhất.
+  - **Tài liệu đặc tả kiến trúc:** Toàn bộ công thức toán học, sơ đồ luồng dữ liệu ASCII, chứng minh tính xác định dương nghiêm ngặt và phân tích cơ chế giam hãm nhiễu vệt đã được cập nhật đầy đủ tại [Mục 7, 8, 9 của SOLAR_ARCHITECTURE.md](SOLAR_ARCHITECTURE.md).
+
 
 

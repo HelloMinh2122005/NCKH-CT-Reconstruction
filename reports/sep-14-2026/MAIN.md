@@ -28,8 +28,9 @@ Cả 3 mô hình đã được kiểm thử mù độc lập trên 214 lát cắ
 | **`LEARN_Longformer`**           |       **33.10** / 0.9237 / **0.0224**        |           19.16 / 0.6097 / 0.1055           |       14 stages       |   4.00M   | Baseline Sliding-Chunks (Best Ep 45)                              |
 | **`LEARN_LongNet`**              |           31.62 / 0.8991 / 0.0270            |           19.19 / 0.5876 / 0.1058           |       14 stages       |   2.40M   | Baseline Dilated Attention (50 ep)                                |
 | **`LEARN_Mamba`**                |           26.32 / 0.7468 / 0.0493            |           18.76 / 0.4292 / 0.1129           |       14 stages       |   2.90M   | Baseline Selective SSM (Epoch 17)                                 |
-| **`SOLAR_Longformer` (Đề xuất)** |           32.95 / 0.9155 / 0.0228            |       **28.05** / **0.8774** / 0.0412       |     **8 stages**      |   4.00M   | Tối ưu bậc 2 Newton-CG + Sliding-Chunks (Job `68551`)             |
+| **`SOLAR_LongNet` (Đề xuất)**    |           31.03 / 0.8958 / 0.0294            |           27.19 / 0.8639 / 0.0462           |     **8 stages**      |   2.40M   | Tối ưu bậc 2 Newton-CG + Dilated Attention (Job `67823`)          |
 | **`SOLAR_Mamba` (Đề xuất)**      |           31.90 / 0.9114 / 0.0268            |           27.53 / 0.8760 / 0.0447           |     **8 stages**      |   2.90M   | Tối ưu bậc 2 Newton-CG + Selective SSM (Job `68552`)              |
+| **`SOLAR_Longformer` (Đề xuất)** |           32.95 / 0.9155 / 0.0228            |       **28.05** / **0.8774** / 0.0412       |     **8 stages**      |   4.00M   | Tối ưu bậc 2 Newton-CG + Sliding-Chunks (Job `68551`)             |
 
 📊 **Bảng dữ liệu đo lường định lượng chi tiết được lưu trữ tại:** [benchmark_results.csv](benchmark_results.csv).
 

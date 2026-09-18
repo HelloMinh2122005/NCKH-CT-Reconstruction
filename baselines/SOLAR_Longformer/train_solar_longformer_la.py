@@ -28,7 +28,7 @@ def _safe_torch_load(*args, **kwargs):
     return _orig_torch_load(*args, **kwargs)
 torch.load = _safe_torch_load
 
-from data.datamodule_LA import LimitedAngleCTDataModule
+from data.datamodule_factory import get_datamodule
 from baselines.SOLAR_Longformer.models import SOLAR_Longformer_LA
 
 
@@ -36,8 +36,9 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Huấn luyện mô hình đề xuất SOLAR_Longformer trên Limited-Angle CT")
     
     # Data
+    parser.add_argument("--dataset_type", "--dataset_name", dest="dataset_type", type=str, choices=["aapm", "deeplesion", "lidc"], default="aapm", help="Lựa chọn tập dữ liệu huấn luyện: 'aapm', 'deeplesion' hoặc 'lidc' (mặc định: 'aapm')")
     parser.add_argument("--dicom_dir", type=str, default="/datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/")
-    parser.add_argument("--dataset_dir", "--data_dir", "--cache_dir", dest="cache_dir", type=str, default="/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/")
+    parser.add_argument("--dataset_dir", "--data_dir", "--cache_dir", dest="cache_dir", type=str, default="/datastore/uittogether3/LuuTru/MinhPD/dataset/aapm/limited_angle/")
     parser.add_argument("--train_patients", nargs="+", default=None)
     parser.add_argument("--val_patients", nargs="+", default=None)
     parser.add_argument("--batch_size", type=int, default=1)
@@ -105,7 +106,8 @@ def main():
     print(f"- Checkpoint lưu tại: {args.output_dir}")
     print("=" * 80)
 
-    datamodule = LimitedAngleCTDataModule(
+    datamodule = get_datamodule(
+        dataset_type=args.dataset_type,
         dicom_dir=args.dicom_dir,
         cache_dir=args.cache_dir,
         setting_tag=setting_tag,

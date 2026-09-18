@@ -1,41 +1,63 @@
-# AGENT INSTRUCTIONS & CONTEXT
+# AGENT INSTRUCTIONS & CONTEXT ROUTING
+# DỰ ÁN: LIMITED-ANGLE CT RECONSTRUCTION (MINHPD)
 
-Khi bắt đầu một session mới trong dự án này:
+> **Mục đích:** File này quy định các **nguyên tắc bất biến, quy trình khởi động session và bản đồ điều hướng ngữ cảnh** cho AI Agent. Mọi Agent tham gia dự án bắt buộc phải tuân thủ nghiêm ngặt các điều khoản trong tài liệu này.
 
-1. **Đọc Checkpoint đầu tiên:**
-   Luôn mở và đọc file `CHECKPOINT.md` để nắm bắt:
-   - Mục tiêu nghiên cứu (Limited-Angle CT nhằm giảm liều tia X cho bệnh nhân).
-   - Các tham số hình học/vật lý đã chốt (Fan-beam, $120^\circ$ span, $64$ views, $256 \times 256$, ODL + ASTRA).
-   - Trạng thái các job Slurm và tiến độ các đầu việc đã hoàn thành/cần làm tiếp theo.
+---
 
-2. **Quy tắc Slurm Cluster:**
-   - Mọi script chạy job phải tuân thủ chuẩn NVIDIA MPS trên GPU A100/L40.
-   - Luôn sử dụng logic kiểm tra VRAM của Admin: `/usr/local/bin/gpu_check.sh $REQUIRED_VRAM $SLURM_JOB_ID`.
-   - **Bắt buộc lưu log tại:** `scripts/output/<tên script>/log/%j.out` và `%j.err`.
+## 🛑 CÁC ĐIỀU CẤM KỴ TUYỆT ĐỐI (CRITICAL CONSTRAINTS)
 
-3. **Quy tắc Bảo Toàn Chú Thích & Tính Toàn Vẹn Mã Nguồn (BẮT BUỘC - NGHIÊM NGẶT):**
-   - **Tuyệt đối KHÔNG ĐƯỢC tự ý xóa, lược bỏ, rút gọn hoặc sửa đổi bất kỳ dòng comment, docstrings tiếng Việt giải thích chi tiết nào trong toàn bộ codebase.**
-   - **Tuyệt đối KHÔNG ĐƯỢC viết code sai lệch, làm mâu thuẫn hoặc làm hỏng các logic và giá trị mặc định đã được giải thích trong comment khi người dùng chưa có yêu cầu rõ ràng.**
-   - Mọi file mới được tạo hoặc chỉnh sửa phải duy trì 100% chú thích chi tiết từng dòng, kích thước tensor và ý nghĩa toán học/vật lý để phục vụ đọc hiểu và review code.
+1. **Bảo Toàn 100% Chú Thích & Tính Toàn Vẹn Mã Nguồn (NGHIÊM NGẶT - BẮT BUỘC):**
+   - **Tuyệt đối KHÔNG ĐƯỢC tự ý xóa, lược bỏ, rút gọn hoặc thay đổi bất kỳ dòng comment, docstrings tiếng Việt giải thích chi tiết nào trong toàn bộ codebase.**
+   - **Tuyệt đối KHÔNG ĐƯỢC viết code sai lệch, làm mâu thuẫn hoặc làm hỏng các logic và giá trị mặc định đã được giải thích trong comment khi người dùng chưa yêu cầu rõ ràng.**
+   - Mọi file mới được tạo hoặc chỉnh sửa phải duy trì 100% chú thích chi tiết từng dòng, kích thước tensor và ý nghĩa toán học/vật lý.
 
-4. **Cập nhật Checkpoint:**
-   Sau khi hoàn thành hoặc có thay đổi quan trọng trong session (tạo mô hình mới, chạy thí nghiệm, sửa lỗi), luôn cập nhật lại mục *6. Trạng Thái & Tiến Độ Dự Án* trong file `CHECKPOINT.md`.
-
-5. **Quy tắc Viết Báo Cáo Tiến Độ (Reports):**
-   - Báo cáo định kỳ trong `reports/<thời-gian>/MAIN.md` phải viết **ngắn gọn, trực diện, súc tích**.
-   - **Tuyệt đối KHÔNG lặp lại** các thông tin đã được báo cáo trong các phiên trước (như mô tả chi tiết lại dataset, kiến trúc đã chạy, lý thuyết cũ...).
-   - Chỉ tập trung báo cáo những mốc mới hoàn thành trong ngày (mô hình nào vừa train xong, checkpoint đạt đỉnh, kết quả test và visualize mới).
-   - Mọi số liệu đo lường định lượng chi tiết phải đưa vào file `benchmark_results.csv` và dẫn link trực tiếp (`[benchmark_results.csv](benchmark_results.csv)`), không trình bày bảng biểu dài dòng trùng lặp trong `MAIN.md`.
-
-6. **Quy tắc Thao Tác Git & GitHub (BẮT BUỘC - CD TRÊN LOCAL, KHÔNG DÙNG SSH):**
-   - **Thao tác trực tiếp trên Local:** Đối với tất cả thao tác GitHub / Git (`status`, `add`, `commit`, `push`, `pull`, v.v.), **bắt buộc `cd` trên local** vào thư mục mount:
+2. **Thao Tác Git & GitHub (BẮT BUỘC TRÊN LOCAL MOUNT - KHÔNG SSH):**
+   - **Bắt buộc `cd` trên local** vào thư mục mount:
      ```bash
      cd /home/phandinhminh/Downloads/kltn/agents-research/uittogether3-slurm-server/MinhPD
      ```
-   - **Tuyệt đối KHÔNG SSH lên server để thao tác Git:** Thư mục của server đã được mount sẵn tới máy local qua SSHFS (`mount-uit`), do đó mọi thay đổi file đều đã sẵn sàng trên local.
-   - **Lý do & Lợi thế vượt trội:**
-     - **Tốc độ nhanh hơn rất nhiều:** Không mất thời gian kết nối/bắt tay SSH lên server, tránh gián đoạn hay nghẽn terminal cluster.
-     - **Tự động dùng credential/SSH key cá nhân:** Sử dụng ngay GitHub token/SSH key đã cấu hình sẵn trên máy local mà không cần đẩy key bí mật lên cluster.
-     - **Mẹo tối ưu hiệu năng qua SSHFS:** Khi kiểm tra trạng thái Git, nên dùng `git status -uno` hoặc chỉ định file cụ thể để tránh tốn thời gian duyệt đệ quy các thư mục chứa dữ liệu ảnh lớn.
+   - **Tuyệt đối KHÔNG SSH lên server để thao tác Git.**
+   - Sử dụng `git status -uno` để kiểm tra nhanh mà không tốn thời gian duyệt các file ảnh dataset lớn qua SSHFS.
 
+3. **BẢO MẬT CÔNG NGHỆ BÀI BÁO SOICT 2026 (`papers/soict2026/main.tex`):**
+   - **TUYỆT ĐỐI KHÔNG ĐƯỢC ĐƯA KẾT QUẢ / KIẾN TRÚC CỦA MÔ HÌNH SOLAR VÀO BÀI BÁO SOICT 2026.**
+   - Bài báo SOICT 2026 chỉ so sánh đối chứng các mô hình Baseline unrolling bậc 1 (`LEARN_Longformer`, `LEARN_LongNet`, `LEARN_Mamba`, và `FBP`).
+   - Kiến trúc đề xuất **SOLAR** cùng kết quả test vượt trội được giữ bí mật để phục vụ riêng cho bài báo Journal Q1 đỉnh cao (IEEE TMI / MedIA, IF > 10).
 
+---
+
+## 🧭 BẢN ĐỒ ĐIỀU HƯỚNG NGỮ CẢNH (CONTEXT ROUTING TABLE)
+
+Để tránh hiện tượng **Context Rot** và lãng phí token, Agent **chỉ mở đúng tài liệu liên quan đến tác vụ hiện tại**, không quét đọc tràn lan:
+
+| Nhiệm vụ cần thực hiện | File tài liệu duy nhất cần đọc |
+| :--- | :--- |
+| **Khởi động session / Nắm bắt tiến độ** | [CHECKPOINT.md](CHECKPOINT.md) + file log trong `scripts/output/` |
+| **Tra cứu tham số CT / Slurm / Dataset gốc** | [SYSTEM_SPEC.md](SYSTEM_SPEC.md) |
+| **Tra cứu lịch sử các thử nghiệm cũ (tháng 8)** | [ARCHIVE_LOG.md](ARCHIVE_LOG.md) |
+| **Chỉnh sửa / Phát triển kiến trúc SOLAR** | [SOLAR_ARCHITECTURE.md](SOLAR_ARCHITECTURE.md) + `baselines/SOLAR_*/models.py` |
+| **Kiểm tra / Phân tích số liệu Benchmark** | [benchmark_results.csv](reports/sep-14-2026/benchmark_results.csv) hoặc [EXPERIMENT_RESULTS.md](EXPERIMENT_RESULTS.md) |
+| **Biên tập bài báo Hội nghị SOICT** | `papers/soict2026/main.tex` *(Nhớ tuân thủ điều cấm kỵ SOLAR)* |
+
+---
+
+## ⚡ QUY TRÌNH KHỞI ĐỘNG PHIÊN LÀM VIỆC (SESSION INIT WORKFLOW)
+
+Khi bắt đầu một session mới, Agent phải thực hiện tuần tự 3 bước:
+1. **Đọc [CHECKPOINT.md](CHECKPOINT.md):** Xác định các job Slurm đang chạy hoặc vừa được giao và các TODO ưu tiên.
+2. **Kiểm tra thực tế:**
+   - Đọc đuôi file log tương ứng tại `scripts/output/<tên_job>/log/%j.out`.
+   - Kiểm tra các file `.ckpt` mới nhất trong `saved_models/<tên_mô_hình>/`.
+3. **Báo cáo tình trạng:** Trình bày bảng tóm tắt trạng thái job cho người dùng và đề xuất bước hành động tiếp theo trước khi thay đổi mã nguồn.
+
+---
+
+## 📋 QUY TẮC CẬP NHẬT TIẾN ĐỘ & BÁO CÁO
+
+1. **Cập nhật Checkpoint:**
+   Sau khi hoàn thành hoặc có thay đổi quan trọng trong session (job chạy xong, test benchmark xong, sửa code), luôn cập nhật lại mục *1 & 2* trong file [CHECKPOINT.md](CHECKPOINT.md).
+2. **Quy tắc Báo cáo (Reports):**
+   - Báo cáo định kỳ trong `reports/<thời-gian>/MAIN.md` phải viết **ngắn gọn, trực diện, súc tích**.
+   - **Tuyệt đối KHÔNG lặp lại** thông tin cũ (dataset, lý thuyết nền). Chỉ báo cáo kết quả mới hoàn thành trong ngày.
+   - Mọi số liệu đo lường định lượng chi tiết phải đưa vào `benchmark_results.csv`.

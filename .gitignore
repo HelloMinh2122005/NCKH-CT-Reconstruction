@@ -28,6 +28,9 @@ minideeplesion/
 data/raw/
 data/processed/
 datasets/
+dataset/
+.agents/
+*.bak
 
 # Model Checkpoints & WandB
 *.pt

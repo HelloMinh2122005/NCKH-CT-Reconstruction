@@ -21,8 +21,8 @@ def _safe_torch_load(*args, **kwargs):
     return _orig_torch_load(*args, **kwargs)
 torch.load = _safe_torch_load
 
-# Import DataModule và Mô hình
-from data.datamodule_LA import LimitedAngleCTDataModule
+# Import DataModule Factory và Mô hình
+from data.datamodule_factory import get_datamodule
 from baselines.LEARN_Longformer.models import LEARN_Longformer_LA
 
 
@@ -34,8 +34,14 @@ def parse_args():
     parser = argparse.ArgumentParser(description="Huấn luyện mô hình Baseline LEARN_Longformer trên Limited-Angle CT")
     
     # -------------------------------------------------------------------------
-    # 1. Cấu hình Dữ liệu (Data Configuration)
-    # -------------------------------------------------------------------------
+    parser.add_argument(
+        "--dataset_type", "--dataset_name",
+        dest="dataset_type",
+        type=str,
+        choices=["aapm", "deeplesion", "lidc"],
+        default="aapm",
+        help="Lựa chọn tập dữ liệu huấn luyện: 'aapm', 'deeplesion' hoặc 'lidc' (mặc định: 'aapm')"
+    )
     parser.add_argument(
         "--dicom_dir",
         type=str,
@@ -46,7 +52,7 @@ def parse_args():
         "--dataset_dir", "--data_dir", "--cache_dir",
         dest="cache_dir",
         type=str,
-        default="/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/",
+        default="/datastore/uittogether3/LuuTru/MinhPD/dataset/aapm/limited_angle/",
         help="Đường dẫn thư mục chứa dữ liệu .npy tiền xử lý"
     )
     parser.add_argument(
@@ -219,8 +225,9 @@ def main():
     print(f"- Checkpoint lưu tại: {args.output_dir}")
     print("=" * 80)
 
-    # Bước 4: Khởi tạo DataModule
-    datamodule = LimitedAngleCTDataModule(
+    # Bước 4: Khởi tạo DataModule thông qua Factory đa tập dữ liệu
+    datamodule = get_datamodule(
+        dataset_type=args.dataset_type,
         dicom_dir=args.dicom_dir,
         cache_dir=args.cache_dir,
         setting_tag=setting_tag,

@@ -1,6 +1,33 @@
-# Quy trình Chuẩn bị Dữ liệu Limited-Angle CT (LA-CT)
+# Quy trình Chuẩn bị & Quản trị Dữ liệu Limited-Angle CT (LA-CT)
 
-Tài liệu này hướng dẫn chi tiết cách tạo và tiền xử lý dữ liệu cho bài toán **Limited-Angle CT Reconstruction** từ bộ dữ liệu CT gốc (AAPM Mayo Clinic LDCT).
+Thư mục `data/` được tổ chức thành 3 module con độc lập, đại diện cho **Chiến Lược Bộ Ba Benchmark Toàn Diện (Tri-Dataset Benchmark Framework)** trong bài toán Tái tạo ảnh Cắt lớp CT Góc Giới hạn (Limited-Angle CT Reconstruction):
+
+```text
+data/
+├── README.md                      # Tài liệu tổng quan kiến trúc dữ liệu
+├── CTSlice_Provider_LA.py         # Provider tương thích ngược cho AAPM
+├── datamodule_LA.py               # DataModule tương thích ngược cho AAPM
+├── prepare_data_sinogram_LA.py    # Script sinh cache tương thích ngược
+│
+├── aapm/                          # Module 1: AAPM Mayo Clinic Low Dose CT (Khảo sát mô mềm bụng)
+│   ├── README.md                  # Hướng dẫn chi tiết dữ liệu AAPM
+│   ├── CTSlice_Provider_LA.py     # Provider nạp DICOM (.IMA) & cache .npy
+│   ├── datamodule_LA.py           # PyTorch Lightning DataModule
+│   └── prepare_data_sinogram_LA.py# Script sinh cache offline
+│
+├── nih_deep_lesion/               # Module 2: NIH DeepLesion CT Dataset (Khảo sát tổn thương đa tạng)
+│   ├── README.md                  # Hướng dẫn chi tiết dữ liệu DeepLesion
+│   ├── CTSlice_Provider_LA_DeepLesion.py      # Provider nạp ảnh 16-bit PNG (HU = pixel - 32768)
+│   ├── datamodule_LA_DeepLesion.py            # PyTorch Lightning DataModule
+│   └── prepare_data_sinogram_LA_DeepLesion.py # Script sinh cache offline
+│
+└── lidc_idri/                     # Module 3: LIDC-IDRI Thoracic CT Dataset (Khảo sát lồng ngực/phổi)
+    ├── README.md                  # Hướng dẫn chi tiết dữ liệu LIDC-IDRI
+    ├── download_lidc_subset.py    # Script tự động tải 12 ca CT ngực từ TCIA REST API
+    ├── CTSlice_Provider_LA_LIDC.py# Provider nạp ảnh DICOM (.dcm)
+    ├── datamodule_LA_LIDC.py      # PyTorch Lightning DataModule
+    └── prepare_data_sinogram_LA_LIDC.py # Script sinh cache offline
+```
 
 ---
 

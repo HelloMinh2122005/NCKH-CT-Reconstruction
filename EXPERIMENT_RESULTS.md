@@ -25,8 +25,12 @@ Mọi mô hình được huấn luyện và đánh giá trên bộ dữ liệu c
 | **2** | **`LEARN_Longformer`**| Sliding-Chunks Self-Attention + Global Tokens | **LA-120° (64v)** | **50 / 50** | **34.77** | **0.9383** | `saved_models/LEARN_Longformer/longformer_la-epoch=45-val_psnr=34.77-val_ssim=0.9383.ckpt` | ✅ **Hoàn thành 100% (50/50 epochs - Job `66652`)**. Đạt kết quả SOTA cao nhất trong toàn bộ baseline (**PSNR = 34.77 dB**, **SSIM = 0.9383** ở Epoch 45). |
 | **3** | **`LEARN_Mamba`** | Selective SSM ($\mathcal{O}(N)$) | **LA-120° (64v)** | **41 / 50** | **27.66** | **0.7373** | `saved_models/LEARN_Mamba/mamba_la-epoch=17-val_psnr=27.66-val_ssim=0.7373.ckpt` | ⚠️ **Sử dụng Checkpoint Epoch 17**. Đạt đỉnh ở Epoch 17; sau Epoch 20 xuất hiện bùng nổ gradient / NaN do đặc tính quét 1D trên Hessian suy biến của LA-CT. |
 | **4** | **`SOLAR_LongNet` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Dilated Attention** | **LA-120° (64v)** | **31 / 50 (Paused)** | **32.26** | **0.8935** | `saved_models/SOLAR_LongNet/solar_longnet_la-epoch=29-val_psnr=32.26-val_ssim=0.8935.ckpt` | 🎯 **Đã hoàn thành đánh giá Test Benchmark (Job `67823`)**. Vượt trội ngoạn mục ở góc hẹp LA-90° (PSNR 27.19 dB, SSIM 0.8639). |
-| **5** | **`SOLAR_Longformer` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Sliding-Chunks Attention** | **LA-120° (64v)** | **36 / 50 (Running)** | **33.62** | **0.9079** | `saved_models/SOLAR_Longformer/solar_longformer_la-epoch=35-val_psnr=33.62-val_ssim=0.9079.ckpt` | 🚀 **Đang chạy huấn luyện resume (Job `67820`)** từ Epoch 36 trên DGX-A100. |
-| **6** | **`SOLAR_Mamba` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Selective SSM** | **LA-120° (64v)** | **27 / 50 (Running)** | **33.19** | **0.8975** | `saved_models/SOLAR_Mamba/solar_mamba_la-epoch=25-val_psnr=33.19-val_ssim=0.8975.ckpt` | 🚀 **Đang chạy huấn luyện resume (Job `67821`)** từ Epoch 27 trên DGX-A100 (100% ổn định số học, không NaN). |
+| **5** | **`SOLAR_Longformer` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Sliding-Chunks Attention** | **LA-120° (64v)** | **50 / 50** | **34.18** | **0.9165** | `saved_models/SOLAR_Longformer/solar_longformer_la-epoch=45-val_psnr=34.18-val_ssim=0.9165.ckpt` | ✅ **Hoàn thành 100% 50 epochs (Job `67820`)**. Đạt đỉnh Val PSNR 34.18 dB, SSIM 0.9165 tại Epoch 45. |
+| **6** | **`SOLAR_Mamba` (Đề xuất)**| **Newton-CG Bậc 2 + Res-CNN & Selective SSM** | **LA-120° (64v)** | **50 / 50** | **34.00** | **0.9089** | `saved_models/SOLAR_Mamba/solar_mamba_la-epoch=45-val_psnr=34.00-val_ssim=0.9089.ckpt` | ✅ **Hoàn thành 100% 50 epochs (Job `67821`)**. Đạt đỉnh Val PSNR 34.00 dB tại Epoch 45 (Epoch 46 SSIM 0.9112). 100% ổn định số học, không NaN. |
+| **7** | **`LEARN` (Original CNN)** | 3-Layer CNN Thuần túy (14 stages) | **LA-120° (64v)** | **50 / 50** | **36.27** | **0.950** | `saved_models/LEARN/LEARN_AAPM_LA_120deg_view64/epoch=46-val_psnr=36.2681.ckpt` | ✅ **Hoàn thành 100% 50 epochs (Job `71393`)**. Hội tụ cực kỳ mượt mà, Val PSNR đỉnh 36.27 dB ở Epoch 46. |
+| **8** | **`RegFormer`** | Local CNN + Swin Transformer (14 stages) | **LA-120° (64v)** | **50 / 50** | **36.05** | **0.950** | `saved_models/RegFormer/RegFormer_AAPM_LA_120deg_view64/epoch=46-val_psnr=36.0533.ckpt` | ✅ **Hoàn thành 100% 50 epochs (Job `71394`)**. Cơ chế điều hòa kép hoạt động hoàn hảo, Val PSNR đỉnh 36.05 dB ở Epoch 46. |
+| **9** | **`DuDoTrans`** | Sinogram Transformer + Image Refinement | **LA-120° (64v)** | **50 / 50** | **25.73** | **0.730** | `saved_models/DuDoTrans/DuDoTrans_AAPM_LA_120deg_view64/epoch=38-val_psnr=25.7300.ckpt` | ✅ **Hoàn thành 100% 50 epochs (Job `71395`)**. Chạy siêu nhanh (2h32m), Val PSNR đạt đỉnh 25.73 dB ở Epoch 38. |
+| **10** | **`SOLAR_RegFormer` (Đề xuất)** | **Newton-CG Bậc 2 + Swin Window Attention** | **LA-120° (64v)** | **35 / 35 (Phase 1)** | **33.64** | **0.9103** | `saved_models/SOLAR_RegFormer/solar_regformer_la-epoch=34-val_psnr=33.64-val_ssim=0.9103.ckpt` | ✅ **Hoàn thành 35/35 epochs (Job `71632`)**. Đạt đỉnh Val PSNR 33.64 dB, SSIM 0.9103 tại Epoch 34. Đang resume lên 50 epochs. |
 
 ---
 
@@ -62,8 +66,12 @@ Mọi mô hình được huấn luyện và đánh giá trên bộ dữ liệu c
 | **`LEARN_LongNet`** | `longnet_la-last.ckpt` | **31.62** | **0.8991** | **0.0270** | $\approx 28\text{ ms}$ | Baseline Dilated Attention (50 ep) |
 | **`LEARN_Longformer`**| `longformer_la-epoch=45` | **33.10** | **0.9237** | **0.0224** | $\approx 45\text{ ms}$ | Baseline Sliding-Chunks (50 ep - Best Ep 45) |
 | **`SOLAR_LongNet` (Đề xuất)** | `solar_longnet_la-epoch=29` | **31.03** | **0.8958** | **0.0294** | $\approx 25\text{ ms}$ | Newton-CG 8 stages + Dilated Attention (31 ep, Job `67823`) |
-| **`SOLAR_Mamba` (Đề xuất)** | `solar_mamba_la-epoch=25` | **31.21** | **0.8982** | **0.0291** | $\approx 18\text{ ms}$ | Newton-CG 8 stages + Selective SSM (29 ep, Job `67829`); +4.89 dB so với LEARN_Mamba |
-| **`SOLAR_Longformer` (Đề xuất)**| `solar_longformer_la-epoch=35` | **32.51** | **0.9101** | **0.0239** | $\approx 35\text{ ms}$ | Newton-CG 8 stages + Sliding-Chunks (36 ep, Job `67828`) |
+| **`SOLAR_Mamba` (Đề xuất)** | `solar_mamba_la-epoch=45` | **31.90** | **0.9114** | **0.0268** | $\approx 18\text{ ms}$ | Newton-CG 8 stages + Selective SSM (50 ep, Job `68552`); +5.58 dB so với LEARN_Mamba |
+| **`SOLAR_Longformer` (Đề xuất)**| `solar_longformer_la-epoch=45` | **32.95** | **0.9155** | **0.0228** | $\approx 35\text{ ms}$ | Newton-CG 8 stages + Sliding-Chunks (50 ep, Job `68551`) |
+| **`LEARN` (Original CNN)** | `epoch=46-val_psnr=36.27` | **32.29** | **0.9383** | **0.0246** | $\approx 20\text{ ms}$ | Baseline CNN 3 tầng 14 stages (Hu Chen et al. 2018, Job `71615`) |
+| **`RegFormer`** | `epoch=46-val_psnr=36.05` | **32.82** | **0.9398** | **0.0234** | $\approx 30\text{ ms}$ | Baseline điều hòa kép Local CNN + Swin Transformer (Job `71616`) |
+| **`DuDoTrans`** | `epoch=38-val_psnr=25.73` | **25.15** | **0.7447** | **0.0650** | $\approx 15\text{ ms}$ | Baseline biến đổi đa miền Sinogram Transformer + FBP (Job `71617`) |
+| **`SOLAR_RegFormer` (Đề xuất)** | `solar_regformer_la-epoch=34` | **32.11** | **0.9044** | **0.0259** | $\approx 22\text{ ms}$ | Newton-CG 8 stages + Swin Window Attn (35 ep, Job `72251`); 87.8K params |
 
 ### 4.2. Stress Test trên Cung Quét Khắc Nghiệt: LA-90° (64 views, $256 \times 256$, `noise_0`)
 *(Đánh giá khả năng bù đắp nêm khuyết khi mô hình được thử thách trên dải góc hẹp hơn)*
@@ -75,8 +83,12 @@ Mọi mô hình được huấn luyện và đánh giá trên bộ dữ liệu c
 | **`LEARN_LongNet`** | `longnet_la-last.ckpt` | **19.19** | **0.5876** | **0.1058** | Giữ được cấu trúc tốt hơn Mamba nhờ Dilated Attention đa tỷ lệ |
 | **`LEARN_Longformer`**| `longformer_la-epoch=45` | **19.16** | **0.6097** | **0.1055** | SSIM cao nhất baseline nhờ cơ chế sliding-chunks + global tokens |
 | **`SOLAR_LongNet` (Đề xuất)** | `solar_longnet_la-epoch=29` | **27.19** | **0.8639** | **0.0462** | 🚀 **Vượt trội đột phá (+8.00 dB PSNR, +0.2763 SSIM)** so với LEARN_LongNet |
-| **`SOLAR_Mamba` (Đề xuất)** | `solar_mamba_la-epoch=25` | **27.16** | **0.8620** | **0.0472** | 🚀 **Vượt trội đột phá (+8.40 dB PSNR, +0.4328 SSIM)** so với LEARN_Mamba (+100.8% SSIM) |
-| **`SOLAR_Longformer` (Đề xuất)**| `solar_longformer_la-epoch=35` | **27.92** | **0.8736** | **0.0416** | 🏆 **SOTA Toàn diện ở góc 90° (+8.76 dB PSNR, +0.2639 SSIM)** so với LEARN_Longformer |
+| **`SOLAR_Mamba` (Đề xuất)** | `solar_mamba_la-epoch=45` | **27.53** | **0.8760** | **0.0447** | 🚀 **Vượt trội đột phá (+8.77 dB PSNR, +0.4468 SSIM)** so với LEARN_Mamba (+104.1% SSIM) |
+| **`SOLAR_Longformer` (Đề xuất)**| `solar_longformer_la-epoch=45` | **28.05** | **0.8774** | **0.0412** | 🏆 **SOTA Toàn diện ở góc 90° (+8.89 dB PSNR, +0.2677 SSIM)** so với LEARN_Longformer |
+| **`LEARN` (Original CNN)** | `epoch=46-val_psnr=36.27` | **28.03** | **0.8793** | **0.0411** | Duy trì SSIM cao nhờ kiến trúc unrolling gradient descent |
+| **`RegFormer`** | `epoch=46-val_psnr=36.05` | **28.20** | **0.8814** | **0.0405** | SSIM cao nhất baseline nhờ kết hợp Local CNN và Swin Transformer |
+| **`SOLAR_RegFormer` (Đề xuất)**| `solar_regformer_la-epoch=34` | **27.68** | **0.8776** | **0.0440** | 🏆 **+8.52 dB / +0.2679** so với baseline LEARN_Longformer (Đánh giá ở 35 ep, Job `72251`) |
+| **`DuDoTrans`** | `epoch=38-val_psnr=25.73` | **21.81** | **0.6738** | **0.0842** | Đa miền phục hồi tốt hơn FBP (+6.61 dB) nhưng kém hơn nhóm mở cuộn |
 
 ---
 

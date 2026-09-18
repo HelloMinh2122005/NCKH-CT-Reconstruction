@@ -105,7 +105,7 @@ python -u baselines/SOLAR_RegFormer/train_solar_regformer_la.py \
     --batch_size 1 \
     --n_iterations 8 \
     --cg_iters 4 \
-    --max_epochs 35 \
+    --max_epochs 50 \
     --lr 1e-4 \
     --final_lr 1e-5 \
     --num_workers 4 \

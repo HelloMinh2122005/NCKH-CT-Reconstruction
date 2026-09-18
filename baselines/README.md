@@ -6,8 +6,11 @@ Thư mục này chứa toàn bộ các mô hình học sâu tái lập từ côn
 
 ## 1. Danh Mục Các Mô Hình Baseline
 
-| Tên Baseline | Thư mục | Động cơ Attention / SSM | Mô tả đặc tính |
+| Tên Baseline | Thư mục | Động cơ Attention / SSM / Module | Mô tả đặc tính |
 | :--- | :--- | :--- | :--- |
+| **LEARN (Original)** | [`LEARN/`](./LEARN) | **3-Layer CNN Regularizer** | Kiến trúc mở cuộn 14 stages nguyên bản từ Hu Chen et al. (IEEE TMI 2018), 3 tầng Conv2D kernel 5x5 kết hợp hàm kích hoạt ReLU. |
+| **RegFormer** | [`RegFormer/`](./RegFormer) | **Swin Transformer + Local CNN** | Kết hợp điều hòa kép cục bộ (Residual CNN) và toàn cục (Window-based Multi-Head Self-Attention W-MSA) từ Xia et al. (IEEE TRPMS 2023). |
+| **DuDoTrans** | [`DuDoTrans/`](./DuDoTrans) | **Dual-Domain Transformer** | Phục hồi đa miền (Wang et al. 2021): Transformer khôi phục sinogram góc thiếu kết hợp cầu nối FBP vi phân và khối tinh chỉnh ảnh Image Transformer. |
 | **LEARN_Mamba** | [`LEARN_Mamba/`](./LEARN_Mamba) | **Selective SSM (State Space Model)** | Xử lý chuỗi token $2 \times 2$ ($16.384$ tokens) qua cơ chế quét song song chọn lọc $\mathcal{O}(N)$. Tốc độ huấn luyện và suy luận nhanh, tiêu thụ ít VRAM. |
 | **LEARN_Longformer** | [`LEARN_Longformer/`](./LEARN_Longformer) | **Longformer Self-Attention** | Kết hợp Sliding Window Attention cục bộ ($w=256$) và $50$ Global Attention tokens phân bố đều trên chuỗi. |
 | **LEARN_LongNet** | [`LEARN_LongNet/`](./LEARN_LongNet) | **Multi-Scale Dilated Attention** | Cơ chế giãn nở đa tỷ lệ (Dilated Attention) cho phép mở rộng khả năng tiếp nhận ngữ cảnh toàn cục trên chuỗi cực dài. |

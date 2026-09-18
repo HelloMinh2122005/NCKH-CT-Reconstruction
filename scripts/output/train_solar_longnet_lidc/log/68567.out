@@ -1,0 +1,17 @@
+[INFO] start at Mon Sep  7 09:39:16 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=68567
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=4
+[INFO] BEST_GPU=4
+[INFO] Launching SOLAR_LongNet Training on LIDC-IDRI Lung CT at Mon Sep  7 09:39:18 PM +07 2026
+================================================================================
+🚀 BẮT ĐẦU HUẤN LUYỆN: SOLAR_LongNet (Limited-Angle CT)
+- Dải góc quét: [-60.0°, 60.0°] (Cung quét 120.0°)
+- Số views: 64 | Detectors: 512 | Kích thước ảnh: 256x256
+- Cấu hình Cache Tag: limited_ang_120deg_numview_64_size_256_noise_0
+- Unrolling Bậc 2: 8 stages | Số bước CG mỗi stage: 4 steps
+- Max Epochs: 50 | Batch size: 1 | LR: 0.0001 -> 1e-05
+- Checkpoint lưu tại: /datastore/uittogether3/LuuTru/MinhPD/saved_models/lidc_idri/SOLAR_LongNet/
+================================================================================
+Sanity Checking: |          | 0/? [00:00<?, ?it/s]                                                  [INFO] cleanup rc=1 at Mon Sep  7 09:39:33 PM +07 2026

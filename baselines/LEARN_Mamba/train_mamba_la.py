@@ -21,8 +21,8 @@ def _safe_torch_load(*args, **kwargs):
     return _orig_torch_load(*args, **kwargs)
 torch.load = _safe_torch_load
 
-# Import DataModule và Mô hình kiến trúc
-from data.datamodule_LA import LimitedAngleCTDataModule
+# Import DataModule Factory và Mô hình kiến trúc
+from data.datamodule_factory import get_datamodule
 from baselines.LEARN_Mamba.models import LEARN_Mamba_LA
 
 
@@ -41,6 +41,14 @@ def parse_args():
     # 1. Cấu hình Dữ liệu (Data Configuration)
     # -------------------------------------------------------------------------
     parser.add_argument(
+        "--dataset_type", "--dataset_name",
+        dest="dataset_type",
+        type=str,
+        choices=["aapm", "deeplesion", "lidc"],
+        default="aapm",
+        help="Lựa chọn tập dữ liệu huấn luyện: 'aapm', 'deeplesion' hoặc 'lidc' (mặc định: 'aapm')"
+    )
+    parser.add_argument(
         "--dicom_dir",
         type=str,
         default="/datastore/uittogether3/LuuTru/Thanhld/CT-Reconstruction/split/",
@@ -50,7 +58,7 @@ def parse_args():
         "--dataset_dir", "--data_dir", "--cache_dir",
         dest="cache_dir",
         type=str,
-        default="/datastore/uittogether3/LuuTru/MinhPD/dataset/limited_angle/",
+        default="/datastore/uittogether3/LuuTru/MinhPD/dataset/aapm/limited_angle/",
         help="Đường dẫn thư mục chứa các file .npy tiền xử lý (sinogram và FBP ban đầu)"
     )
     parser.add_argument(
@@ -177,6 +185,13 @@ def parse_args():
         default="/datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN_Mamba/",
         help="Thư mục lưu trữ checkpoint trọng số mô hình tốt nhất (.ckpt)"
     )
+    parser.add_argument(
+        "--resume_ckpt", "--resume_from_checkpoint",
+        dest="resume_ckpt",
+        type=str,
+        default=None,
+        help="Đường dẫn tới file checkpoint .ckpt để tiếp tục huấn luyện (resume training)"
+    )
     
     return parser.parse_args()
 
@@ -215,8 +230,9 @@ def main():
     print(f"- Checkpoint lưu tại: {args.output_dir}")
     print("=" * 80)
 
-    # Bước 4: Khởi tạo PyTorch Lightning DataModule
-    datamodule = LimitedAngleCTDataModule(
+    # Bước 4: Khởi tạo PyTorch Lightning DataModule thông qua Factory đa tập dữ liệu
+    datamodule = get_datamodule(
+        dataset_type=args.dataset_type,
         dicom_dir=args.dicom_dir,
         cache_dir=args.cache_dir,
         setting_tag=setting_tag,
@@ -280,7 +296,7 @@ def main():
     )
 
     # Bước 9: Thực thi quy trình huấn luyện
-    trainer.fit(model, datamodule=datamodule)
+    trainer.fit(model, datamodule=datamodule, ckpt_path=args.resume_ckpt)
     print("\n🎉 Huấn luyện LEARN_Mamba hoàn thành thành công!")
 
 

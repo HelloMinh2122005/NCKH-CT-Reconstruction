@@ -1,0 +1,17 @@
+[INFO] start at Wed Sep  9 05:23:12 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=69547
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=2
+[INFO] BEST_GPU=2
+[INFO] Launching LEARN_LongNet Training on NIH DeepLesion CT at Wed Sep  9 05:23:24 PM +07 2026
+================================================================================
+🚀 BẮT ĐẦU HUẤN LUYỆN BASELINE: LEARN_LongNet (Limited-Angle CT)
+- Dải góc quét: [-60.0°, 60.0°] (Cung quét 120.0°)
+- Số views: 64 | Detectors: 512 | Kích thước ảnh: 256x256
+- Cấu hình Cache Tag: limited_ang_120deg_numview_64_size_256_noise_0
+- Số giai đoạn Unrolling: 14 stages | Window size: 16 | Max Epochs: 50 | Batch size: 1
+- Tốc độ học: 0.0001 -> 1e-05
+- Checkpoint lưu tại: /datastore/uittogether3/LuuTru/MinhPD/saved_models/deeplesion/LEARN_LongNet/
+================================================================================
+[INFO] cleanup rc=1 at Wed Sep  9 05:25:06 PM +07 2026

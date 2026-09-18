@@ -1,0 +1,29 @@
+[INFO] start at Mon Sep  7 09:39:14 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=68565
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=4
+[INFO] BEST_GPU=4
+[INFO] Launching LEARN_Mamba Training on LIDC-IDRI Lung CT at Mon Sep  7 09:39:19 PM +07 2026
+================================================================================
+🚀 BẮT ĐẦU HUẤN LUYỆN BASELINE: LEARN_Mamba (Limited-Angle CT)
+- Dải góc quét: [-60.0°, 60.0°] (Cung quét 120.0°)
+- Số views: 64 | Số Detectors: 512 | Kích thước ảnh: 256x256
+- Cấu hình Cache Tag: limited_ang_120deg_numview_64_size_256_noise_0
+- Số giai đoạn Unrolling: 14 stages | Max Epochs: 50 | Batch size: 1
+- Tốc độ học: 0.0001 -> 1e-05 (Cosine Annealing)
+- Checkpoint lưu tại: /datastore/uittogether3/LuuTru/MinhPD/saved_models/lidc_idri/LEARN_Mamba/
+================================================================================
+
+================================================================================
+  🚀 [LEARN_Mamba_LA] ĐÃ KHỞI TẠO MÔ HÌNH VÀ HÌNH HỌC VẬT LÝ THÀNH CÔNG:
+  • Số giai đoạn Unrolling (Stages) : 14 vòng lặp
+  • Dải góc quét (Limited-Angle)    : [-60.0°, 60.0°] (Cung quét 120.0°)
+  • Số góc chiếu (Views)            : 64 views (Bước góc Δθ ≈ 1.87°)
+  • Số cảm biến (Detectors)         : 512 kênh (Dải [-480, 480] mm)
+  • Kích thước ảnh tái tạo          : 256 x 256 pixels
+  • Toán tử Chiếu Thuận (A)         : ODL RayTransform (GPU astra_cuda)
+  • Toán tử Chiếu Ngược (A^T - FBP) : ODL FBP (Filter: Ram-Lak, Frequency Scaling: 0.9, Scale: √2)
+================================================================================
+
+Sanity Checking: |          | 0/? [00:00<?, ?it/s]                                                  [INFO] cleanup rc=1 at Mon Sep  7 09:39:34 PM +07 2026

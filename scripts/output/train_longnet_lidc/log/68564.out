@@ -1,0 +1,6 @@
+[INFO] start at Mon Sep  7 09:44:30 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=68564
+[INFO] gpu_check exit_code=11
+[INFO] gpu_check output=❌ [Job 68564] Đã thử lại 5 lần nhưng vẫn không đủ 25000MB. Hủy Job.
+❌ [Job 68564] Đã thử lại 5 lần nhưng vẫn không đủ 25000MB. Hủy Job.

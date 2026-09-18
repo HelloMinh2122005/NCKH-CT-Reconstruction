@@ -1,0 +1,18 @@
+[INFO] start at Mon Sep  7 09:29:01 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=68557
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=4
+[INFO] BEST_GPU=4
+[INFO] Launching LEARN_Longformer Training on NIH DeepLesion CT at Mon Sep  7 09:29:05 PM +07 2026
+================================================================================
+🚀 BẮT ĐẦU HUẤN LUYỆN BASELINE: LEARN_Longformer (Limited-Angle CT)
+- Dải góc quét: [-60.0°, 60.0°] (Cung quét 120.0°)
+- Số views: 64 | Detectors: 512 | Kích thước ảnh: 256x256
+- Cấu hình Cache Tag: limited_ang_120deg_numview_64_size_256_noise_0
+- Số giai đoạn Unrolling: 14 stages | Max Epochs: 50 | Batch size: 1
+- Tốc độ học: 0.0001 -> 1e-05
+- Checkpoint lưu tại: /datastore/uittogether3/LuuTru/MinhPD/saved_models/deeplesion/LEARN_Longformer/
+================================================================================
+Sanity Checking: |          | 0/? [00:00<?, ?it/s]Sanity Checking: |          | 0/? [00:00<?, ?it/s]Sanity Checking DataLoader 0:   0%|          | 0/2 [00:00<?, ?it/s]Sanity Checking DataLoader 0:  50%|█████     | 1/2 [00:03<00:03,  0.31it/s]Sanity Checking DataLoader 0: 100%|██████████| 2/2 [00:05<00:00,  0.36it/s]                                                                           Training: |          | 0/? [00:00<?, ?it/s]Training: |          | 0/? [00:00<?, ?it/s]Epoch 0:   0%|          | 0/2000 [00:00<?, ?it/s]Epoch 0:   0%|          | 0/2000 [00:01<?, ?it/s]
+[INFO] cleanup rc=1 at Mon Sep  7 09:29:24 PM +07 2026

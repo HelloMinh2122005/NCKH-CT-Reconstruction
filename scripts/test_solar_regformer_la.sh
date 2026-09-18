@@ -88,7 +88,11 @@ echo "[INFO] Launching SOLAR_RegFormer Testing on Limited-Angle CT at $(date)"
 cd /datastore/uittogether3/LuuTru/MinhPD
 export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
 
-CKPT_PATH=$(find /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_RegFormer/ -name "*.ckpt" | grep -v "last" | sort -V | tail -n 1)
+# Xác định Checkpoint tốt nhất (ưu tiên epoch=45 hoàn tất 50 epochs đạt đỉnh kỷ lục PSNR 34.00 dB, SSIM 0.9117, sau đó đến tự động tìm checkpoint mới nhất hoặc last.ckpt)
+CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_RegFormer/solar_regformer_la-epoch=45-val_psnr=34.00-val_ssim=0.9117.ckpt"
+if [ ! -f "$CKPT_PATH" ]; then
+    CKPT_PATH=$(find /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_RegFormer/ -name "*.ckpt" | grep -v "last" | sort -V | tail -n 1)
+fi
 if [ -z "$CKPT_PATH" ] || [ ! -f "$CKPT_PATH" ]; then
     CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_RegFormer/last.ckpt"
 fi

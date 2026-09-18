@@ -1,0 +1,17 @@
+[INFO] start at Wed Sep 16 10:25:26 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=72273
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=1
+[INFO] BEST_GPU=1
+[INFO] Launching SOLAR_DualMamba Training on Limited-Angle CT (AAPM) at Wed Sep 16 10:25:31 PM +07 2026
+================================================================================
+🚀 KHỞI ĐỘNG HUẤN LUYỆN KIẾN TRÚC ĐỘT PHÁ MIỀN KÉP: SOLAR_DualMamba
+   (Dual-Domain Angular Sinogram Bi-Mamba + Newton-CG Swin Regularizer)
+- Tập dữ liệu: AAPM (limited_ang_120deg_numview_64_size_256_noise_0)
+- Dải góc quét: 120.0° (Views: 64, Detectors: 512)
+- Kích thước ảnh: 256x256 | Unrolling Stages: 8
+- Số Epochs: 50 | Batch size: 1 | CG iters: 4
+- Thư mục Checkpoint: /datastore/uittogether3/LuuTru/MinhPD/saved_models/SOLAR_DualMamba/
+================================================================================
+[INFO] cleanup rc=1 at Wed Sep 16 10:25:46 PM +07 2026

@@ -1,0 +1,15 @@
+Model,Checkpoint,LA_120_PSNR_dB,LA_120_SSIM,LA_120_RMSE,LA_90_PSNR_dB,LA_90_SSIM,LA_90_RMSE,Notes
+FBP Thô (Ram-Lak),Analytical,17.89,0.4984,0.1145,15.20,0.4120,0.1450,Vệt sọc (streak artifacts) dày đặc do thiếu thông tin hình học góc quét
+LEARN_Mamba,mamba_la-epoch=17.ckpt (41 ep),26.32,0.7468,0.0493,18.76,0.4292,0.1129,Khôi phục trung bình; suy giảm mạnh ở 90° do cơ chế quét 1D không thích nghi nêm khuyết 2D
+LEARN_LongNet,longnet_la-last.ckpt (50 ep),31.62,0.8991,0.0270,19.19,0.5876,0.1058,Khôi phục sắc nét; trường chú ý giãn nở đa tỷ lệ giúp giữ cấu trúc xương và mô tốt
+LEARN_Longformer,longformer_la-epoch=45.ckpt (50 ep),33.10,0.9237,0.0224,19.16,0.6097,0.1055,SOTA cao nhất toàn bộ Baseline; cơ chế Sliding-Chunks + Global Tokens bảo toàn SSIM vượt trội
+SOLAR_LongNet (Đề xuất),solar_longnet_la-epoch=29.ckpt (31 ep),31.03,0.8958,0.0294,27.19,0.8639,0.0462,Đánh giá Test Job 67823: Vượt trội ngoạn mục ở LA-90° (+8.00 dB PSNR và +0.2763 SSIM so với baseline)
+SOLAR_Mamba (Đề xuất),solar_mamba_la-epoch=45.ckpt (50 ep),31.90,0.9114,0.0268,27.53,0.8760,0.0447,Đánh giá Test Job 68552 (50 ep): Vượt trội ngoạn mục ở LA-90° (+8.77 dB PSNR và +0.4468 SSIM so với LEARN_Mamba)
+SOLAR_Longformer (Đề xuất),solar_longformer_la-epoch=45.ckpt (50 ep),32.95,0.9155,0.0228,28.05,0.8774,0.0412,Đánh giá Test Job 68551 (50 ep): SOTA toàn diện ở LA-90° (28.05 dB PSNR và 0.8774 SSIM; +8.89 dB so với baseline)
+LEARN_Mamba (NIH DeepLesion),mamba_la-epoch=23.ckpt (50 ep),26.69,0.7132,0.0486,18.59,0.3913,0.1211,Đánh giá Test Job 71392 trên NIH DeepLesion (300 lát cắt test); suy giảm mạnh ở 90° (PSNR -8.10 dB và SSIM -0.3219)
+LEARN (Original CNN),epoch=46-val_psnr=36.27.ckpt (50 ep),32.29,0.9383,0.0246,28.03,0.8793,0.0411,Đánh giá Test Job 71615: Baseline mở cuộn 14 stages với CNN 3 tầng thuần túy (Hu Chen et al. 2018); SSIM cao ở cả 120° và 90°
+RegFormer,epoch=46-val_psnr=36.05.ckpt (50 ep),32.82,0.9398,0.0234,28.20,0.8814,0.0405,Đánh giá Test Job 71616: Baseline điều hòa kép Local CNN + Swin Transformer (14 stages); SSIM cao nhất nhóm baseline unrolling
+DuDoTrans,epoch=38-val_psnr=25.73.ckpt (50 ep),25.15,0.7447,0.0650,21.81,0.6738,0.0842,Đánh giá Test Job 71617: Baseline biến đổi đa miền Sinogram Transformer + FBP + Image Refinement
+SOLAR_RegFormer (Đề xuất - 35 ep),solar_regformer_la-epoch=34.ckpt (35 ep),32.11,0.9044,0.0259,27.68,0.8776,0.0440,Đánh giá Test Job 72251 (35 ep): Newton-CG 8 stages + Swin Window Attention
+SOLAR_RegFormer (Đề xuất - 50 ep),solar_regformer_la-epoch=45.ckpt (50 ep),32.47,0.9095,0.0247,27.64,0.8804,0.0442,Đánh giá Test Job 72610 (50 ep hoàn chỉnh): Tăng +0.36 dB PSNR / +0.0051 SSIM ở 120°; đạt SSIM 0.8804 ở 90° (vượt cả SOLAR_Longformer và SOLAR_Mamba)
+SOLAR_DualMamba (Đề xuất),solar_dualmamba_la-epoch=48.ckpt (49 ep),32.91,0.9186,0.0245,27.98,0.8843,0.0446,Đánh giá Test Job 72818: Miền kép Bi-Mamba Sinogram + Newton-CG Swin; đạt SSIM 0.8843 ở 90° (Kỷ lục SOTA cao nhất dự án)

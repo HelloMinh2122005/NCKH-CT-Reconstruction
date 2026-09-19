@@ -36,6 +36,30 @@
    - **Trạng thái:** 🟡 **Hàng đợi `PD (Priority)`** (Epoch 0 $\to$ 50).
    - **Script & Log:** `scripts/train_dudotrans_deeplesion.sh` | Log: `scripts/output/train_dudotrans_deeplesion/log/72823.out`
 
+6. **`MoDL` (Huấn luyện Baseline Model-Based Deep Learning trên AAPM LA-120°):**
+   - **Job ID Slurm:** **`72886`** (Submit lúc 20:36 ngày 19/09/2026).
+   - **Trạng thái:** 🟡 **Hàng đợi `PD (Priority)`** (Epoch 0 $\to$ 50).
+   - **Cấu hình:** 10 stages unrolling, 6 CG iterations, ResNet-5 regularizer (~112K params).
+   - **Script & Log:** `scripts/train_modl_la.sh` | Log: `scripts/output/train_modl_la/log/72886.out`
+
+7. **`FISTA-Net` (Huấn luyện Baseline Deep Unfolded FISTA trên AAPM LA-120°):**
+   - **Job ID Slurm:** **`72887`** (Submit lúc 20:36 ngày 19/09/2026).
+   - **Trạng thái:** 🟡 **Hàng đợi `PD (Priority)`** (Epoch 0 $\to$ 50).
+   - **Cấu hình:** 10 stages unrolling, Learnable Soft-Thresholding + Nesterov momentum (~38K params).
+   - **Script & Log:** `scripts/train_fista_net_la.sh` | Log: `scripts/output/train_fista_net_la/log/72887.out`
+
+8. **`DuDoNet` (Huấn luyện Baseline Dual-Domain trên AAPM LA-120°):**
+   - **Job ID Slurm:** **`72888`** (Submit lúc 20:36 ngày 19/09/2026).
+   - **Trạng thái:** 🟡 **Hàng đợi `PD (Priority)`** (Epoch 0 $\to$ 50).
+   - **Cấu hình:** Sinogram U-Net inpainting + FBP + Image Refinement CNN (~688K params).
+   - **Script & Log:** `scripts/train_dudonet_la.sh` | Log: `scripts/output/train_dudonet_la/log/72888.out`
+
+9. **`CT-Former` (Huấn luyện Baseline Cross-Shape Attention ViT trên AAPM LA-120°):**
+   - **Job ID Slurm:** **`72889`** (Submit lúc 20:36 ngày 19/09/2026).
+   - **Trạng thái:** 🟡 **Hàng đợi `PD (Priority)`** (Epoch 0 $\to$ 50).
+   - **Cấu hình:** 6 Cross-Shape Transformer Blocks, 4 heads, ConvFFN (~76K params).
+   - **Script & Log:** `scripts/train_ct_former_la.sh` | Log: `scripts/output/train_ct_former_la/log/72889.out`
+
 ### ✅ B. Các Job Vừa Hoàn Thành & Nghiệm Thu Gần Nhất
 1. **`SOLAR_DualMamba` - Test Benchmark Kiểm Chứng SOTA Patient L310 (Job ID `72818`):**
    - ✅ Hoàn thành 100% lúc 19:52:50 ngày 19/09/2026 (`rc=0`) trên 214 lát cắt CT độc lập:
@@ -89,7 +113,14 @@
   - Đã cập nhật vào `reports/sep-19-2026/benchmark_results.csv` và `reports/sep-19-2026/MAIN.md`.
 - [x] **4. Hoàn thành Khảo cứu Toàn diện Đối thủ Tái tạo LA-CT (19/09/2026):**
   - Đã lập báo cáo chi tiết 5 trường phái đối thủ (Deep Unrolling, Dual-Domain, ViT/SSM, Diffusion, INR) tại [reports/sep-19-2026/COMPETITORS_RESEARCH.md](reports/sep-19-2026/COMPETITORS_RESEARCH.md) sẵn sàng trình Giáo sư hướng dẫn.
-- [ ] **5. Kế Hoạch Tiếp Theo: Lặp Lại Toàn Bộ Huấn Luyện & Kiểm Thử Trên 2 Bộ Dữ Liệu NIH DeepLesion & LIDC-IDRI:**
+- [x] **5. Triển Khai & Nộp Huấn Luyện 4 Mô Hình Baseline Mới (19/09/2026):**
+  - Đã hoàn tất 100% mã nguồn 4 baseline: `MoDL`, `FISTA-Net`, `DuDoNet`, `CT-Former` (đầy đủ `models.py`, `train_*_la.py`, `test_*_la.py`, `scripts/train_*_la.sh`, `scripts/test_*_la.sh`).
+  - Đã nộp thành công 4 Slurm jobs lên DGX-A100:
+    * `MoDL`: Job ID **`72886`**
+    * `FISTA-Net`: Job ID **`72887`**
+    * `DuDoNet`: Job ID **`72888`**
+    * `CT-Former`: Job ID **`72889`**
+- [ ] **6. Kế Hoạch Tiếp Theo: Lặp Lại Toàn Bộ Huấn Luyện & Kiểm Thử Trên 2 Bộ Dữ Liệu NIH DeepLesion & LIDC-IDRI:**
   - **NIH DeepLesion (>32,000 lát cắt):**
     * Giám sát Job `72819` (`LEARN_Longformer` DeepLesion - Epoch 10/50).
     * Lần lượt kích hoạt và hoàn tất các baseline `LEARN_LongNet` (`72820`), `LEARN_Mamba` (`72821`), `LEARN` (`72822`), `DuDoTrans` (`72823`).
@@ -97,6 +128,6 @@
   - **LIDC-IDRI (1,018 bệnh nhân CT phổi):**
     * Lặp lại tương tự quy trình huấn luyện cho toàn bộ nhóm baseline và mô hình đề xuất bằng các script `scripts/train_*_lidc.sh`.
     * Đánh giá test benchmark trên tập kiểm thử độc lập LIDC (LA-120° và LA-90°).
-- [ ] **6. Hoàn thiện Bản thảo Bài báo SOICT 2026 (`papers/soict2026/`):**
+- [ ] **7. Hoàn thiện Bản thảo Bài báo SOICT 2026 (`papers/soict2026/`):**
   - Rà soát bản thảo `main.tex`, đưa thêm kết quả đối chứng của `LEARN` và `DuDoTrans`.
   - *Nhắc lại điều cấm kỵ:* Tuyệt đối không đưa SOLAR vào bài báo SOICT 2026.

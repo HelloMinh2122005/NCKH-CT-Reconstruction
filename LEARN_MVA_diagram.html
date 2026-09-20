@@ -1,0 +1,1487 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LEARN_MVA Architecture | Multi-View Long-Sequence Deep Unfolding for Limited-Angle CT</title>
+  
+  <!-- Modern Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- MathJax for High-Fidelity Equations -->
+  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+  <style>
+    :root {
+      --bg-dark: #060911;
+      --bg-card: rgba(13, 20, 37, 0.82);
+      --bg-card-hover: rgba(26, 38, 68, 0.95);
+      --border-color: rgba(148, 163, 184, 0.16);
+      --border-accent: rgba(56, 189, 248, 0.4);
+      
+      --cyan: #06b6d4;
+      --cyan-glow: rgba(6, 182, 212, 0.4);
+      --amber: #f59e0b;
+      --amber-glow: rgba(245, 158, 11, 0.4);
+      --emerald: #10b981;
+      --emerald-glow: rgba(16, 185, 129, 0.4);
+      --purple: #8b5cf6;
+      --purple-glow: rgba(139, 92, 246, 0.4);
+      --rose: #f43f5e;
+      --rose-glow: rgba(244, 63, 94, 0.4);
+      --blue: #3b82f6;
+      --indigo: #6366f1;
+      
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --text-dim: #64748b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background-color: var(--bg-dark);
+      color: var(--text-main);
+      overflow-x: hidden;
+      line-height: 1.6;
+      background-image: 
+        radial-gradient(circle at 10% 15%, rgba(6, 182, 212, 0.12) 0%, transparent 45%),
+        radial-gradient(circle at 90% 20%, rgba(245, 158, 11, 0.10) 0%, transparent 50%),
+        radial-gradient(circle at 50% 90%, rgba(139, 92, 246, 0.12) 0%, transparent 55%),
+        linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+      background-size: 100% 100%, 100% 100%, 100% 100%, 48px 48px, 48px 48px;
+      min-height: 100vh;
+    }
+
+    .container {
+      max-width: 1560px;
+      margin: 0 auto;
+      padding: 32px 24px 80px 24px;
+    }
+
+    /* Header */
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 30px;
+      flex-wrap: wrap;
+      gap: 20px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 24px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .brand-logo {
+      width: 56px;
+      height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #06b6d4, #8b5cf6 50%, #f59e0b);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 26px;
+      color: #fff;
+      box-shadow: 0 0 28px rgba(6, 182, 212, 0.5);
+      flex-shrink: 0;
+    }
+
+    .brand-title h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 28px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      background: linear-gradient(90deg, #ffffff, #38bdf8 40%, #c084fc 75%, #fbbf24);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .brand-title p {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      margin-top: 3px;
+    }
+
+    .header-badges {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .badge-pill {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(6, 182, 212, 0.12);
+      border: 1px solid rgba(6, 182, 212, 0.35);
+      border-radius: 9999px;
+      padding: 6px 16px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: #38bdf8;
+      backdrop-filter: blur(8px);
+    }
+
+    .badge-pill.green {
+      background: rgba(16, 185, 129, 0.12);
+      border-color: rgba(16, 185, 129, 0.35);
+      color: #34d399;
+    }
+
+    .pulse-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: currentColor;
+      box-shadow: 0 0 8px currentColor;
+      animation: pulse 1.8s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.3; transform: scale(1.3); }
+    }
+
+    /* Key Metrics Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      margin-bottom: 30px;
+    }
+
+    @media (max-width: 1024px) {
+      .metrics-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 640px) {
+      .metrics-grid { grid-template-columns: 1fr; }
+    }
+
+    .metric-card {
+      background: var(--bg-card);
+      backdrop-filter: blur(16px);
+      border: 1px solid var(--border-color);
+      border-radius: 18px;
+      padding: 20px 22px;
+      position: relative;
+      overflow: hidden;
+      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    .metric-card:hover {
+      transform: translateY(-4px);
+      border-color: var(--border-accent);
+      background: var(--bg-card-hover);
+      box-shadow: 0 12px 28px -8px rgba(0, 0, 0, 0.6);
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+    }
+
+    .metric-card.c1::before { background: linear-gradient(90deg, #10b981, #06b6d4); }
+    .metric-card.c2::before { background: linear-gradient(90deg, #06b6d4, #8b5cf6); }
+    .metric-card.c3::before { background: linear-gradient(90deg, #f59e0b, #f43f5e); }
+    .metric-card.c4::before { background: linear-gradient(90deg, #8b5cf6, #ec4899); }
+
+    .metric-label {
+      font-size: 11.5px;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: var(--text-dim);
+      font-weight: 700;
+    }
+
+    .metric-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 26px;
+      font-weight: 800;
+      color: #fff;
+      margin: 6px 0 2px 0;
+      display: flex;
+      align-items: baseline;
+      gap: 6px;
+    }
+
+    .metric-sub {
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* Tab Bar */
+    .nav-tabs {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 24px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 14px;
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      background: rgba(15, 23, 42, 0.55);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 11px 22px;
+      border-radius: 12px;
+      font-size: 13.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      transition: all 0.25s ease;
+      white-space: nowrap;
+    }
+
+    .tab-btn:hover {
+      background: rgba(30, 41, 59, 0.8);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.25);
+    }
+
+    .tab-btn.active {
+      background: linear-gradient(135deg, rgba(6, 182, 212, 0.22), rgba(139, 92, 246, 0.26));
+      border-color: #38bdf8;
+      color: #fff;
+      box-shadow: 0 0 20px rgba(6, 182, 212, 0.25);
+    }
+
+    /* Main Workspace */
+    .workspace {
+      display: grid;
+      grid-template-columns: 1fr 410px;
+      gap: 24px;
+      align-items: start;
+    }
+
+    @media (max-width: 1200px) {
+      .workspace { grid-template-columns: 1fr; }
+    }
+
+    .diagram-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      position: relative;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      color: #fff;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .panel-tag {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      color: var(--text-muted);
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      width: 100%;
+      background: #05070e;
+      border-radius: 16px;
+      border: 1px solid rgba(255, 255, 255, 0.06);
+      overflow: hidden;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 16px;
+    }
+
+    svg.diagram-svg {
+      width: 100%;
+      height: auto;
+      display: none;
+    }
+
+    svg.diagram-svg.active {
+      display: block;
+    }
+
+    /* SVG Interactive Nodes */
+    .node-group {
+      cursor: pointer;
+      transition: all 0.25s ease;
+    }
+
+    .node-group:hover rect, .node-group:hover circle, .node-group:hover polygon {
+      filter: brightness(1.25);
+      stroke-width: 2.5;
+    }
+
+    .node-group.active rect, .node-group.active circle, .node-group.active polygon {
+      stroke-width: 3;
+      filter: drop-shadow(0 0 14px currentColor);
+    }
+
+    /* Flow Lines Animation */
+    .flow-line {
+      stroke-dasharray: 6, 6;
+      animation: flowAnim 1.4s linear infinite;
+    }
+
+    @keyframes flowAnim {
+      from { stroke-dashoffset: 24; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Inspector Sidebar */
+    .inspector-panel {
+      background: var(--bg-card);
+      backdrop-filter: blur(20px);
+      border: 1px solid var(--border-color);
+      border-radius: 20px;
+      padding: 24px;
+      position: sticky;
+      top: 24px;
+      box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.6);
+    }
+
+    .inspector-header {
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 16px;
+      margin-bottom: 18px;
+    }
+
+    .inspector-header h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 20px;
+      font-weight: 700;
+      color: #fff;
+      margin-top: 6px;
+    }
+
+    .module-badge {
+      display: inline-block;
+      font-size: 10.5px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.6px;
+      padding: 3px 9px;
+      border-radius: 6px;
+      margin-bottom: 4px;
+    }
+
+    .badge-cyan { background: rgba(6, 182, 212, 0.18); color: #38bdf8; border: 1px solid rgba(6, 182, 212, 0.35); }
+    .badge-amber { background: rgba(245, 158, 11, 0.18); color: #fbbf24; border: 1px solid rgba(245, 158, 11, 0.35); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.35); }
+    .badge-purple { background: rgba(139, 92, 246, 0.18); color: #c084fc; border: 1px solid rgba(139, 92, 246, 0.35); }
+    .badge-rose { background: rgba(244, 63, 94, 0.18); color: #fb7185; border: 1px solid rgba(244, 63, 94, 0.35); }
+
+    .inspector-body {
+      font-size: 13.5px;
+      color: var(--text-muted);
+      line-height: 1.68;
+    }
+
+    .math-formula-box {
+      background: rgba(6, 182, 212, 0.08);
+      border: 1px solid rgba(6, 182, 212, 0.25);
+      border-radius: 12px;
+      padding: 12px 14px;
+      margin: 14px 0;
+      text-align: center;
+      color: #38bdf8;
+      font-size: 14px;
+    }
+
+    .prop-list {
+      margin-top: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .prop-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 12px;
+      background: rgba(255, 255, 255, 0.02);
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.04);
+      font-size: 12.5px;
+    }
+
+    .prop-name {
+      color: var(--text-dim);
+      font-weight: 500;
+    }
+
+    .prop-val {
+      font-family: 'JetBrains Mono', monospace;
+      color: #fff;
+      font-weight: 600;
+    }
+
+    .code-box {
+      background: #030509;
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 12px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11.5px;
+      color: #cbd5e1;
+      overflow-x: auto;
+      margin-top: 14px;
+      line-height: 1.5;
+    }
+
+    /* Theory and Table Tabs Styles */
+    .theory-section {
+      padding: 10px 4px;
+    }
+
+    .theory-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--border-color);
+      border-radius: 16px;
+      padding: 22px;
+      margin-bottom: 20px;
+    }
+
+    .theory-card h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 18px;
+      color: #38bdf8;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .custom-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 13px;
+    }
+
+    .custom-table th, .custom-table td {
+      padding: 12px 14px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .custom-table th {
+      background: rgba(255, 255, 255, 0.04);
+      color: var(--text-main);
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 11.5px;
+      letter-spacing: 0.6px;
+    }
+
+    .custom-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    .tag-sota {
+      background: rgba(16, 185, 129, 0.2);
+      color: #34d399;
+      padding: 2px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid rgba(16, 185, 129, 0.4);
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="brand">
+      <div class="brand-logo">MVA</div>
+      <div class="brand-title">
+        <h1>LEARN_MVA Framework Architecture</h1>
+        <p>Kiến Trúc Mạng Mở Cuộn Sâu Đa Chuỗi Dài (Long-Sequence Deep Unrolling) cho Tái Tạo CT Góc Giới Hạn</p>
+      </div>
+    </div>
+    <div class="header-badges">
+      <div class="badge-pill green">
+        <span class="pulse-dot"></span>
+        <span>SOICT 2026 Peer-Reviewed</span>
+      </div>
+      <div class="badge-pill">
+        <span>14 Cascading Unrolling Stages</span>
+      </div>
+      <div class="badge-pill">
+        <span>N = 16,384 Tokens Grid (p=2)</span>
+      </div>
+    </div>
+  </header>
+
+  <!-- Key Metrics Grid -->
+  <div class="metrics-grid">
+    <div class="metric-card c1">
+      <div class="metric-label">Quán Quân LA-120° (PSNR / RMSE)</div>
+      <div class="metric-val">33.10 dB <span style="font-size: 14px; color: #34d399;">+0.81 dB vs CNN</span></div>
+      <div class="metric-sub">LEARN_Longformer (Sliding Window w=256, Global Anchors G=50)</div>
+    </div>
+    <div class="metric-card c2">
+      <div class="metric-label">Độ Phân Giải Token Vi Mô</div>
+      <div class="metric-val">p = 2 px <span style="font-size: 14px; color: #38bdf8;">d = 192 dims</span></div>
+      <div class="metric-sub">16,384 tokens trên lưới 256x256 giữ trọn vi vôi hóa & bè xương</div>
+    </div>
+    <div class="metric-card c3">
+      <div class="metric-label">Độ Phức Tạp Thuật Toán</div>
+      <div class="metric-val">\(\mathcal{O}(N)\) <span style="font-size: 14px; color: #fbbf24;">Tuyến Tính</span></div>
+      <div class="metric-sub">Giải quyết hoàn toàn tắc nghẽn bộ nhớ \(\mathcal{O}(N^2)\) của ViT chuẩn</div>
+    </div>
+    <div class="metric-card c4">
+      <div class="metric-label">Hình Học Fan-Beam Lâm Sàng</div>
+      <div class="metric-val">64 Views <span style="font-size: 14px; color: #c084fc;">512 Det</span></div>
+      <div class="metric-sub">Cung quét 120° & 90° - Cắt giảm 66.7% liều bức xạ ALARA</div>
+    </div>
+  </div>
+
+  <!-- Navigation Tabs -->
+  <div class="nav-tabs">
+    <button class="tab-btn active" onclick="switchTab('macro')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M4 5a1 1 0 011-1h14a1 1 0 011 1v2a1 1 0 01-1 1H5a1 1 0 01-1-1V5zM4 13a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H5a1 1 0 01-1-1v-6zM16 13a1 1 0 011-1h2a1 1 0 011 1v6a1 1 0 01-1 1h-2a1 1 0 01-1-1v-6z"/></svg>
+      1. Sơ Đồ Toàn Cục (Macro Unrolling)
+    </button>
+    <button class="tab-btn" onclick="switchTab('sandwich')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"/></svg>
+      2. Khối Điều Hòa (Sandwich Prior)
+    </button>
+    <button class="tab-btn" onclick="switchTab('engines')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+      3. So Sánh 4 Cỗ Máy Chuỗi Dài (Engines)
+    </button>
+    <button class="tab-btn" onclick="switchTab('theory')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/></svg>
+      4. Cơ Sở Toán Học & Vật Lý CT
+    </button>
+    <button class="tab-btn" onclick="switchTab('benchmark')">
+      <svg fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"/></svg>
+      5. Bảng Số Liệu Đối Chứng SOICT
+    </button>
+  </div>
+
+  <!-- Workspace: Canvas on Left, Inspector on Right -->
+  <div class="workspace">
+    
+    <!-- Diagram Canvas Area -->
+    <div class="diagram-panel">
+      <div class="panel-header">
+        <div class="panel-title" id="panel-title-text">
+          <span style="color: #38bdf8;">●</span> Sơ Đồ Toàn Cục Mạng Mở Cuộn LEARN_MVA (14 Stages Unrolling)
+        </div>
+        <div class="panel-tag">Nhấn vào từng node để xem giải thích chi tiết tiếng Việt</div>
+      </div>
+
+      <div class="canvas-wrapper">
+        
+        <!-- SVG 1: MACRO ARCHITECTURE -->
+        <svg id="svg-macro" class="diagram-svg active" viewBox="0 0 1020 720">
+          <defs>
+            <linearGradient id="grad-sin" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0284c7"/>
+              <stop offset="100%" stop-color="#0369a1"/>
+            </linearGradient>
+            <linearGradient id="grad-fbp" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#0d9488"/>
+              <stop offset="100%" stop-color="#047857"/>
+            </linearGradient>
+            <linearGradient id="grad-phys" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#d97706"/>
+              <stop offset="100%" stop-color="#b45309"/>
+            </linearGradient>
+            <linearGradient id="grad-prior" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#7c3aed"/>
+              <stop offset="100%" stop-color="#6d28d9"/>
+            </linearGradient>
+            <linearGradient id="grad-update" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#2563eb"/>
+              <stop offset="100%" stop-color="#1d4ed8"/>
+            </linearGradient>
+            <linearGradient id="grad-loss" x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stop-color="#e11d48"/>
+              <stop offset="100%" stop-color="#be123c"/>
+            </linearGradient>
+            
+            <marker id="arrow" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#94a3b8"/>
+            </marker>
+            <marker id="arrow-cyan" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#38bdf8"/>
+            </marker>
+            <marker id="arrow-amber" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#fbbf24"/>
+            </marker>
+            <marker id="arrow-purple" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+              <path d="M 0 1 L 10 5 L 0 9 z" fill="#c084fc"/>
+            </marker>
+          </defs>
+
+          <!-- Input Sinogram Node -->
+          <g class="node-group" id="node-sino" onclick="selectNode('sino')">
+            <rect x="40" y="70" width="160" height="70" rx="12" fill="url(#grad-sin)" stroke="#38bdf8" stroke-width="1.5"/>
+            <text x="120" y="100" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Sinogram Đo Đạc (y)</text>
+            <text x="120" y="122" fill="#bae6fd" font-family="JetBrains Mono" font-size="11" text-anchor="middle">[B, 1, 64, 512]</text>
+          </g>
+
+          <!-- FBP Init Node -->
+          <g class="node-group" id="node-fbp" onclick="selectNode('fbp')">
+            <rect x="250" y="70" width="170" height="70" rx="12" fill="url(#grad-fbp)" stroke="#34d399" stroke-width="1.5"/>
+            <text x="335" y="98" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">FBP (Ram-Lak)</text>
+            <text x="335" y="116" fill="#a7f3d0" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">Khởi tạo x^(0) = A_FBP(y)</text>
+            <text x="335" y="132" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" text-anchor="middle">[B, 1, 256, 256]</text>
+          </g>
+
+          <!-- Connection: Sino -> FBP -->
+          <path d="M 200 105 L 250 105" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)" class="flow-line"/>
+
+          <!-- Unrolling Cascade Outer Container -->
+          <rect x="40" y="180" width="940" height="390" rx="18" fill="rgba(15, 23, 42, 0.6)" stroke="rgba(148, 163, 184, 0.25)" stroke-width="1.5" stroke-dasharray="8 4"/>
+          <text x="60" y="210" fill="#94a3b8" font-family="Outfit" font-weight="700" font-size="14" letter-spacing="1">
+            VÒNG LẶP UNROLLING BẬC 1 (14 STAGES CASCADING: k = 0, 1, ..., 13)
+          </text>
+          <text x="890" y="210" fill="#38bdf8" font-family="JetBrains Mono" font-size="12">Stage k &rarr; k+1</text>
+
+          <!-- Connection: FBP -> Unrolling Loop Entry -->
+          <path d="M 335 140 L 335 160 L 140 160 L 140 230" stroke="#34d399" stroke-width="2" marker-end="url(#arrow)" class="flow-line"/>
+
+          <!-- Current Image State x^(k) -->
+          <g class="node-group" id="node-xk" onclick="selectNode('xk')">
+            <rect x="70" y="240" width="140" height="75" rx="12" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
+            <text x="140" y="270" fill="#fff" font-family="Outfit" font-weight="700" font-size="15" text-anchor="middle">Trạng Thái x^(k)</text>
+            <text x="140" y="290" fill="#94a3b8" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">Ảnh CT tại Stage k</text>
+            <text x="140" y="306" fill="#cbd5e1" font-family="JetBrains Mono" font-size="10" text-anchor="middle">[B, 1, 256, 256]</text>
+          </g>
+
+          <!-- Branch 1: Physics Data Consistency -->
+          <path d="M 210 260 L 260 260" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrow-amber)" class="flow-line"/>
+          
+          <g class="node-group" id="node-phys" onclick="selectNode('phys')">
+            <rect x="260" y="235" width="280" height="90" rx="14" fill="url(#grad-phys)" stroke="#fbbf24" stroke-width="1.5"/>
+            <text x="400" y="262" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Nhánh Vật Lý (Data Consistency)</text>
+            <text x="400" y="284" fill="#fef08a" font-family="JetBrains Mono" font-size="12" text-anchor="middle">g_phys = &alpha;^(k) &middot; A^T(A x^(k) - y)</text>
+            <text x="400" y="305" fill="#fde68a" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">Chiếu thuận A & Chiếu ngược FBP Ram-Lak</text>
+          </g>
+
+          <!-- Branch 2: Deep Learned Prior (Regularizer) -->
+          <path d="M 140 315 L 140 430 L 260 430" stroke="#c084fc" stroke-width="2" marker-end="url(#arrow-purple)" class="flow-line"/>
+
+          <g class="node-group" id="node-prior" onclick="selectNode('prior')">
+            <rect x="260" y="380" width="280" height="100" rx="14" fill="url(#grad-prior)" stroke="#c084fc" stroke-width="1.5"/>
+            <text x="400" y="410" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Nhánh Tiên Nghiệm Học Sâu</text>
+            <text x="400" y="432" fill="#e9d5ff" font-family="JetBrains Mono" font-size="12" text-anchor="middle">R_&theta;^(k)(x^(k)) &isin; R^(B &times; 1 &times; 256 &times; 256)</text>
+            <text x="400" y="454" fill="#ddd6fe" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">Sandwich: Conv + MVA Engine + Conv</text>
+            <text x="400" y="470" fill="#c4b5fd" font-family="Plus Jakarta Sans" font-size="10" text-anchor="middle">(Longformer / LongNet / Mamba)</text>
+          </g>
+
+          <!-- Gradient Summation Node -->
+          <g class="node-group" id="node-sum" onclick="selectNode('sum')">
+            <circle cx="610" cy="355" r="28" fill="#0f172a" stroke="#38bdf8" stroke-width="2"/>
+            <text x="610" y="363" fill="#38bdf8" font-family="Outfit" font-weight="800" font-size="24" text-anchor="middle">+</text>
+            <text x="610" y="398" fill="#94a3b8" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">Cộng Gradient</text>
+          </g>
+
+          <!-- Connections to Sum -->
+          <path d="M 540 280 L 585 280 L 600 330" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrow)" class="flow-line"/>
+          <path d="M 540 430 L 585 430 L 600 380" stroke="#c084fc" stroke-width="2" marker-end="url(#arrow)" class="flow-line"/>
+
+          <!-- Update Equation Node -->
+          <g class="node-group" id="node-update" onclick="selectNode('update')">
+            <rect x="680" y="315" width="260" height="80" rx="14" fill="url(#grad-update)" stroke="#60a5fa" stroke-width="1.5"/>
+            <text x="810" y="344" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Bước Cập Nhật Nghiệm</text>
+            <text x="810" y="366" fill="#bfdbfe" font-family="JetBrains Mono" font-size="12" text-anchor="middle">x^(k+1) = x^(k) - [ g_phys + R_&theta; ]</text>
+            <text x="810" y="385" fill="#93c5fd" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">Tối ưu hóa Gradient Descent unrolled</text>
+          </g>
+
+          <!-- Sum to Update -->
+          <path d="M 638 355 L 680 355" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)" class="flow-line"/>
+
+          <!-- Recurrent Loop Arrow back to x^(k) -->
+          <path d="M 810 395 L 810 520 L 140 520 L 140 325" stroke="#38bdf8" stroke-width="2" stroke-dasharray="6 4" marker-end="url(#arrow-cyan)"/>
+          <text x="475" y="540" fill="#38bdf8" font-family="Plus Jakarta Sans" font-size="12" font-weight="600" text-anchor="middle">
+            Vòng lặp đệ quy tiếp tục đến khi chạm ngưỡng k = 14 stages
+          </text>
+
+          <!-- Exit to Final Output -->
+          <path d="M 940 355 L 980 355 L 980 620 L 560 620" stroke="#34d399" stroke-width="2" marker-end="url(#arrow)" class="flow-line"/>
+
+          <!-- Final Output Image x^(14) -->
+          <g class="node-group" id="node-xout" onclick="selectNode('xout')">
+            <rect x="360" y="585" width="200" height="70" rx="12" fill="url(#grad-fbp)" stroke="#34d399" stroke-width="1.5"/>
+            <text x="460" y="613" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Ảnh Tái Tạo Cuối x^(14)</text>
+            <text x="460" y="632" fill="#a7f3d0" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">Triệt tiêu hoàn toàn sọc nhiễu</text>
+            <text x="460" y="647" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" text-anchor="middle">[B, 1, 256, 256]</text>
+          </g>
+
+          <!-- Supervised Loss Node -->
+          <g class="node-group" id="node-loss" onclick="selectNode('loss')">
+            <rect x="40" y="585" width="230" height="70" rx="12" fill="url(#grad-loss)" stroke="#f43f5e" stroke-width="1.5"/>
+            <text x="155" y="613" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">End-to-End MSE Loss</text>
+            <text x="155" y="632" fill="#fecdd3" font-family="JetBrains Mono" font-size="11" text-anchor="middle">L = (1/S) &sum; || x_i^(K) - x_i^* ||^2</text>
+            <text x="155" y="647" fill="#fda4af" font-family="Plus Jakarta Sans" font-size="10" text-anchor="middle">So sánh với Ground-Truth x*</text>
+          </g>
+
+          <!-- Connect Final -> Loss -->
+          <path d="M 360 620 L 270 620" stroke="#f43f5e" stroke-width="2" marker-end="url(#arrow)" class="flow-line"/>
+
+        </svg>
+
+        <!-- SVG 2: SANDWICH REGULARIZATION BLOCK -->
+        <svg id="svg-sandwich" class="diagram-svg" viewBox="0 0 1020 680">
+          <!-- Input x^(k) -->
+          <g class="node-group" id="node-sand-in" onclick="selectNode('sand_in')">
+            <rect x="40" y="270" width="130" height="80" rx="12" fill="#1e293b" stroke="#64748b" stroke-width="1.5"/>
+            <text x="105" y="302" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Ảnh Đầu Vào x^(k)</text>
+            <text x="105" y="322" fill="#94a3b8" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">CT Image Slice</text>
+            <text x="105" y="340" fill="#cbd5e1" font-family="JetBrains Mono" font-size="10" text-anchor="middle">[B, 1, 256, 256]</text>
+          </g>
+
+          <!-- Conv1 Feature Extractor -->
+          <path d="M 170 310 L 210 310" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)" class="flow-line"/>
+          <g class="node-group" id="node-sand-conv1" onclick="selectNode('sand_conv1')">
+            <rect x="210" y="260" width="160" height="100" rx="14" fill="#0369a1" stroke="#38bdf8" stroke-width="1.5"/>
+            <text x="290" y="290" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Tầng Conv 1 + ReLU</text>
+            <text x="290" y="312" fill="#bae6fd" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">Kernel 5x5, stride 1, pad 2</text>
+            <text x="290" y="332" fill="#e0f2fe" font-family="JetBrains Mono" font-size="10" text-anchor="middle">C = 1 &rarr; 48 channels</text>
+            <text x="290" y="350" fill="#7dd3fc" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Out: [B, 48, 256, 256]</text>
+          </g>
+
+          <!-- Tokenization Operator T_2x2 -->
+          <path d="M 370 310 L 410 310" stroke="#fbbf24" stroke-width="2" marker-end="url(#arrow-amber)" class="flow-line"/>
+          <g class="node-group" id="node-sand-token" onclick="selectNode('sand_token')">
+            <rect x="410" y="250" width="180" height="120" rx="14" fill="#b45309" stroke="#fbbf24" stroke-width="1.5"/>
+            <text x="500" y="280" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Tokenization (T_2x2)</text>
+            <text x="500" y="302" fill="#fef08a" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">Cắt Patch Không Trùng Lặp</text>
+            <text x="500" y="322" fill="#fef9c3" font-family="JetBrains Mono" font-size="10" text-anchor="middle">p = 2 px &rarr; 128x128 patches</text>
+            <text x="500" y="342" fill="#fde047" font-family="JetBrains Mono" font-size="11" text-anchor="middle">N = 16,384 tokens</text>
+            <text x="500" y="360" fill="#fef08a" font-family="JetBrains Mono" font-size="10" text-anchor="middle">d = 48 &times; 2^2 = 192 dims</text>
+          </g>
+
+          <!-- Sequence Engine Box -->
+          <path d="M 590 310 L 630 310" stroke="#c084fc" stroke-width="2" marker-end="url(#arrow-purple)" class="flow-line"/>
+          <g class="node-group" id="node-sand-engine" onclick="selectNode('sand_engine')">
+            <rect x="630" y="235" width="200" height="150" rx="16" fill="url(#grad-prior)" stroke="#c084fc" stroke-width="2"/>
+            <text x="730" y="265" fill="#fff" font-family="Outfit" font-weight="800" font-size="15" text-anchor="middle">SequenceEngine(&middot;)</text>
+            <text x="730" y="286" fill="#e9d5ff" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">Mô Hình Chuỗi Dài O(N)</text>
+            <rect x="645" y="300" width="170" height="70" rx="8" fill="rgba(0,0,0,0.35)" stroke="rgba(255,255,255,0.15)"/>
+            <text x="730" y="320" fill="#38bdf8" font-family="Outfit" font-size="11" font-weight="700" text-anchor="middle">&bull; LEARN_Longformer (SOTA)</text>
+            <text x="730" y="338" fill="#fbbf24" font-family="Outfit" font-size="11" font-weight="700" text-anchor="middle">&bull; LEARN_LongNet (Dilated)</text>
+            <text x="730" y="356" fill="#34d399" font-family="Outfit" font-size="11" font-weight="700" text-anchor="middle">&bull; LEARN_Mamba (SSM S4)</text>
+          </g>
+
+          <!-- Untokenization T_2x2^(-1) -->
+          <path d="M 830 310 L 870 310" stroke="#34d399" stroke-width="2" marker-end="url(#arrow)" class="flow-line"/>
+          <g class="node-group" id="node-sand-untoken" onclick="selectNode('sand_untoken')">
+            <rect x="870" y="250" width="120" height="120" rx="14" fill="#047857" stroke="#34d399" stroke-width="1.5"/>
+            <text x="930" y="285" fill="#fff" font-family="Outfit" font-weight="700" font-size="13" text-anchor="middle">Untokenize</text>
+            <text x="930" y="305" fill="#a7f3d0" font-family="Plus Jakarta Sans" font-size="10" text-anchor="middle">Gấp Lại Ảnh 2D</text>
+            <text x="930" y="325" fill="#6ee7b7" font-family="JetBrains Mono" font-size="10" text-anchor="middle">T_2x2^(-1)</text>
+            <text x="930" y="348" fill="#a7f3d0" font-family="JetBrains Mono" font-size="10" text-anchor="middle">[B, 48, 256, 256]</text>
+          </g>
+
+          <!-- Lower Flow: Conv2 -> Conv3 -> Output -->
+          <path d="M 930 370 L 930 460 L 780 460" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)" class="flow-line"/>
+          
+          <!-- Conv2 Reconstruction -->
+          <g class="node-group" id="node-sand-conv2" onclick="selectNode('sand_conv2')">
+            <rect x="620" y="420" width="160" height="80" rx="12" fill="#1e3a8a" stroke="#38bdf8" stroke-width="1.5"/>
+            <text x="700" y="448" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Tầng Conv 2 + ReLU</text>
+            <text x="700" y="468" fill="#bfdbfe" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">5x5, 48 &rarr; 48 channels</text>
+            <text x="700" y="486" fill="#93c5fd" font-family="JetBrains Mono" font-size="10" text-anchor="middle">[B, 48, 256, 256]</text>
+          </g>
+
+          <!-- Conv3 Projection -->
+          <path d="M 620 460 L 530 460" stroke="#38bdf8" stroke-width="2" marker-end="url(#arrow-cyan)" class="flow-line"/>
+          <g class="node-group" id="node-sand-conv3" onclick="selectNode('sand_conv3')">
+            <rect x="370" y="420" width="160" height="80" rx="12" fill="#0f766e" stroke="#2dd4bf" stroke-width="1.5"/>
+            <text x="450" y="448" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Tầng Conv 3 (Output)</text>
+            <text x="450" y="468" fill="#99f6e4" font-family="Plus Jakarta Sans" font-size="11" text-anchor="middle">5x5, 48 &rarr; 1 channel</text>
+            <text x="450" y="486" fill="#5eead4" font-family="JetBrains Mono" font-size="10" text-anchor="middle">Residual Gradient &nabla;R</text>
+          </g>
+
+          <!-- Output Residual Gradient -->
+          <path d="M 370 460 L 250 460" stroke="#2dd4bf" stroke-width="2" marker-end="url(#arrow)" class="flow-line"/>
+          <g class="node-group" id="node-sand-out" onclick="selectNode('sand_out')">
+            <rect x="70" y="425" width="180" height="70" rx="12" fill="#1e293b" stroke="#34d399" stroke-width="1.5"/>
+            <text x="160" y="455" fill="#fff" font-family="Outfit" font-weight="700" font-size="14" text-anchor="middle">Output Tiên Nghiệm R_&theta;</text>
+            <text x="160" y="475" fill="#6ee7b7" font-family="JetBrains Mono" font-size="11" text-anchor="middle">[B, 1, 256, 256]</text>
+          </g>
+        </svg>
+
+        <!-- SVG 3: THE 4 SEQUENCE ENGINES COMPARISON -->
+        <svg id="svg-engines" class="diagram-svg" viewBox="0 0 1020 680">
+          <!-- Engine 1: Longformer -->
+          <g class="node-group" id="node-eng-lf" onclick="selectNode('eng_lf')">
+            <rect x="40" y="40" width="450" height="280" rx="16" fill="rgba(6, 182, 212, 0.08)" stroke="#06b6d4" stroke-width="1.5"/>
+            <text x="65" y="75" fill="#38bdf8" font-family="Outfit" font-weight="800" font-size="17">1. LEARN_Longformer (Quán quân SOTA)</text>
+            <text x="65" y="98" fill="#94a3b8" font-family="Plus Jakarta Sans" font-size="12">Sliding Window Attention (w=256) + 50 Global Anchor Tokens</text>
+            
+            <!-- Window illustration -->
+            <rect x="65" y="115" width="400" height="85" rx="10" fill="#061325" stroke="rgba(56, 189, 248, 0.3)"/>
+            <text x="80" y="140" fill="#e2e8f0" font-family="JetBrains Mono" font-size="11">Ma trận Attention: |i - j| &le; w/2 hoặc i, j &isin; G</text>
+            <text x="80" y="162" fill="#38bdf8" font-family="JetBrains Mono" font-size="11">&bull; w = 256 (Cửa sổ trượt bao quanh 128 tokens)</text>
+            <text x="80" y="182" fill="#fbbf24" font-family="JetBrains Mono" font-size="11">&bull; |G| = 50 (Global Tokens neo sọc trên toàn bức ảnh)</text>
+            
+            <rect x="65" y="215" width="400" height="85" rx="10" fill="#0f172a" stroke="rgba(255, 255, 255, 0.08)"/>
+            <text x="80" y="240" fill="#34d399" font-family="Outfit" font-size="12" font-weight="700">Đặc tính lâm sàng:</text>
+            <text x="80" y="260" fill="#cbd5e1" font-family="Plus Jakarta Sans" font-size="11.5">Giữ cực sắc biên xương sườn; neo 50 điểm triệt sọc góc khuyết.</text>
+            <text x="80" y="282" fill="#6ee7b7" font-family="JetBrains Mono" font-size="11">Độ phức tạp: O(N &middot; (w + |G|)) = Tuyến tính O(N)</text>
+          </g>
+
+          <!-- Engine 2: LongNet -->
+          <g class="node-group" id="node-eng-ln" onclick="selectNode('eng_ln')">
+            <rect x="530" y="40" width="450" height="280" rx="16" fill="rgba(245, 158, 11, 0.08)" stroke="#f59e0b" stroke-width="1.5"/>
+            <text x="555" y="75" fill="#fbbf24" font-family="Outfit" font-weight="800" font-size="17">2. LEARN_LongNet (Multi-Scale Dilated)</text>
+            <text x="555" y="98" fill="#94a3b8" font-family="Plus Jakarta Sans" font-size="12">Phân đoạn Segments w + Bước nhảy Dilation r tăng theo hàm mũ</text>
+            
+            <rect x="555" y="115" width="400" height="85" rx="10" fill="#1c1305" stroke="rgba(245, 158, 11, 0.3)"/>
+            <text x="570" y="140" fill="#e2e8f0" font-family="JetBrains Mono" font-size="11">Attention: O_s = Softmax(Q_hat &middot; K_hat^T / &radic;d_h) V_s</text>
+            <text x="570" y="162" fill="#fbbf24" font-family="JetBrains Mono" font-size="11">&bull; Chuẩn hóa L2-norm Q & K: Q_hat = Q / ||Q||_2</text>
+            <text x="570" y="182" fill="#fde047" font-family="JetBrains Mono" font-size="11">&bull; N/w = 1,024 segments; window size chuẩn = 2</text>
+            
+            <rect x="555" y="215" width="400" height="85" rx="10" fill="#0f172a" stroke="rgba(255, 255, 255, 0.08)"/>
+            <text x="570" y="240" fill="#fbbf24" font-family="Outfit" font-size="12" font-weight="700">Đặc tính lâm sàng:</text>
+            <text x="570" y="260" fill="#cbd5e1" font-family="Plus Jakarta Sans" font-size="11.5">Bắt đa dải tần số sọc; ổn định số học nhờ chuẩn hóa L2.</text>
+            <text x="570" y="282" fill="#fde047" font-family="JetBrains Mono" font-size="11">Độ phức tạp: O(N &middot; &sum; (w_m / r_m)) = Tuyến tính O(N)</text>
+          </g>
+
+          <!-- Engine 3: Mamba -->
+          <g class="node-group" id="node-eng-mb" onclick="selectNode('eng_mb')">
+            <rect x="40" y="350" width="450" height="290" rx="16" fill="rgba(139, 92, 246, 0.08)" stroke="#8b5cf6" stroke-width="1.5"/>
+            <text x="65" y="385" fill="#c084fc" font-family="Outfit" font-weight="800" font-size="17">3. LEARN_Mamba (Selective State-Space)</text>
+            <text x="65" y="408" fill="#94a3b8" font-family="Plus Jakarta Sans" font-size="12">Mô hình không gian trạng thái S4 + Quét song song Associative Scan</text>
+            
+            <rect x="65" y="425" width="400" height="95" rx="10" fill="#130a2a" stroke="rgba(139, 92, 246, 0.3)"/>
+            <text x="80" y="450" fill="#e2e8f0" font-family="JetBrains Mono" font-size="11">Rời rạc ZOH: h_t = A_bar_t h_{t-1} + B_bar_t x_t</text>
+            <text x="80" y="470" fill="#c084fc" font-family="JetBrains Mono" font-size="11">&bull; A_bar = exp(&Delta;_t A); &Delta;_t = Softplus(W_&Delta; x_t + b_&Delta;)</text>
+            <text x="80" y="490" fill="#ddd6fe" font-family="JetBrains Mono" font-size="11">&bull; B_t = W_B x_t; C_t = W_C x_t (Chọn lọc động theo token)</text>
+            <text x="80" y="508" fill="#e9d5ff" font-family="JetBrains Mono" font-size="10">State dimension N_state = 16, H = 4 heads</text>
+            
+            <rect x="65" y="530" width="400" height="90" rx="10" fill="#0f172a" stroke="rgba(255, 255, 255, 0.08)"/>
+            <text x="80" y="555" fill="#f43f5e" font-family="Outfit" font-size="12" font-weight="700">Chẩn đoán điểm nghẽn:</text>
+            <text x="80" y="575" fill="#cbd5e1" font-family="Plus Jakarta Sans" font-size="11.5">Tốt ở 120° nhưng sụp đổ tại 90° do quét nhân quả 1D (Raster Scan)</text>
+            <text x="80" y="595" fill="#fda4af" font-family="Plus Jakarta Sans" font-size="11">bị đứt gãy tính liên tục khi gặp nêm khuyết 2D.</text>
+          </g>
+
+          <!-- Engine 4: Nyströmformer (MVA Baseline Gốc) -->
+          <g class="node-group" id="node-eng-nys" onclick="selectNode('eng_nys')">
+            <rect x="530" y="350" width="450" height="290" rx="16" fill="rgba(16, 185, 129, 0.08)" stroke="#10b981" stroke-width="1.5"/>
+            <text x="555" y="385" fill="#34d399" font-family="Outfit" font-weight="800" font-size="17">4. LEARN_Nyströmformer (MVA Gốc)</text>
+            <text x="555" y="408" fill="#94a3b8" font-family="Plus Jakarta Sans" font-size="12">Xấp xỉ ma trận Self-Attention qua Nyström Low-Rank Landmarks</text>
+            
+            <rect x="555" y="425" width="400" height="95" rx="10" fill="#041a14" stroke="rgba(16, 185, 129, 0.3)"/>
+            <text x="570" y="450" fill="#e2e8f0" font-family="JetBrains Mono" font-size="11">S_approx = Softmax(Q K_tilde^T) (Q_tilde K_tilde^T)^+ Softmax(Q_tilde K^T)</text>
+            <text x="570" y="472" fill="#34d399" font-family="JetBrains Mono" font-size="11">&bull; pinv_iterations = 6 vòng lặp Moore-Penrose</text>
+            <text x="570" y="492" fill="#6ee7b7" font-family="JetBrains Mono" font-size="11">&bull; Chọn m = 64 landmarks để xấp xỉ ma trận 16,384^2</text>
+            <text x="570" y="508" fill="#a7f3d0" font-family="JetBrains Mono" font-size="10">H = 4 attention heads</text>
+            
+            <rect x="555" y="530" width="400" height="90" rx="10" fill="#0f172a" stroke="rgba(255, 255, 255, 0.08)"/>
+            <text x="570" y="555" fill="#34d399" font-family="Outfit" font-size="12" font-weight="700">Đặc tính kỹ thuật:</text>
+            <text x="570" y="575" fill="#cbd5e1" font-family="Plus Jakarta Sans" font-size="11.5">Tiền thân của MVA trên Sparse-View CT, làm nền tảng mở đường</text>
+            <text x="570" y="595" fill="#a7f3d0" font-family="Plus Jakarta Sans" font-size="11">cho việc mở rộng sang Longformer và Mamba trên Limited-Angle CT.</text>
+          </g>
+        </svg>
+
+        <!-- HTML 4: THEORY AND FORMULATIONS -->
+        <div id="html-theory" style="display: none; width: 100%;" class="theory-section">
+          <div class="theory-card">
+            <h3>📐 1. Bài Toán Nghịch Đảo và Nêm Khuyết Tần Số (Missing Wedge)</h3>
+            <p>Trong chụp cắt lớp vi tính góc giới hạn (Limited-Angle CT), góc quét bị bó hẹp \(\Theta_{\text{scan}} < 180^\circ\) (cụ thể \(120^\circ\) hoặc \(90^\circ\)). Theo <strong>Định Lý Lát Cắt Fourier (Fourier Slice Theorem)</strong>:</p>
+            <div class="math-formula-box">
+              $$\mathcal{F}_{2D}\{x\}(\omega \cos\theta, \omega \sin\theta) = \mathcal{F}_{1D}\{y(\theta, \cdot)\}(\omega)$$
+            </div>
+            <p>Toàn bộ vùng tần số nằm ngoài cung quét \(\Omega_{\text{missing}} = \{(\omega_u, \omega_v) \mid |\theta| > \Theta_{\text{scan}}/2\}\) hoàn toàn bị khuyết số đo. Toán tử chuẩn \(A^T A\) bị suy biến nghiêm trọng (có không gian hạt nhân \(\mathcal{N}(A)\) rất lớn). Phép tái tạo phân tích FBP tạo ra các vệt sọc giao thoa (streak artifacts) có biên độ cực lớn đâm xuyên qua toàn bộ trường nhìn (FOV).</p>
+          </div>
+
+          <div class="theory-card">
+            <h3>⚡ 2. Cơ Chế Mở Cuộn Sâu (Deep Unfolding) 14 Vòng Lặp</h3>
+            <p>Khung unrolling <strong>LEARN</strong> biến quá trình tối ưu hóa hàm mục tiêu có điều hòa:</p>
+            <div class="math-formula-box">
+              $$\min_{x} \frac{1}{2} \| A x - y \|_2^2 + \lambda \Phi(x)$$
+            </div>
+            <p>thành một mạng nơ-ron sâu gồm \(K = 14\) tầng mở cuộn, luân phiên thực hiện 2 lực lượng:</p>
+            <div class="math-formula-box">
+              $$x^{(k+1)} = x^{(k)} - \left[ \underbrace{\alpha^{(k)} A^T(A x^{(k)} - y)}_{\text{Nhánh Đo đạc Vật lý: Ép ảnh khớp số đo}} + \underbrace{\mathcal{R}_{\theta^{(k)}}(x^{(k)})}_{\text{Nhánh Tiên nghiệm Học sâu: Xóa sọc & giữ giải phẫu}} \right]$$
+            </div>
+          </div>
+
+          <div class="theory-card">
+            <h3>🔬 3. Vì Sao Phải Dùng Token Vi Mô \(p=2\) và Attention Tuyến Tính?</h3>
+            <p>Trong ảnh CT y khoa, các vi vôi hóa khối u và bè xương xốp chỉ rộng 1 - 2 pixels. Nếu dùng Vision Transformer chuẩn với patch thô \(16 \times 16\), toàn bộ chi tiết giải phẫu vi mô sẽ bị mờ nhòe. Với patch \(p = 2\), chuỗi token trên lưới \(256 \times 256\) bùng nổ lên:</p>
+            <div class="math-formula-box">
+              $$N = \left(\frac{256}{2}\right) \times \left(\frac{256}{2}\right) = 16,384 \text{ tokens}$$
+            </div>
+            <p>Ma trận Self-Attention chuẩn \(\mathcal{O}(N^2)\) sẽ chiếm: \(16,384 \times 16,384 \approx 2.68 \times 10^8\) phép tính/head trên mỗi stage (tràn VRAM A100). Do đó, sự ra đời của <strong>Longformer, LongNet, Mamba</strong> là bước ngoặt giúp đưa độ phức tạp về tuyến tính \(\mathcal{O}(N)\).</p>
+          </div>
+        </div>
+
+        <!-- HTML 5: SOICT BENCHMARK RESULTS TABLE -->
+        <div id="html-benchmark" style="display: none; width: 100%;" class="theory-section">
+          <div class="theory-card">
+            <h3>🏆 Bảng Kết Quả Thực Nghiệm Đối Chứng (Mayo Clinic LDCT Patient L310)</h3>
+            <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 14px;">
+              Đánh giá mù độc lập trên 214 lát cắt CT cắt ngang (Full 3mm) ở cả 2 dải góc vừa phải (\(120^\circ\)) và khắc nghiệt (\(90^\circ\)).
+            </p>
+
+            <table class="custom-table">
+              <thead>
+                <tr>
+                  <th>Mô Hình</th>
+                  <th>Cơ Chế Tiên Nghiệm</th>
+                  <th>Độ Phức Tạp</th>
+                  <th>LA-120° (PSNR &uarr;)</th>
+                  <th>LA-120° (SSIM &uarr;)</th>
+                  <th>LA-90° (PSNR &uarr;)</th>
+                  <th>LA-90° (SSIM &uarr;)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr style="background: rgba(6, 182, 212, 0.08);">
+                  <td><strong>LEARN_Longformer</strong> <span class="tag-sota">SOTA 120°</span></td>
+                  <td>Sliding Window + 50 Global Anchors</td>
+                  <td>\(\mathcal{O}(N)\)</td>
+                  <td style="color: #38bdf8; font-weight: 700;">33.10 dB</td>
+                  <td style="color: #38bdf8; font-weight: 700;">0.9237</td>
+                  <td>19.16 dB</td>
+                  <td>0.6097</td>
+                </tr>
+                <tr>
+                  <td><strong>LEARN_LongNet</strong></td>
+                  <td>Dilated Attention (w=16, L2-norm)</td>
+                  <td>\(\mathcal{O}(N)\)</td>
+                  <td>31.62 dB</td>
+                  <td>0.8991</td>
+                  <td>19.85 dB</td>
+                  <td>0.6412</td>
+                </tr>
+                <tr>
+                  <td><strong>LEARN (Canonical CNN)</strong></td>
+                  <td>CNN thuần 3 tầng (Chen et al. 2018)</td>
+                  <td>\(\mathcal{O}(N)\) (Local)</td>
+                  <td>32.29 dB</td>
+                  <td>0.9383</td>
+                  <td>28.03 dB</td>
+                  <td>0.8793</td>
+                </tr>
+                <tr>
+                  <td><strong>DuDoTrans</strong></td>
+                  <td>Dual-Domain Transformer (Wang 2022)</td>
+                  <td>\(\mathcal{O}(N^2)\)</td>
+                  <td>25.15 dB</td>
+                  <td>0.7447</td>
+                  <td style="color: #34d399; font-weight: 700;">21.81 dB</td>
+                  <td style="color: #34d399; font-weight: 700;">0.6738</td>
+                </tr>
+                <tr>
+                  <td><strong>LEARN_Mamba</strong></td>
+                  <td>Selective State-Space (ZOH Scan)</td>
+                  <td>\(\mathcal{O}(N)\)</td>
+                  <td>26.32 dB</td>
+                  <td>0.7188</td>
+                  <td>18.76 dB</td>
+                  <td>0.4292</td>
+                </tr>
+                <tr style="color: var(--text-dim);">
+                  <td><strong>FBP (Ram-Lak)</strong></td>
+                  <td>Chiếu ngược có lọc phân tích</td>
+                  <td>\(\mathcal{O}(N \log N)\)</td>
+                  <td>18.77 dB</td>
+                  <td>0.5510</td>
+                  <td>14.88 dB</td>
+                  <td>0.4208</td>
+                </tr>
+              </tbody>
+            </table>
+
+            <div style="margin-top: 18px; font-size: 13px; color: var(--text-muted); line-height: 1.6;">
+              <p>💡 <strong>Nhận xét cốt lõi từ bài báo SOICT:</strong></p>
+              <ul style="margin-left: 20px; margin-top: 6px;">
+                <li><strong>Ở dải góc 120°:</strong> <span style="color:#38bdf8;">LEARN_Longformer</span> vượt trội hoàn toàn nhờ sự kết hợp hài hòa giữa cửa sổ cục bộ (bảo vệ đường biên xương) và 50 token neo toàn cục (triệt tiêu sọc đối xứng xuyên góc khuyết).</li>
+                <li><strong>Ở dải góc 90°:</strong> Nhánh chiếu ngược \(A^T\) bị suy thoái do thiếu tới 270° thông tin. Mô hình đa miền như <span style="color:#34d399;">DuDoTrans</span> thể hiện sức bền vượt trội nhờ nội suy trên miền sinogram trước khi FBP.</li>
+                <li><strong>Điểm nghẽn Mamba:</strong> Cơ chế quét tuần tự 1D (Raster Scan) bị đứt gãy bất đẳng hướng khi đối mặt với vùng khuyết hình nêm 2D, khiến SSIM sụt giảm mạnh ở góc 90°.</li>
+              </ul>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Interactive Inspector Sidebar -->
+    <div class="inspector-panel" id="inspector">
+      <div class="inspector-header">
+        <span class="module-badge badge-cyan" id="node-badge">Toán Tử Khởi Tạo</span>
+        <h2 id="node-title">Sinogram Đo Đạc (y)</h2>
+      </div>
+
+      <div class="inspector-body">
+        <div class="math-formula-box" id="node-formula">
+          $$y = \mathcal{P}\{x^*\} + \epsilon \in \mathbb{R}^{B \times 1 \times 64 \times 512}$$
+        </div>
+
+        <p id="node-desc">
+          Dữ liệu đo đạc thô thu nhận từ máy CT Fan-Beam lâm sàng. Mỗi điểm ảnh trong Sinogram biểu diễn tích phân đường cản tia X của chùm tia đi qua cơ thể theo định luật Beer-Lambert.
+        </p>
+
+        <div class="prop-list" id="node-props">
+          <div class="prop-row">
+            <span class="prop-name">Kích thước Tensor</span>
+            <span class="prop-val" id="p-shape">(B, 1, 64, 512)</span>
+          </div>
+          <div class="prop-row">
+            <span class="prop-name">Cung Quét (Scan Arc)</span>
+            <span class="prop-val" id="p-arc">120° ([-60°, +60°])</span>
+          </div>
+          <div class="prop-row">
+            <span class="prop-name">Số Views / Đầu Thu</span>
+            <span class="prop-val" id="p-res">64 Views &times; 512 Det</span>
+          </div>
+          <div class="prop-row">
+            <span class="prop-name">Miền Dữ Liệu</span>
+            <span class="prop-val" id="p-domain">Projection Domain</span>
+          </div>
+        </div>
+
+        <div class="code-box" id="node-code">
+# Khởi tạo hình học Fan-Beam lâm sàng qua ODL
+geometry = odl.tomo.fan_beam_geometry(
+    space, src_radius=600, det_radius=290,
+    angles=np.linspace(-np.pi/3, np.pi/3, 64)
+)
+y = ray_transform(x_true)
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+  // Node Data Dictionary containing Comprehensive Vietnamese Explanations
+  const nodeDatabase = {
+    sino: {
+      badge: "badge-cyan",
+      badgeText: "Dữ Liệu Đo Đạc Thô",
+      title: "Sinogram Đo Đạc (y)",
+      formula: "$$y = \\mathcal{P}\\{x^*\\} + \\epsilon \\in \\mathbb{R}^{B \\times 1 \\times 64 \\times 512}$$",
+      desc: "Dữ liệu đo đạc thô từ cảm biến CT. Mỗi điểm trên Sinogram đại diện cho một tích phân đường suy giảm năng lượng photon X-ray đi qua cơ thể theo định luật Beer-Lambert. Trong Limited-Angle CT, dữ liệu này chỉ được quét trên cung 120° hoặc 90°.",
+      props: [
+        ["Kích thước Tensor", "(B, 1, 64, 512) float32"],
+        ["Cung quét (Scan Arc)", "120° ([-60°, +60°]) hoặc 90°"],
+        ["Số góc / Đầu dò", "64 Views &times; 512 Detectors"],
+        ["Độ phân giải góc", "&Delta;&theta; &approx; 1.875° (120°) / 1.406° (90°)"]
+      ],
+      code: `# Khởi tạo Sinogram mô phỏng theo chuẩn Siemens Somatom
+y = forward_op(x_ground_truth)  # Shape: (B, 1, 64, 512)`
+    },
+    fbp: {
+      badge: "badge-emerald",
+      badgeText: "Phép Chiếu Ngược Có Lọc",
+      title: "Khởi Tạo FBP (x^(0))",
+      formula: "$$x^{(0)} = A^{\\dagger}_{\\text{FBP}} y = P A^T y$$",
+      desc: "Khởi tạo bức ảnh thô ban đầu bằng thuật toán Filtered Backprojection (FBP) sử dụng bộ lọc Ram-Lak (Ramp filter). Do thiếu góc quét ngoài cung 120°, ảnh FBP ban đầu chứa các vệt sọc giao thoa rất nặng và méo mó hình học.",
+      props: [
+        ["Kích thước Tensor", "(B, 1, 256, 256) float32"],
+        ["Bộ lọc tái tạo", "Ram-Lak Filter (Frequency Scaling 0.9)"],
+        ["Toán tử ODL", "fbp_op = odl.tomo.fbp_op(ray_trafo)"],
+        ["Chất lượng ảnh", "PSNR &approx; 18.77 dB, SSIM &approx; 0.5510"]
+      ],
+      code: `x_0 = fbp_operator(y) * np.sqrt(2)  # Ảnh khởi tạo cho stage 0`
+    },
+    xk: {
+      badge: "badge-cyan",
+      badgeText: "Trạng Thái Vòng Lặp",
+      title: "Trạng Thái Ảnh Tại Stage k (x^(k))",
+      formula: "$$x^{(k)} \\in \\mathbb{R}^{B \\times 1 \\times 256 \\times 256}$$",
+      desc: "Ước lượng ảnh CT hiện tại ở đầu vòng lặp thứ k (k = 0, ..., 13). Bức ảnh này sẽ được phân nhánh đồng thời sang nhánh vật lý đo đạc và nhánh tiên nghiệm học sâu để tính toán vector gradient hiệu chỉnh.",
+      props: [
+        ["Kích thước", "(B, 1, 256, 256) float32"],
+        ["Thang đo mật độ", "Hệ số suy giảm mô tuyến tính &mu; [0, 1]"],
+        ["Số vòng lặp", "K = 14 Cascading Stages"]
+      ],
+      code: `# Trạng thái x^(k) được nạp đồng thời vào 2 nhánh
+x_k = stages[k](x_current)`
+    },
+    phys: {
+      badge: "badge-amber",
+      badgeText: "Đo Đạc Vật Lý",
+      title: "Nhánh Khớp Dữ Liệu Vật Lý (Data Consistency)",
+      formula: "$$g_{\\text{phys}} = \\alpha^{(k)} A^T(A x^{(k)} - y)$$",
+      desc: "Bảo toàn định luật vật lý X-ray: Tính ảnh chiếu ảo Ax^(k), so sánh sai số đo đạc với số đo thật (Ax^(k) - y), rồi dùng toán tử chiếu ngược A^T để phân bổ sai số về các pixel 2D. Hệ số &alpha;^(k) là bước nhảy học được giúp tránh dao động overshooting.",
+      props: [
+        ["Toán tử chiếu thuận (A)", "ODL RayTransform GPU astra_cuda"],
+        ["Toán tử chiếu ngược (A^T)", "FBP preconditioned Ram-Lak backprojection"],
+        ["Hệ số bước nhảy &alpha;", "Tham số vô hướng học được &alpha;^(k) &isin; R^+"],
+        ["Vai trò", "Ép bức ảnh phải khớp chính xác dữ liệu máy CT thu được"]
+      ],
+      code: `# Nhánh Gradient Vật lý Data Consistency
+residual_sinogram = forward_op(x_k) - y
+grad_phys = alpha_k * backward_op(residual_sinogram)`
+    },
+    prior: {
+      badge: "badge-purple",
+      badgeText: "Tiên Nghiệm AI",
+      title: "Nhánh Tiên Nghiệm Học Sâu (Deep Regularizer)",
+      formula: "$$\\mathcal{R}_{\\theta^{(k)}}(x^{(k)}) \\in \\mathbb{R}^{B \\times 1 \\times 256 \\times 256}$$",
+      desc: "Đóng vai trò 'bác sĩ chẩn đoán hình ảnh': Nhìn ngữ cảnh không gian 2D toàn cục, phân biệt ranh giới xương vs mô mềm, nhận diện và triệt tiêu các dải sọc hình nêm mà nhánh vật lý bị mù do thiếu góc quét.",
+      props: [
+        ["Kiến trúc", "Sandwich: Conv1 &rarr; Tokenize &rarr; Engine &rarr; Conv2 &rarr; Conv3"],
+        ["Số kênh trung gian", "C = 48 feature channels"],
+        ["Cỗ máy chuỗi dài", "Longformer / LongNet / Mamba / Nyströmformer"],
+        ["Vai trò", "Vẽ lại biên giải phẫu và triệt tiêu sọc nhiễu toàn cục"]
+      ],
+      code: `grad_prior = self.regularizer_list[k](x_k)`
+    },
+    sum: {
+      badge: "badge-cyan",
+      badgeText: "Hội Tụ Lực Lượng",
+      title: "Tổng Hợp Hai Nhánh Gradient",
+      formula: "$$g^{(k)} = \\alpha^{(k)} A^T(A x^{(k)} - y) + \\mathcal{R}_{\\theta^{(k)}}(x^{(k)})$$",
+      desc: "Cộng gộp hai lực lượng: Lực lượng vật lý (ép khớp số đo thật của máy CT) và lực lượng tiên nghiệm AI (ép ảnh mịn, nét và chuẩn giải phẫu y khoa). Sự cân bằng này ngăn ngừa triệt để hiện tượng sinh ảo giác (hallucination).",
+      props: [
+        ["Phép toán", "Element-wise Tensor Addition"],
+        ["Kích thước đầu ra", "(B, 1, 256, 256) float32"]
+      ],
+      code: `total_grad = grad_phys + grad_prior`
+    },
+    update: {
+      badge: "badge-blue",
+      badgeText: "Cập Nhật Nghiệm",
+      title: "Bước Cập Nhật Nghiệm Gradient Descent",
+      formula: "$$x^{(k+1)} = x^{(k)} - g^{(k)}$$",
+      desc: "Mở cuộn một bước hạ gradient chuẩn: Trừ trực tiếp tổng vector sai số khỏi bức ảnh hiện tại để tiệm cận nghiệm giải phẫu tối ưu của bệnh nhân.",
+      props: [
+        ["Phương pháp tối ưu", "Unrolled Gradient Descent bậc 1"],
+        ["Số tầng thực thi", "14 Stages tuần tự"]
+      ],
+      code: `x_next = x_k - total_grad  # x^(k+1)`
+    },
+    xout: {
+      badge: "badge-emerald",
+      badgeText: "Ảnh Hoàn Thiện",
+      title: "Ảnh Tái Tạo Cuối Cùng (x^(14))",
+      formula: "$$x^{(14)} = x^{(K)} \\in \\mathbb{R}^{B \\times 1 \\times 256 \\times 256}$$",
+      desc: "Bức ảnh CT cắt lớp hoàn chỉnh sau khi đi qua trọn vẹn 14 stages mở cuộn. Các sọc nhiễu góc khuyết đã bị triệt tiêu, cấu trúc nội tạng, mạch máu và mô mỡ được phục hồi sắc nét với độ tương phản cao.",
+      props: [
+        ["PSNR (LA-120°)", "33.10 dB (Longformer) / 32.29 dB (CNN)"],
+        ["SSIM (LA-120°)", "0.9237 (Longformer) / 0.9383 (CNN)"],
+        ["RMSE (LA-120°)", "0.0224 (Longformer) / 0.0245 (CNN)"]
+      ],
+      code: `return x_final  # Kết quả tái tạo cuối cùng xuất ra bác sĩ`
+    },
+    loss: {
+      badge: "badge-rose",
+      badgeText: "Hàm Mất Mát",
+      title: "Hàm Mất Mát Giám Sát End-to-End (MSE)",
+      formula: "$$\\mathcal{L}(\\Theta) = \\frac{1}{S} \\sum_{i=1}^{S} \\| x_i^{(14)} - x_i^* \\|_2^2$$",
+      desc: "Đo lường sai số bình phương trung bình giữa ảnh tái tạo x^(14) và ảnh Ground-Truth liều chuẩn x* trên tập dữ liệu lâm sàng Mayo Clinic. Lan truyền ngược xuyên suốt 14 stages unrolling.",
+      props: [
+        ["Hàm tối ưu", "Mean Squared Error (MSE Loss)"],
+        ["Tập huấn luyện", "1,920 lát cắt từ 8 bệnh nhân lâm sàng"],
+        ["Bộ tối ưu", "Adam (lr: 1e-4 &rarr; 1e-5 với Cosine Annealing)"]
+      ],
+      code: `loss = F.mse_loss(x_pred, x_true)
+loss.backward()`
+    },
+    sand_in: {
+      badge: "badge-cyan",
+      badgeText: "Đầu Vào Block",
+      title: "Ảnh Đầu Vào Khối Điều Hòa (x^(k))",
+      formula: "$$x^{(k)} \\in \\mathbb{R}^{B \\times 1 \\times 256 \\times 256}$$",
+      desc: "Ảnh CT đơn kênh tại stage k, chuẩn bị bước vào cấu trúc bánh kẹp (Sandwich Architecture) của khối điều hòa để trích xuất đặc trưng đa tầng.",
+      props: [["Kích thước", "(B, 1, 256, 256)"], ["Kiểu dữ liệu", "float32"]],
+      code: `x_in = x_k`
+    },
+    sand_conv1: {
+      badge: "badge-blue",
+      badgeText: "Tích Chập Mở Rộng",
+      title: "Tầng Tích Chập Ban Đầu (Conv 1 + ReLU)",
+      formula: "$$z^{(k)} = \\text{ReLU}(\\text{Conv}_1(x^{(k)})) \\in \\mathbb{R}^{B \\times 48 \\times 256 \\times 256}$$",
+      desc: "Mở rộng biểu diễn từ 1 kênh ảnh xám sang 48 kênh đặc trưng không gian bằng bộ lọc kích thước 5x5. Trích xuất các biên cạnh cục bộ, kết cấu mô và các tia sọc ban đầu.",
+      props: [
+        ["Cấu hình Conv", "Conv2d(in=1, out=48, kernel=5, stride=1, padding=2)"],
+        ["Hàm kích hoạt", "ReLU non-linear activation"],
+        ["Kích thước đầu ra", "(B, 48, 256, 256)"]
+      ],
+      code: `z = F.relu(self.conv1(x_k))`
+    },
+    sand_token: {
+      badge: "badge-amber",
+      badgeText: "Phân Mảnh Vi Mô",
+      title: "Toán Tử Phân Tách Token (T_{2x2})",
+      formula: "$$Z^{(k)} = \\mathcal{T}_{2 \\times 2}(z^{(k)}) \\in \\mathbb{R}^{B \\times 16,384 \\times 192}$$",
+      desc: "Cắt ảnh đặc trưng thành các mảnh siêu nhỏ không trùng lặp kích thước 2x2 pixels. Trải phẳng không gian 2D thành chuỗi token 1D dài 16,384 tokens với chiều sâu nhúng d = 48 x 2^2 = 192. Độ phân giải hạt mịn p=2 ngăn ngừa mờ nhòe giải phẫu.",
+      props: [
+        ["Kích thước patch (p)", "p = 2 pixels (2x2)"],
+        ["Số lượng tokens (N)", "N = (256/2) &times; (256/2) = 16,384 tokens"],
+        ["Embedding Dimension (d)", "d = 48 &times; 2^2 = 192 channels"]
+      ],
+      code: `# Cắt tensor 2D thành chuỗi token 1D qua hàm unfold
+tokens = z.unfold(2, 2, 2).unfold(3, 2, 2)
+tokens = tokens.permute(0, 2, 3, 1, 4, 5).reshape(B, 16384, 192)`
+    },
+    sand_engine: {
+      badge: "badge-purple",
+      badgeText: "Lõi Xử Lý Chuỗi Dài",
+      title: "Cỗ Máy Chuỗi Tuyến Tính (SequenceEngine)",
+      formula: "$$Z'^{(k)} = \\text{SequenceEngine}(Z^{(k)}) \\in \\mathbb{R}^{B \\times 16,384 \\times 192}$$",
+      desc: "Trái tim của kiến trúc MVA: Tiếp nhận chuỗi 16,384 tokens và học tương quan ngữ cảnh toàn ảnh với độ phức tạp tuyến tính O(N). Thay thế linh hoạt giữa Longformer, LongNet và Mamba.",
+      props: [
+        ["Độ dài chuỗi", "N = 16,384 tokens"],
+        ["Độ phức tạp", "O(N) thay vì O(N^2) của Transformer chuẩn"],
+        ["Khả năng triệt sọc", "Liên kết các token ở hai đầu đối xứng của nêm khuyết"]
+      ],
+      code: `tokens_out = self.sequence_engine(tokens)`
+    },
+    sand_untoken: {
+      badge: "badge-emerald",
+      badgeText: "Tái Lập Không Gian",
+      title: "Toán Tử Gấp Ngược (T_{2x2}^(-1))",
+      formula: "$$z'^{(k)} = \\mathcal{T}_{2 \\times 2}^{-1}(Z'^{(k)}) \\in \\mathbb{R}^{B \\times 48 \\times 256 \\times 256}$$",
+      desc: "Tái cấu trúc chuỗi 16,384 tokens đã được xử lý tương quan trở lại thành ma trận không gian 2D 256x256 pixels với 48 kênh đặc trưng.",
+      props: [
+        ["Phép biến đổi", "Reshape & Permute ngược"],
+        ["Kích thước đầu ra", "(B, 48, 256, 256)"]
+      ],
+      code: `z_out = tokens_out.reshape(B, 128, 128, 48, 2, 2).permute(...)`
+    },
+    sand_conv2: {
+      badge: "badge-blue",
+      badgeText: "Tích Chập Tinh Chỉnh",
+      title: "Tầng Tích Chập Conv 2 + ReLU",
+      formula: "$$z''^{(k)} = \\text{ReLU}(\\text{Conv}_2(z'^{(k)}))$$",
+      desc: "Lọc mịn các đường biên sau khi ghép token, khôi phục tính trơn tru liên tục tại các đường ranh giới của các mảnh 2x2.",
+      props: [
+        ["Cấu hình Conv", "Conv2d(in=48, out=48, kernel=5, stride=1, padding=2)"],
+        ["Kích hoạt", "ReLU"]
+      ],
+      code: `z_conv2 = F.relu(self.conv2(z_out))`
+    },
+    sand_conv3: {
+      badge: "badge-emerald",
+      badgeText: "Nén Xuất Ảnh",
+      title: "Tầng Chiếu Đầu Ra (Conv 3)",
+      formula: "$$\\mathcal{R}_{\\theta^{(k)}} = \\text{Conv}_3(z''^{(k)}) \\in \\mathbb{R}^{B \\times 1 \\times 256 \\times 256}$$",
+      desc: "Nén 48 kênh đặc trưng về lại 1 kênh ảnh đơn duy nhất, đại diện cho vector đạo hàm tiên nghiệm để cập nhật vào ảnh CT.",
+      props: [
+        ["Cấu hình Conv", "Conv2d(in=48, out=1, kernel=5, stride=1, padding=2)"],
+        ["Kích thước đầu ra", "(B, 1, 256, 256)"]
+      ],
+      code: `grad_prior = self.conv3(z_conv2)`
+    },
+    sand_out: {
+      badge: "badge-cyan",
+      badgeText: "Đầu Ra Khối",
+      title: "Gradient Tiên Nghiệm Hoàn Chỉnh",
+      formula: "$$\\mathcal{R}_{\\theta^{(k)}}(x^{(k)}) \\in \\mathbb{R}^{B \\times 1 \\times 256 \\times 256}$$",
+      desc: "Đầu ra cuối cùng của khối điều hòa sẵn sàng đưa vào phép trừ gradient descent cập nhật nghiệm.",
+      props: [["Shape", "(B, 1, 256, 256)"], ["Kênh", "1 (CT attenuation)"]],
+      code: `return grad_prior`
+    },
+    eng_lf: {
+      badge: "badge-cyan",
+      badgeText: "Quán Quân SOICT",
+      title: "LEARN_Longformer (Beltagy et al. 2020)",
+      formula: "$$S_{i, j} = \\frac{Q_i K_j^T}{\\sqrt{d_h}} \\quad \\forall |i - j| \\le \\frac{w}{2} \\text{ hoặc } i, j \\in \\mathcal{G}$$",
+      desc: "Cơ chế lai giữa Attention cửa sổ trượt (w=256 tokens) và 50 token neo toàn cục (Global Anchors). Cửa sổ trượt giúp giữ sắc nét các vi cấu trúc cục bộ, trong khi 50 token toàn cục kết nối xuyên qua nêm khuyết để xóa sạch các dải sọc tangent.",
+      props: [
+        ["Window size (w)", "w = 256 tokens (128 tokens hai phía)"],
+        ["Global Tokens (|G|)", "50 tokens phân bố đều trên toàn lưới"],
+        ["Attention Heads / Dim", "H = 6 heads, d_h = 32, 12 layers"],
+        ["Hiệu năng LA-120°", "33.10 dB PSNR (Cao nhất benchmark)"]
+      ],
+      code: `# Cấu hình Longformer trong dự án
+config = LongformerConfig(
+    hidden_size=192, num_attention_heads=6,
+    attention_window=[256]*12, max_position_embeddings=16384
+)`
+    },
+    eng_ln: {
+      badge: "badge-amber",
+      badgeText: "Multi-Scale Attention",
+      title: "LEARN_LongNet (Ding et al. 2023)",
+      formula: "$$O_s = \\text{Softmax}\\left( \\frac{\\hat{Q}_s \\hat{K}_s^T}{\\sqrt{d_h}} \\right) V_s, \\quad \\hat{Q} = \\frac{Q}{\\|Q\\|_2}$$",
+      desc: "Chia chuỗi token thành các segments không trùng lặp và áp dụng dilation stride r tăng dần. Chuẩn hóa L2-norm trên Query và Key ngăn ngừa hiện tượng bùng nổ số học khi chuỗi quá dài.",
+      props: [
+        ["Segment Length (w)", "w = 16 tokens"],
+        ["Normalization", "L2-norm: Q_hat = Q / ||Q||_2, K_hat = K / ||K||_2"],
+        ["Attention Heads / Dim", "H = 4 heads, d_h = 48"],
+        ["Hiệu năng LA-120°", "31.62 dB PSNR / 0.8991 SSIM"]
+      ],
+      code: `# Dilated Attention với chuẩn hóa L2
+q_norm = q / q.norm(dim=-1, keepdim=True)
+k_norm = k / k.norm(dim=-1, keepdim=True)
+attn = torch.matmul(q_norm, k_norm.transpose(-1, -2))`
+    },
+    eng_mb: {
+      badge: "badge-purple",
+      badgeText: "Selective State-Space",
+      title: "LEARN_Mamba (Gu & Dao 2023)",
+      formula: "$$h_t = \\bar{A}_t h_{t-1} + \\bar{B}_t x_t, \\quad y_t = C_t h_t + D x_t$$",
+      desc: "Mô hình hóa chuỗi qua hệ phương trình vi phân trạng thái liên tục được rời rạc hóa bằng luật Zero-Order Hold (ZOH). Tham số hóa động B, C, &Delta; theo từng token giúp mô hình chỉ lọc những thông tin quan trọng.",
+      props: [
+        ["State Dimension (N_state)", "16 chiều trạng thái ẩn"],
+        ["State Heads (H)", "4 heads"],
+        ["Thuật toán", "Hardware-aware associative parallel scan O(N)"],
+        ["Hiệu năng LA-120°", "26.32 dB PSNR"]
+      ],
+      code: `# Mamba Selective Scan
+delta_t = F.softplus(self.dt_proj(x_t))
+A_bar = torch.exp(delta_t * A)
+B_bar = delta_t * B_t
+h = A_bar * h_prev + B_bar * x_t`
+    },
+    eng_nys: {
+      badge: "badge-emerald",
+      badgeText: "Nyström Approximation",
+      title: "LEARN_Nyströmformer (MVA Baseline Gốc)",
+      formula: "$$\\tilde{S} = \\text{Softmax}\\left(\\frac{Q \\tilde{K}^T}{\\sqrt{d}}\\right) (\\tilde{Q}\\tilde{K}^T)^+ \\text{Softmax}\\left(\\frac{\\tilde{Q} K^T}{\\sqrt{d}}\\right)$$",
+      desc: "Kiến trúc Multi-View Attention (MVA) ban đầu của nhóm tác giả (Thành et al.) cho bài toán Sparse-View CT. Dùng phép chọn m=64 mốc landmarks để xấp xỉ ma trận Self-Attention khổng lồ qua 6 vòng lặp giả nghịch đảo Moore-Penrose.",
+      props: [
+        ["Số landmarks (m)", "m = 64 điểm mốc ngẫu nhiên"],
+        ["Moore-Penrose iters", "pinv_iterations = 6"],
+        ["Heads", "4 attention heads"],
+        ["Ý nghĩa", "Tiền thân định hình nên dòng mô hình unrolling đa chuỗi dài"]
+      ],
+      code: `# Nyström low-rank matrix approximation
+q_landmarks = segment_means(q, m)
+k_landmarks = segment_means(k, m)
+kernel_inv = moore_penrose_pinv(q_landmarks @ k_landmarks.T)`
+    }
+  };
+
+  // Switch Tabs function
+  function switchTab(tabId) {
+    // Buttons
+    const buttons = document.querySelectorAll('.tab-btn');
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.currentTarget.classList.add('active');
+
+    // SVGs and HTML panels
+    const svgs = ['macro', 'sandwich', 'engines'];
+    svgs.forEach(id => {
+      const el = document.getElementById(`svg-${id}`);
+      if (el) el.classList.remove('active');
+    });
+
+    const htmlTheory = document.getElementById('html-theory');
+    const htmlBench = document.getElementById('html-benchmark');
+    if (htmlTheory) htmlTheory.style.display = 'none';
+    if (htmlBench) htmlBench.style.display = 'none';
+
+    const titleText = document.getElementById('panel-title-text');
+
+    if (tabId === 'macro') {
+      document.getElementById('svg-macro').classList.add('active');
+      titleText.innerHTML = '<span style="color: #38bdf8;">●</span> Sơ Đồ Toàn Cục Mạng Mở Cuộn LEARN_MVA (14 Stages Unrolling)';
+      selectNode('sino');
+    } else if (tabId === 'sandwich') {
+      document.getElementById('svg-sandwich').classList.add('active');
+      titleText.innerHTML = '<span style="color: #c084fc;">●</span> Khối Điều Hòa Tiên Nghiệm (Sandwich Architecture Prior)';
+      selectNode('sand_token');
+    } else if (tabId === 'engines') {
+      document.getElementById('svg-engines').classList.add('active');
+      titleText.innerHTML = '<span style="color: #fbbf24;">●</span> So Sánh 4 Cỗ Máy Chuỗi Dài (Long-Sequence Engines Benchmark)';
+      selectNode('eng_lf');
+    } else if (tabId === 'theory') {
+      if (htmlTheory) htmlTheory.style.display = 'block';
+      titleText.innerHTML = '<span style="color: #34d399;">●</span> Cơ Sở Toán Học & Vật Lý Tái Tạo CT Góc Giới Hạn';
+      selectNode('phys');
+    } else if (tabId === 'benchmark') {
+      if (htmlBench) htmlBench.style.display = 'block';
+      titleText.innerHTML = '<span style="color: #ec4899;">●</span> Bảng Số Liệu Đối Chứng Thực Nghiệm (SOICT 2026 Benchmark)';
+      selectNode('eng_lf');
+    }
+  }
+
+  // Interactive Node Selection
+  function selectNode(nodeKey) {
+    const data = nodeDatabase[nodeKey];
+    if (!data) return;
+
+    // Highlight node in SVG
+    document.querySelectorAll('.node-group').forEach(el => el.classList.remove('active'));
+    const activeNode = document.getElementById(`node-${nodeKey}`);
+    if (activeNode) activeNode.classList.add('active');
+
+    // Update Inspector Sidebar
+    const badgeEl = document.getElementById('node-badge');
+    badgeEl.className = `module-badge ${data.badge}`;
+    badgeEl.textContent = data.badgeText;
+
+    document.getElementById('node-title').textContent = data.title;
+    document.getElementById('node-formula').innerHTML = data.formula;
+    document.getElementById('node-desc').textContent = data.desc;
+
+    // Render Props
+    const propsContainer = document.getElementById('node-props');
+    propsContainer.innerHTML = '';
+    data.props.forEach(([key, val]) => {
+      const row = document.createElement('div');
+      row.className = 'prop-row';
+      row.innerHTML = `<span class="prop-name">${key}</span><span class="prop-val">${val}</span>`;
+      propsContainer.appendChild(row);
+    });
+
+    // Render Code
+    document.getElementById('node-code').textContent = data.code;
+
+    // Re-trigger MathJax typesetting
+    if (window.MathJax && MathJax.typesetPromise) {
+      MathJax.typesetPromise([document.getElementById('inspector')]);
+    }
+  }
+
+  // Initialize with Default Node
+  window.addEventListener('DOMContentLoaded', () => {
+    selectNode('sino');
+  });
+</script>
+
+</body>
+</html>

@@ -50,17 +50,20 @@ def main():
     print(f"- Tập dữ liệu: {args.dataset_type.upper()} | Dải góc: {angle_range_deg}° (Views: {args.num_view})")
     print("=" * 80)
 
+    setting_tag = f"limited_ang_{int(angle_range_deg)}deg_numview_{args.num_view}_size_{args.input_size}_noise_0"
     dm = get_datamodule(
-        dataset_name=args.dataset_type,
-        data_dir=args.cache_dir,
+        dataset_type=args.dataset_type,
         dicom_dir=args.dicom_dir,
-        batch_size=args.batch_size,
-        num_workers=args.num_workers,
+        cache_dir=args.cache_dir,
+        setting_tag=setting_tag,
+        start_ang=start_ang,
+        end_ang=end_ang,
         num_view=args.num_view,
         num_detectors=args.num_detectors,
-        start_ang_deg=-angle_range_deg / 2.0,
-        end_ang_deg=angle_range_deg / 2.0,
         input_size=args.input_size,
+        use_precomputed=True,
+        batch_size=args.batch_size,
+        num_workers=args.num_workers,
     )
 
     model = CT_Former_LA.load_from_checkpoint(

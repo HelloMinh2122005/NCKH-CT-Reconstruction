@@ -1,25 +1,27 @@
 #!/bin/bash
-#SBATCH --job-name=tr_longne_deeplesion
-#SBATCH --output=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/train_longnet_deeplesion/log/%j.out
-#SBATCH --error=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/train_longnet_deeplesion/log/%j.err
+#SBATCH --job-name=test_dudotrans_dl
+#SBATCH --output=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/test_dudotrans_deeplesion/log/%j.out
+#SBATCH --error=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/test_dudotrans_deeplesion/log/%j.err
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
 #SBATCH --gres=mps:a100:2
-#SBATCH --time=24:00:00
+#SBATCH --time=01:00:00
 
 # ==============================================================================
-# SCRIPT HUẤN LUYỆN: LEARN_LongNet trên NIH DeepLesion CT (Limited-Angle CT)
-# Cung quét chuẩn: LA-120° (64 views, 512 detectors, 256x256, noise_0)
+# SCRIPT ĐÁNH GIÁ (TEST BENCHMARK): DuDoTrans trên NIH DeepLesion CT
+# Cung quét: LA-120° & LA-90° (64 views, 512 detectors, 256x256, noise_0)
 # Tác giả: MinhPD - VNU-HCM UIT
 # Cụm máy chủ: Slurm HPC GPU A100/L40 với NVIDIA MPS
 # ==============================================================================
 
 set -euo pipefail
 
-REQUIRED_VRAM=25000
+# Ngưỡng VRAM yêu cầu tối thiểu (MB)
+REQUIRED_VRAM=12000
 
+# Hàm dọn dẹp tài nguyên NVIDIA MPS
 cleanup() {
     local rc=$?
     echo "[INFO] cleanup rc=$rc at $(date)"
@@ -36,19 +38,20 @@ echo "[INFO] start at $(date)"
 echo "[INFO] hostname=$(hostname)"
 echo "[INFO] SLURM_JOB_ID=${SLURM_JOB_ID:-<unset>}"
 
+# Khởi tạo môi trường Module Slurm
 module clear -f
 module load slurm/slurm/24.11
 
+# Kích hoạt môi trường Conda chuyên dụng của dự án
 source /datastore/uittogether3/tools/miniconda3/etc/profile.d/conda.sh
 
 export NVCC_PREPEND_FLAGS="${NVCC_PREPEND_FLAGS:-}"
 export NVCC_APPEND_FLAGS="${NVCC_APPEND_FLAGS:-}"
+export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True"
 
 set +u
 conda activate /datastore/uittogether3/tools/miniconda3/envs/LongNet
 set -u
-
-export PYTORCH_CUDA_ALLOC_CONF=expandable_segments:True
 
 # ================= GPU CHECK =================
 unset CUDA_VISIBLE_DEVICES
@@ -84,23 +87,25 @@ mkdir -p "${CUDA_MPS_PIPE_DIRECTORY}" "${CUDA_MPS_LOG_DIRECTORY}"
 
 export CUDA_VISIBLE_DEVICES="${BEST_GPU}"
 
-# ================= RUN TRAINING =================
-echo "[INFO] Launching LEARN_LongNet Training on NIH DeepLesion CT at $(date)"
+# ================= RUN TESTING =================
+echo "[INFO] Launching DuDoTrans Testing on NIH DeepLesion CT at $(date)"
 
 cd /datastore/uittogether3/LuuTru/MinhPD
 export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
 
-RESUME_CKPT="/datastore/uittogether3/LuuTru/MinhPD/saved_models/deeplesion/LEARN_LongNet/last.ckpt"
-EXTRA_ARGS=""
-if [ -f "$RESUME_CKPT" ]; then
-    echo "[INFO] Tìm thấy checkpoint để resume: $RESUME_CKPT"
-    EXTRA_ARGS="--resume_ckpt $RESUME_CKPT"
+CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/deeplesion/DuDoTrans/DuDoTrans_DEEPLESION_LA_120deg_view64/epoch=49-val_psnr=23.6662.ckpt"
+if [ ! -f "$CKPT_PATH" ]; then
+    CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/deeplesion/DuDoTrans/DuDoTrans_DEEPLESION_LA_120deg_view64/last.ckpt"
 fi
 
-python -u baselines/LEARN_LongNet/train_longnet_la.py \
+echo "================================================================================"
+echo "🎯 ĐÁNH GIÁ 1: DuDoTrans trên DeepLesion LA-120° (64 views)"
+echo "   Checkpoint: $CKPT_PATH"
+echo "================================================================================"
+python -u baselines/DuDoTrans/test_dudotrans_la.py \
+    --ckpt_path "$CKPT_PATH" \
     --dataset_type deeplesion \
-    --dataset_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/nih_deep_lesion/limited_angle/ \
-    --output_dir /datastore/uittogether3/LuuTru/MinhPD/saved_models/deeplesion/LEARN_LongNet/ \
+    --cache_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/nih_deep_lesion/limited_angle/ \
     --angle_range_deg 120.0 \
     --num_view 64 \
     --num_detectors 512 \
@@ -108,9 +113,23 @@ python -u baselines/LEARN_LongNet/train_longnet_la.py \
     --poisson_level 0 \
     --gaussian_level 0 \
     --batch_size 1 \
-    --max_epochs 50 \
-    --use_precomputed \
-    --n_iterations 14 --lr 1e-4 --window_size 2 \
-    $EXTRA_ARGS
+    --num_workers 4
 
-echo "[INFO] LEARN_LongNet Training on NIH DeepLesion CT finished at $(date)"
+echo "================================================================================"
+echo "🎯 ĐÁNH GIÁ 2: DuDoTrans trên DeepLesion LA-90° (64 views)"
+echo "   Checkpoint: $CKPT_PATH"
+echo "================================================================================"
+python -u baselines/DuDoTrans/test_dudotrans_la.py \
+    --ckpt_path "$CKPT_PATH" \
+    --dataset_type deeplesion \
+    --cache_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/nih_deep_lesion/limited_angle/ \
+    --angle_range_deg 90.0 \
+    --num_view 64 \
+    --num_detectors 512 \
+    --input_size 256 \
+    --poisson_level 0 \
+    --gaussian_level 0 \
+    --batch_size 1 \
+    --num_workers 4
+
+echo "[INFO] DuDoTrans DeepLesion Testing finished at $(date)"

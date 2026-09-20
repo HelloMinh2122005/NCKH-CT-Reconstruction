@@ -81,18 +81,21 @@ def main():
         ckpt_dir = os.path.join(args.saved_models_dir, args.dataset_type, "CT_Former")
     os.makedirs(ckpt_dir, exist_ok=True)
 
-    # 1. Khởi tạo DataModule
+    # 1. Khởi tạo DataModule thông qua Factory đa tập dữ liệu
+    setting_tag = f"limited_ang_{int(args.angle_range_deg)}deg_numview_{args.num_view}_size_{args.input_size}_noise_0"
     dm = get_datamodule(
-        dataset_name=args.dataset_type,
-        data_dir=args.cache_dir,
+        dataset_type=args.dataset_type,
         dicom_dir=args.dicom_dir,
-        batch_size=args.batch_size,
-        num_workers=args.num_workers,
+        cache_dir=args.cache_dir,
+        setting_tag=setting_tag,
+        start_ang=start_ang,
+        end_ang=end_ang,
         num_view=args.num_view,
         num_detectors=args.num_detectors,
-        start_ang_deg=start_ang_deg,
-        end_ang_deg=end_ang_deg,
         input_size=args.input_size,
+        use_precomputed=True,
+        batch_size=args.batch_size,
+        num_workers=args.num_workers,
     )
 
     # 2. Khởi tạo Mô hình CT_Former_LA

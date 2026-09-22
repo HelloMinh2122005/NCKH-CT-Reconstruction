@@ -1,0 +1,8 @@
+end_ang: 1.0471975511965976
+final_lr: 1.0e-05
+initial_lr: 0.0002
+input_size: 256
+num_detectors: 512
+num_view: 64
+sino_loss_weight: 0.1
+start_ang: -1.0471975511965976

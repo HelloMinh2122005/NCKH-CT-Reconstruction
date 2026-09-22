@@ -18,7 +18,7 @@
 
 set -euo pipefail
 
-REQUIRED_VRAM=20000
+REQUIRED_VRAM=15000
 
 cleanup() {
     local rc=$?

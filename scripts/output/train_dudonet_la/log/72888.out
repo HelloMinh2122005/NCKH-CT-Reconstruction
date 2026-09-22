@@ -1,0 +1,8 @@
+[INFO] start at Sun Sep 20 02:54:43 PM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=72888
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=7
+[INFO] BEST_GPU=7
+[INFO] Launching DuDoNet Training on Limited-Angle CT at Sun Sep 20 02:54:47 PM +07 2026
+[INFO] cleanup rc=1 at Sun Sep 20 02:54:58 PM +07 2026

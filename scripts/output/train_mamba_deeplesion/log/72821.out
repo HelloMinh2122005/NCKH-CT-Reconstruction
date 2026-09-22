@@ -1,0 +1,42 @@
+[INFO] start at Sun Sep 20 06:13:09 AM +07 2026
+[INFO] hostname=DGX-A100
+[INFO] SLURM_JOB_ID=72821
+[INFO] gpu_check exit_code=0
+[INFO] gpu_check output=7
+[INFO] BEST_GPU=7
+[INFO] Launching LEARN_Mamba Training on NIH DeepLesion CT at Sun Sep 20 06:13:19 AM +07 2026
+[INFO] Tìm thấy checkpoint để resume: /datastore/uittogether3/LuuTru/MinhPD/saved_models/deeplesion/LEARN_Mamba/last.ckpt
+================================================================================
+🚀 BẮT ĐẦU HUẤN LUYỆN BASELINE: LEARN_Mamba (Limited-Angle CT)
+- Dải góc quét: [-60.0°, 60.0°] (Cung quét 120.0°)
+- Số views: 64 | Số Detectors: 512 | Kích thước ảnh: 256x256
+- Cấu hình Cache Tag: limited_ang_120deg_numview_64_size_256_noise_0
+- Số giai đoạn Unrolling: 14 stages | Max Epochs: 50 | Batch size: 1
+- Tốc độ học: 0.0001 -> 1e-05 (Cosine Annealing)
+- Checkpoint lưu tại: /datastore/uittogether3/LuuTru/MinhPD/saved_models/deeplesion/LEARN_Mamba/
+================================================================================
+
+================================================================================
+  🚀 [LEARN_Mamba_LA] ĐÃ KHỞI TẠO MÔ HÌNH VÀ HÌNH HỌC VẬT LÝ THÀNH CÔNG:
+  • Số giai đoạn Unrolling (Stages) : 14 vòng lặp
+  • Dải góc quét (Limited-Angle)    : [-60.0°, 60.0°] (Cung quét 120.0°)
+  • Số góc chiếu (Views)            : 64 views (Bước góc Δθ ≈ 1.87°)
+  • Số cảm biến (Detectors)         : 512 kênh (Dải [-480, 480] mm)
+  • Kích thước ảnh tái tạo          : 256 x 256 pixels
+  • Toán tử Chiếu Thuận (A)         : ODL RayTransform (GPU astra_cuda)
+  • Toán tử Chiếu Ngược (A^T - FBP) : ODL FBP (Filter: Ram-Lak, Frequency Scaling: 0.9, Scale: √2)
+================================================================================
+
+Sanity Checking: |          | 0/? [00:00<?, ?it/s]Sanity Checking: |          | 0/? [00:00<?, ?it/s]Sanity Checking DataLoader 0:   0%|          | 0/2 [00:00<?, ?it/s]
+>>> [VALIDATION Epoch 50] ------------------------------------------
+  • Val MSE Loss : 0.004703
+  • Val PSNR     : 23.57 dB (Càng cao càng sắc nét)
+  • Val SSIM     : 0.5915 (Độ tương đồng cấu trúc [0 -> 1])
+  • Val RMSE     : 0.068582
+  • Dynamic Range: Min = 0.0000, Max = 1.0000
+>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
+
+Sanity Checking DataLoader 0:  50%|█████     | 1/2 [00:00<00:00,  1.00it/s]Sanity Checking DataLoader 0: 100%|██████████| 2/2 [00:01<00:00,  1.24it/s]                                                                           
+🎉 Huấn luyện LEARN_Mamba hoàn thành thành công!
+[INFO] LEARN_Mamba Training on NIH DeepLesion CT finished at Sun Sep 20 06:13:35 AM +07 2026
+[INFO] cleanup rc=0 at Sun Sep 20 06:13:35 AM +07 2026

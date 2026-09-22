@@ -44,6 +44,8 @@ from data.datamodule_LA import LimitedAngleCTDataModule
 from baselines.LEARN_LongNet.models import LEARN_LongNet_LA
 from baselines.LEARN_Mamba.models import LEARN_Mamba_LA
 from baselines.LEARN_Longformer.models import LEARN_Longformer_LA
+from baselines.LEARN.models import LEARN_LA
+from baselines.DuDoTrans.models import DuDoTrans_LA
 
 
 def parse_args():
@@ -133,10 +135,22 @@ def parse_args():
         help="Đường dẫn file trọng số LEARN_Longformer"
     )
     parser.add_argument(
+        "--learn_ckpt",
+        type=str,
+        default="/datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN/LEARN_AAPM_LA_120deg_view64/epoch=46-val_psnr=36.2681.ckpt",
+        help="Đường dẫn file trọng số LEARN (Original CNN)"
+    )
+    parser.add_argument(
+        "--dudotrans_ckpt",
+        type=str,
+        default="/datastore/uittogether3/LuuTru/MinhPD/saved_models/DuDoTrans/DuDoTrans_AAPM_LA_120deg_view64/epoch=38-val_psnr=25.7300.ckpt",
+        help="Đường dẫn file trọng số DuDoTrans (Dual-Domain Transformer)"
+    )
+    parser.add_argument(
         "--models",
         nargs="+",
         default=None,
-        help="Danh sách tên mô hình cần kết xuất ảnh (vd: --models Longformer hoặc --models LongNet Mamba Longformer. Mặc định: nạp toàn bộ các mô hình có checkpoint)"
+        help="Danh sách tên mô hình cần kết xuất ảnh (vd: --models Longformer hoặc --models LongNet Mamba Longformer LEARN DuDoTrans. Mặc định: nạp toàn bộ các mô hình có checkpoint)"
     )
     
     return parser.parse_args()
@@ -243,6 +257,56 @@ def main():
         else:
             print(f"⚠️ Không tìm thấy checkpoint Longformer tại: {args.longformer_ckpt}")
 
+    # 2.4. Nạp LEARN (Original CNN)
+    if selected_models is None or "learn" in selected_models:
+        learn_ckpt = args.learn_ckpt
+        if not os.path.exists(learn_ckpt):
+            fallback_learn = "/datastore/uittogether3/LuuTru/MinhPD/saved_models/LEARN/LEARN_AAPM_LA_120deg_view64/last.ckpt"
+            if os.path.exists(fallback_learn):
+                learn_ckpt = fallback_learn
+
+        if os.path.exists(learn_ckpt):
+            print(f"📦 Đang nạp LEARN (Original CNN) từ: {learn_ckpt}")
+            model_learn = LEARN_LA.load_from_checkpoint(
+                learn_ckpt,
+                num_view=args.num_view,
+                num_detectors=args.num_detectors,
+                start_ang=start_ang,
+                end_ang=end_ang,
+                input_size=args.input_size,
+                map_location=device,
+            )
+            model_learn.to(device)
+            model_learn.eval()
+            models["LEARN"] = model_learn
+        else:
+            print(f"⚠️ Không tìm thấy checkpoint LEARN tại: {args.learn_ckpt}")
+
+    # 2.5. Nạp DuDoTrans (Dual-Domain Transformer)
+    if selected_models is None or "dudotrans" in selected_models:
+        dudo_ckpt = args.dudotrans_ckpt
+        if not os.path.exists(dudo_ckpt):
+            fallback_dudo = "/datastore/uittogether3/LuuTru/MinhPD/saved_models/DuDoTrans/DuDoTrans_AAPM_LA_120deg_view64/last.ckpt"
+            if os.path.exists(fallback_dudo):
+                dudo_ckpt = fallback_dudo
+
+        if os.path.exists(dudo_ckpt):
+            print(f"📦 Đang nạp DuDoTrans từ: {dudo_ckpt}")
+            model_dudo = DuDoTrans_LA.load_from_checkpoint(
+                dudo_ckpt,
+                num_view=args.num_view,
+                num_detectors=args.num_detectors,
+                start_ang=start_ang,
+                end_ang=end_ang,
+                input_size=args.input_size,
+                map_location=device,
+            )
+            model_dudo.to(device)
+            model_dudo.eval()
+            models["DuDoTrans"] = model_dudo
+        else:
+            print(f"⚠️ Không tìm thấy checkpoint DuDoTrans tại: {args.dudotrans_ckpt}")
+
     angle_tag = f"{int(args.angle_range_deg)}deg"
 
     # Bước 3: Duyệt qua từng lát cắt chỉ định và thực hiện tái tạo
@@ -283,7 +347,11 @@ def main():
         # Chạy suy luận qua các mô hình
         with torch.no_grad():
             for m_name, net in models.items():
-                pred_t = net(fbp_t, sino_t)
+                pred_out = net(fbp_t, sino_t)
+                if isinstance(pred_out, tuple):
+                    pred_t = pred_out[0]
+                else:
+                    pred_t = pred_out
                 pred_np = pred_t.squeeze().detach().cpu().numpy()
                 err_np = np.abs(pred_np - gt_np)
 

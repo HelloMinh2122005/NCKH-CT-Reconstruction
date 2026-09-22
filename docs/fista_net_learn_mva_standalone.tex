@@ -1,0 +1,547 @@
+\documentclass[border=8pt, multi, tikz]{standalone} 
+\usepackage{tikz}
+\usetikzlibrary{quotes,arrows.meta}
+\usetikzlibrary{positioning}
+\usetikzlibrary{3d}
+
+\def\edgecolor{rgb:blue,4;red,1;green,4;black,3}
+\newcommand{\midarrow}{\tikz \draw[-Stealth,line width =0.8mm,draw=\edgecolor] (-0.3,0) -- ++(0.3,0);}
+
+\def\ConvColor{rgb:yellow,5;red,2.5;white,5}
+\def\ConvReluColor{rgb:yellow,5;red,5;white,5}
+\def\PoolColor{rgb:red,1;black,0.3}
+\def\UnpoolColor{rgb:blue,2;green,1;black,0.3}
+\def\FcColor{rgb:blue,5;red,2.5;white,5}
+\def\FcReluColor{rgb:blue,5;red,5;white,4}
+\def\SoftmaxColor{rgb:magenta,5;black,7}   
+\def\SumColor{rgb:blue,5;green,15}
+
+\newcommand{\copymidarrow}{\tikz \draw[-Stealth,line width=0.8mm,draw={rgb:blue,4;red,1;green,1;black,3}] (-0.3,0) -- ++(0.3,0);}
+
+% ==============================================================================
+% 1. ĐỊNH NGHĨA COMPONENT: Ball (Dùng cho to_Sum nút cộng +)
+% ==============================================================================
+\tikzset{Ball/.pic={\tikzset{/sphere/.cd,#1}	 	
+\pgfmathsetmacro{\r}{\radius*\scale}
+\shade[ball color=\fill,opacity=\opacity] (0,0,0) circle (\r);
+\draw (0,0,0) circle [radius=\r] node[scale=4*\r] {\logo};
+\coordinate (\name-anchor) at ( 0 , 0  , 0) ;
+\coordinate (\name-east)   at ( \r, 0  , 0) ;
+\coordinate (\name-west)   at (-\r, 0  , 0) ;
+\coordinate (\name-north)  at ( 0 , \r , 0) ;
+\coordinate (\name-south)  at ( 0 , -\r, 0) ;
+\path (\name-south) + (0,-20pt) coordinate (caption-node) 
+edge ["\textcolor{black}{\bf \caption}"'] (caption-node);
+},
+/sphere/.search also={/tikz},
+/sphere/.cd,
+radius/.store       in=\radius,
+scale/.store        in=\scale,
+caption/.store      in=\caption,
+name/.store         in=\name,
+fill/.store         in=\fill,
+logo/.store         in=\logo,
+opacity/.store      in=\opacity,
+logo=$\Sigma$,
+fill=green,
+opacity=0.10,
+scale=0.2,
+radius=0.5,
+caption=,
+name=,
+}
+
+% ==============================================================================
+% 2. ĐỊNH NGHĨA COMPONENT: Box (Dùng cho to_Conv, to_SoftMax)
+% ==============================================================================
+\tikzset{Box/.pic={\tikzset{/boxblock/.cd,#1}
+        \tikzstyle{box}=[every edge/.append style={pic actions, densely dashed, opacity=.7},fill opacity=\opacity, pic actions,fill=\fill]
+        \pgfmathsetmacro{\y}{\cubey*\scale}
+        \pgfmathsetmacro{\z}{\cubez*\scale}
+        \foreach[count=\i,%
+                 evaluate=\i as \xlabel using {array({\boxlabels},\i-1)},% 
+                 evaluate=\unscaledx as \k using {\unscaledx*\scale+\prev}, remember=\k as \prev (initially 0)] 
+                 \unscaledx in \cubex
+        {
+            \pgfmathsetmacro{\x}{\unscaledx*\scale}
+            \coordinate (a) at (\k-\x , \y/2 , \z/2); 
+            \coordinate (b) at (\k-\x ,-\y/2 , \z/2); 
+            \coordinate (c) at (\k    ,-\y/2 , \z/2); 
+            \coordinate (d) at (\k    , \y/2 , \z/2); 
+            \coordinate (e) at (\k    , \y/2 ,-\z/2); 
+            \coordinate (f) at (\k    ,-\y/2 ,-\z/2); 
+            \coordinate (g) at (\k-\x ,-\y/2 ,-\z/2); 
+            \coordinate (h) at (\k-\x , \y/2 ,-\z/2); 
+        
+            \draw [box] 
+                (d) -- (a) -- (b) -- (c) -- cycle     
+                (d) -- (a) -- (h) -- (e) -- cycle
+                (f) edge (g)
+                (b) edge (g)
+                (h) edge (g);
+            \path (b) edge ["\xlabel"',midway] (c);
+            \xdef\LastEastx{\k}
+        }
+        \draw [box] (d) -- (e) -- (f) -- (c) -- cycle;
+        
+        \coordinate (a1) at (0 , \y/2 , \z/2);
+        \coordinate (b1) at (0 ,-\y/2 , \z/2);
+        \tikzstyle{depthlabel}=[pos=0,text width=14*\z,text centered,sloped]       
+        
+        \path (c) edge ["\small\zlabel"',depthlabel](f);
+        \path (b1) edge ["\ylabel",midway] (a1);
+        
+        \tikzstyle{captionlabel}=[text width=15*\LastEastx/\scale,text centered]       
+        \path (\LastEastx/2,-\y/2,+\z/2) + (0,-25pt) coordinate (cap) 
+        edge ["\textcolor{black}{ \bf \caption}"',captionlabel](cap) ;
+         
+        \coordinate (\name-west)   at (0,0,0) ;
+        \coordinate (\name-east)   at (\LastEastx, 0,0) ;
+        \coordinate (\name-north)  at (\LastEastx/2,\y/2,0);
+        \coordinate (\name-south)  at (\LastEastx/2,-\y/2,0);       
+        \coordinate (\name-anchor) at (\LastEastx/2, 0,0) ;
+        
+        \coordinate (\name-near) at (\LastEastx/2,0,\z/2);
+        \coordinate (\name-far)  at (\LastEastx/2,0,-\z/2);       
+        
+        \coordinate (\name-nearwest) at (0,0,\z/2);
+        \coordinate (\name-neareast) at (\LastEastx,0,\z/2);
+        \coordinate (\name-farwest)  at (0,0,-\z/2);
+        \coordinate (\name-fareast)  at (\LastEastx,0,-\z/2);
+        
+        \coordinate (\name-northeast) at (\name-north-|\name-east);
+        \coordinate (\name-northwest) at (\name-north-|\name-west);
+        \coordinate (\name-southeast) at (\name-south-|\name-east);
+        \coordinate (\name-southwest) at (\name-south-|\name-west);
+        
+        \coordinate (\name-nearnortheast)  at (\LastEastx, \y/2, \z/2);
+        \coordinate (\name-farnortheast)   at (\LastEastx, \y/2,-\z/2);
+        \coordinate (\name-nearsoutheast)  at (\LastEastx,-\y/2, \z/2);
+        \coordinate (\name-farsoutheast)   at (\LastEastx,-\y/2,-\z/2);
+        
+        \coordinate (\name-nearnorthwest)  at (0, \y/2, \z/2);
+        \coordinate (\name-farnorthwest)   at (0, \y/2,-\z/2);
+        \coordinate (\name-nearsouthwest)  at (0,-\y/2, \z/2);
+        \coordinate (\name-farsouthwest)   at (0,-\y/2,-\z/2);
+    },
+    /boxblock/.search also={/tikz},
+    /boxblock/.cd,
+    width/.store        in=\cubex,
+    height/.store       in=\cubey,
+    depth/.store        in=\cubez,
+    scale/.store        in=\scale,
+    xlabel/.store       in=\boxlabels,
+    ylabel/.store       in=\ylabel,
+    zlabel/.store       in=\zlabel,
+    caption/.store      in=\caption,
+    name/.store         in=\name,
+    fill/.store         in=\fill,
+    opacity/.store      in=\opacity,
+    fill={rgb:red,5;green,5;blue,5;white,15},
+    opacity=0.4,
+    width=2,
+    height=13,
+    depth=15,
+    scale=.2,
+    xlabel={{"","","","","","","","","",""}},
+    ylabel=,
+    zlabel=,
+    caption=,
+    name=,
+}
+
+% ==============================================================================
+% 3. ĐỊNH NGHĨA COMPONENT: RightBandedBox (Dùng cho to_ConvConvRelu)
+% ==============================================================================
+\tikzset{RightBandedBox/.pic={\tikzset{/block/.cd,#1}
+        \tikzstyle{box}=[every edge/.append style={pic actions, densely dashed, opacity=.7},fill opacity=\opacity, pic actions,fill=\fill]
+        \tikzstyle{band}=[every edge/.append style={pic actions, densely dashed, opacity=.7},fill opacity=\bandopacity, pic actions,fill=\bandfill,draw=\bandfill]
+        \pgfmathsetmacro{\y}{\cubey*\scale}
+        \pgfmathsetmacro{\z}{\cubez*\scale}
+
+        \foreach[count=\i,%
+                 evaluate=\i as \xlabel using {array({\boxlabels},\i-1)},% 
+                 evaluate=\unscaledx as \k using {\unscaledx*\scale+\prev}, remember=\k as \prev (initially 0)] 
+                 \unscaledx in \cubex
+        {
+            \pgfmathsetmacro{\x}{\unscaledx*\scale}
+            \coordinate (a)     at (\k-\x   , \y/2 , \z/2); 
+            \coordinate (art)   at (\k-\x/3 , \y/2 , \z/2);
+            \coordinate (b)     at (\k-\x   ,-\y/2 , \z/2); 
+            \coordinate (brt)   at (\k-\x/3 ,-\y/2 , \z/2);
+            \coordinate (c)     at (\k      ,-\y/2 , \z/2); 
+            \coordinate (d)     at (\k      , \y/2 , \z/2); 
+            \coordinate (e)     at (\k      , \y/2 ,-\z/2); 
+            \coordinate (f)     at (\k      ,-\y/2 ,-\z/2); 
+            \coordinate (g)     at (\k-\x   ,-\y/2 ,-\z/2); 
+            \coordinate (h)     at (\k-\x   , \y/2 ,-\z/2); 
+            \coordinate (hrt)   at (\k-\x/3 , \y/2 ,-\z/2);
+            
+            \draw [box] 
+                (d) -- (a) -- (b) -- (c) -- cycle     
+                (d) -- (a) -- (h) -- (e) -- cycle;
+            \draw [box]
+                (f) edge (g)
+                (b) edge (g)
+                (h) edge (g);
+            \draw [band] 
+                (d) -- (art) -- (brt) -- (c) -- cycle     
+                (d) -- (art) -- (hrt) -- (e) -- cycle;
+            \draw [box,fill opacity=0] 
+                (d) -- (a) -- (b) -- (c) -- cycle     
+                (d) -- (a) -- (h) -- (e) -- cycle;            
+            	
+            \path (b) edge ["\xlabel"',midway] (c);
+            \xdef\LastEastx{\k}
+        }
+        \draw [box] (d) -- (e) -- (f) -- (c) -- cycle;
+        \draw [band] (d) -- (e) -- (f) -- (c) -- cycle;
+        \draw [pic actions] (d) -- (e) -- (f) -- (c) -- cycle;
+        
+        \coordinate (a1) at (0 , \y/2 , \z/2);
+        \coordinate (b1) at (0 ,-\y/2 , \z/2);
+        \tikzstyle{depthlabel}=[pos=0,text width=14*\z,text centered,sloped]       
+        
+        \path (c) edge ["\small\zlabels"',depthlabel](f);
+        \path (b1) edge ["\ylabel",midway] (a1); 	  
+        
+        \tikzstyle{captionlabel}=[text width=15*\LastEastx/\scale,text centered] 
+        \path (\LastEastx/2,-\y/2,+\z/2) + (0,-25pt) coordinate (cap) 
+        edge ["\textcolor{black}{ \bf \caption}"',captionlabel] (cap);
+         
+        \coordinate (\name-west)   at (0,0,0) ;
+        \coordinate (\name-east)   at (\LastEastx, 0,0) ;
+        \coordinate (\name-north)  at (\LastEastx/2,\y/2,0);
+        \coordinate (\name-south)  at (\LastEastx/2,-\y/2,0);       
+        \coordinate (\name-anchor) at (\LastEastx/2, 0,0) ;
+        
+        \coordinate (\name-near) at (\LastEastx/2,0,\z/2);
+        \coordinate (\name-far)  at (\LastEastx/2,0,-\z/2);       
+        
+        \coordinate (\name-nearwest) at (0,0,\z/2);
+        \coordinate (\name-neareast) at (\LastEastx,0,\z/2);
+        \coordinate (\name-farwest)  at (0,0,-\z/2);
+        \coordinate (\name-fareast)  at (\LastEastx,0,-\z/2);
+        
+        \coordinate (\name-northeast) at (\name-north-|\name-east);
+        \coordinate (\name-northwest) at (\name-north-|\name-west);
+        \coordinate (\name-southeast) at (\name-south-|\name-east);
+        \coordinate (\name-southwest) at (\name-south-|\name-west);
+        
+        \coordinate (\name-nearnortheast)  at (\LastEastx, \y/2, \z/2);
+        \coordinate (\name-farnortheast)   at (\LastEastx, \y/2,-\z/2);
+        \coordinate (\name-nearsoutheast)  at (\LastEastx,-\y/2, \z/2);
+        \coordinate (\name-farsoutheast)   at (\LastEastx,-\y/2,-\z/2);
+        
+        \coordinate (\name-nearnorthwest)  at (0, \y/2, \z/2);
+        \coordinate (\name-farnorthwest)   at (0, \y/2,-\z/2);
+        \coordinate (\name-nearsouthwest)  at (0,-\y/2, \z/2);
+        \coordinate (\name-farsouthwest)   at (0,-\y/2,-\z/2);
+    },
+    /block/.search also={/tikz},
+    /block/.cd,
+    width/.store        in=\cubex,
+    height/.store       in=\cubey,
+    depth/.store        in=\cubez,
+    scale/.store        in=\scale,
+    xlabel/.store       in=\boxlabels,
+    ylabel/.store       in=\ylabel,
+    zlabel/.store       in=\zlabels,
+    caption/.store      in=\caption,
+    name/.store         in=\name,
+    fill/.store         in=\fill,
+    bandfill/.store     in=\bandfill,
+    opacity/.store      in=\opacity,
+    bandopacity/.store  in=\bandopacity,
+    fill={rgb:red,5;green,5;blue,5;white,15},
+    bandfill={rgb:red,5;green,5;blue,5;white,5},
+    opacity=0.4,
+    bandopacity=0.6,
+    width=2,
+    height=13,
+    depth=15,
+    scale=.2,
+    xlabel={{"","","","","","","","","",""}},
+    ylabel=,
+    zlabel=,
+    caption=,
+    name=,
+}
+
+% ==============================================================================
+% 4. NỘI DUNG SƠ ĐỒ MẠNG FISTA-Net / LEARN_MVA
+% ==============================================================================
+\begin{document}
+\begin{tikzpicture}
+\tikzstyle{connection}=[ultra thick,every node/.style={sloped,allow upside down},draw=\edgecolor,opacity=0.7]
+\tikzstyle{copyconnection}=[ultra thick,every node/.style={sloped,allow upside down},draw={rgb:blue,4;red,1;green,1;black,3},opacity=0.7]
+
+% 1.1. Sinogram đầu vào góc giới hạn y: [B, 1, 64, 512] (LA-120°)
+\pic[shift={(0,0,0)}] at (0,0,0) 
+    {Box={
+        name=sino_in,
+        caption=Sinogram $y$ (LA-$120^\circ$),
+        xlabel={{64, }},
+        zlabel=512,
+        fill=\ConvColor,
+        height=14,
+        width=2.5,
+        depth=36
+        }
+    };
+
+% 1.2. FBP Ram-Lak khởi tạo: x^(0) = A_FBP(y)
+\pic[shift={(2.5,0,0)}] at (sino_in-east) 
+    {Box={
+        name=fbp_init,
+        caption=FBP Init $x^{(0)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+\draw [connection]  (sino_in-east)    -- node {\midarrow} (fbp_init-west);
+
+% 2.1. Trạng thái ảnh hiện tại x^(k)
+\pic[shift={(2.5,0,0)}] at (fbp_init-east) 
+    {Box={
+        name=x_k,
+        caption=State $x^{(k)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+\draw [connection]  (fbp_init-east)    -- node {\midarrow} (x_k-west);
+
+% ---------------- NHÁNH VẬT LÝ A (DATA CONSISTENCY, LỆCH LÊN dy=+4.5) ----------------
+\pic[shift={(3.5, 4.5, 0)}] at (x_k-east) 
+    {Box={
+        name=radon_fwd,
+        caption=Forward $A x^{(k)}$,
+        xlabel={{64, }},
+        zlabel=512,
+        fill=\ConvColor,
+        height=14,
+        width=2.5,
+        depth=36
+        }
+    };
+\draw [connection]  (x_k-east)    -- node {\midarrow} (radon_fwd-west);
+
+\pic[shift={(3.2, 0, 0)}] at (radon_fwd-east) 
+    {Box={
+        name=sino_res,
+        caption=Resid $A x - y$,
+        xlabel={{64, }},
+        zlabel=512,
+        fill=\ConvColor,
+        height=14,
+        width=2.5,
+        depth=36
+        }
+    };
+\draw [connection]  (radon_fwd-east)    -- node {\midarrow} (sino_res-west);
+
+\pic[shift={(3.2, 0, 0)}] at (sino_res-east) 
+    {Box={
+        name=radon_adj,
+        caption=Adjoint $A^T(\cdot)$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+\draw [connection]  (sino_res-east)    -- node {\midarrow} (radon_adj-west);
+
+\pic[shift={(3.2, 0, 0)}] at (radon_adj-east) 
+    {Box={
+        name=grad_phys,
+        caption=Phys-Grad $g_{\mathrm{phys}}^{(k)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+\draw [connection]  (radon_adj-east)    -- node {\midarrow} (grad_phys-west);
+
+% ---------------- NHÁNH TIÊN NGHIỆM SANDWICH B (LỆCH XUỐNG dy=-4.5) ----------------
+\pic[shift={ (3.5, -4.5, 0) }] at (x_k-east) 
+    {RightBandedBox={
+        name=conv1,
+        caption=Conv1 + ReLU,
+        xlabel={{ 1, 48 }},
+        zlabel=256,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=36,
+        width={ 1.6 , 3.8 },
+        depth=36
+        }
+    };
+\draw [connection]  (x_k-east)    -- node {\midarrow} (conv1-west);
+
+\pic[shift={(1.8, 0, 0)}] at (conv1-east) 
+    {Box={
+        name=tokenize,
+        caption=Tokenize $T_{2\times2}$,
+        xlabel={{192, }},
+        zlabel=128,
+        fill=\ConvColor,
+        height=24,
+        width=5.5,
+        depth=24
+        }
+    };
+\draw [connection]  (conv1-east)    -- node {\midarrow} (tokenize-west);
+
+\pic[shift={(1.8, 0, 0)}] at (tokenize-east) 
+    {Box={
+        name=seq_engine,
+        caption=MVA Engine $\mathcal{O}(N)$,
+        xlabel={{" ","dummy"}},
+        zlabel=16384,
+        fill=\SoftmaxColor,
+        opacity=0.85,
+        height=20,
+        width=4.0,
+        depth=20
+        }
+    };
+\draw [connection]  (tokenize-east)    -- node {\midarrow} (seq_engine-west);
+
+\pic[shift={(1.8, 0, 0)}] at (seq_engine-east) 
+    {Box={
+        name=untokenize,
+        caption=Untokenize $T_{2\times2}^{-1}$,
+        xlabel={{48, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=3.8,
+        depth=36
+        }
+    };
+\draw [connection]  (seq_engine-east)    -- node {\midarrow} (untokenize-west);
+
+\pic[shift={ (1.8, 0, 0) }] at (untokenize-east) 
+    {RightBandedBox={
+        name=conv2,
+        caption=Conv2 + ReLU,
+        xlabel={{ 48, 48 }},
+        zlabel=256,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=36,
+        width={ 3.8 , 3.8 },
+        depth=36
+        }
+    };
+\draw [connection]  (untokenize-east)    -- node {\midarrow} (conv2-west);
+
+\pic[shift={(1.8, 0, 0)}] at (conv2-east) 
+    {Box={
+        name=conv3,
+        caption=Prior $\nabla R_\theta^{(k)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+\draw [connection]  (conv2-east)    -- node {\midarrow} (conv3-west);
+
+% ---------------- NÚT TỔNG HỢP GRADIENT & CẬP NHẬT NGHIỆM ----------------
+\pic[shift={(2.5, 4.5, 0)}] at (conv3-east) 
+    {Ball={
+        name=sum_grad,
+        fill=\SumColor,
+        opacity=0.75,
+        radius=2.5,
+        logo=$+$
+        }
+    };
+\draw [connection]  (grad_phys-east)    -- node {\midarrow} (sum_grad-west);
+\draw [connection]  (conv3-east)    -- node {\midarrow} (sum_grad-west);
+
+\pic[shift={(2.6, 0, 0)}] at (sum_grad-east) 
+    {Box={
+        name=x_next,
+        caption=State $x^{(k+1)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+\draw [connection]  (sum_grad-east)    -- node {\midarrow} (x_next-west);
+
+% ĐƯỜNG NỐI TẮT RESIDUAL (UỐN CONG VƯỢT LÊN TRÊN NHÁNH VẬT LÝ)
+\path (x_k-southeast) -- (x_k-northeast) coordinate[pos=1.6] (x_k-top) ;
+\path (x_next-south)  -- (x_next-north)  coordinate[pos=1.6] (x_next-top) ;
+\draw [copyconnection]  (x_k-northeast)  
+-- node {\copymidarrow}(x_k-top)
+-- node {\copymidarrow}(x_next-top)
+-- node {\copymidarrow} (x_next-north);
+
+% ---------------- MỞ CUỘN ĐA TẦNG & HÀM MẤT MÁT GIÁM SÁT ----------------
+\pic[shift={(2.6, 0, 0)}] at (x_next-east) 
+    {Box={
+        name=unroll_cascade,
+        caption=Unrolling $\times 14$,
+        xlabel={{14, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=4.5,
+        depth=36
+        }
+    };
+\draw [connection]  (x_next-east)    -- node {\midarrow} (unroll_cascade-west);
+
+\pic[shift={(2.6, 0, 0)}] at (unroll_cascade-east) 
+    {Box={
+        name=x_final,
+        caption=Output $x^{(14)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+\draw [connection]  (unroll_cascade-east)    -- node {\midarrow} (x_final-west);
+
+\pic[shift={(2.2, 0, 0)}] at (x_final-east) 
+    {Box={
+        name=loss_mse,
+        caption=$\mathcal{L}_{\mathrm{MSE}}$,
+        xlabel={{MSE, }},
+        zlabel=Loss,
+        fill=\ConvColor,
+        height=18,
+        width=1.5,
+        depth=18
+        }
+    };
+\draw [connection]  (x_final-east)    -- node {\midarrow} (loss_mse-west);
+
+\end{tikzpicture}
+\end{document}

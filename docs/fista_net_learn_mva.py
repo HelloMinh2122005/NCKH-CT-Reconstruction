@@ -312,8 +312,8 @@ arch = [
     # 3.3. Hàm mất mát giám sát đầu cuối End-to-End Supervised Loss (MSE vs Ground Truth x*)
     to_Conv(
         name="loss_mse",
-        s_filer="Loss",
-        n_filer="MSE",
+        s_filer="1",
+        n_filer="1",
         offset="(2.2, 0, 0)",
         to="(x_final-east)",
         width=1.5,

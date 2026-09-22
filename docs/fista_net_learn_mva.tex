@@ -1,0 +1,302 @@
+
+\documentclass[border=8pt, multi, tikz]{standalone} 
+\usepackage{import}
+\subimport{../layers/}{init}
+\usetikzlibrary{positioning}
+\usetikzlibrary{3d} %for including external image 
+
+\def\ConvColor{rgb:yellow,5;red,2.5;white,5}
+\def\ConvReluColor{rgb:yellow,5;red,5;white,5}
+\def\PoolColor{rgb:red,1;black,0.3}
+\def\UnpoolColor{rgb:blue,2;green,1;black,0.3}
+\def\FcColor{rgb:blue,5;red,2.5;white,5}
+\def\FcReluColor{rgb:blue,5;red,5;white,4}
+\def\SoftmaxColor{rgb:magenta,5;black,7}   
+\def\SumColor{rgb:blue,5;green,15}
+
+\newcommand{\copymidarrow}{\tikz \draw[-Stealth,line width=0.8mm,draw={rgb:blue,4;red,1;green,1;black,3}] (-0.3,0) -- ++(0.3,0);}
+
+\begin{document}
+\begin{tikzpicture}
+\tikzstyle{connection}=[ultra thick,every node/.style={sloped,allow upside down},draw=\edgecolor,opacity=0.7]
+\tikzstyle{copyconnection}=[ultra thick,every node/.style={sloped,allow upside down},draw={rgb:blue,4;red,1;green,1;black,3},opacity=0.7]
+
+\pic[shift={(0,0,0)}] at (0,0,0) 
+    {Box={
+        name=sino_in,
+        caption=Sinogram $y$ (LA-$120^\circ$),
+        xlabel={{64, }},
+        zlabel=512,
+        fill=\ConvColor,
+        height=14,
+        width=2.5,
+        depth=36
+        }
+    };
+
+\pic[shift={(2.5,0,0)}] at (sino_in-east) 
+    {Box={
+        name=fbp_init,
+        caption=FBP Init $x^{(0)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+
+\draw [connection]  (sino_in-east)    -- node {\midarrow} (fbp_init-west);
+
+\pic[shift={(2.5,0,0)}] at (fbp_init-east) 
+    {Box={
+        name=x_k,
+        caption=State $x^{(k)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+
+\draw [connection]  (fbp_init-east)    -- node {\midarrow} (x_k-west);
+
+\pic[shift={(3.5, 4.5, 0)}] at (x_k-east) 
+    {Box={
+        name=radon_fwd,
+        caption=Forward $A x^{(k)}$,
+        xlabel={{64, }},
+        zlabel=512,
+        fill=\ConvColor,
+        height=14,
+        width=2.5,
+        depth=36
+        }
+    };
+
+\draw [connection]  (x_k-east)    -- node {\midarrow} (radon_fwd-west);
+
+\pic[shift={(3.2, 0, 0)}] at (radon_fwd-east) 
+    {Box={
+        name=sino_res,
+        caption=Resid $A x - y$,
+        xlabel={{64, }},
+        zlabel=512,
+        fill=\ConvColor,
+        height=14,
+        width=2.5,
+        depth=36
+        }
+    };
+
+\draw [connection]  (radon_fwd-east)    -- node {\midarrow} (sino_res-west);
+
+\pic[shift={(3.2, 0, 0)}] at (sino_res-east) 
+    {Box={
+        name=radon_adj,
+        caption=Adjoint $A^T(\cdot)$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+
+\draw [connection]  (sino_res-east)    -- node {\midarrow} (radon_adj-west);
+
+\pic[shift={(3.2, 0, 0)}] at (radon_adj-east) 
+    {Box={
+        name=grad_phys,
+        caption=Phys-Grad $g_{\mathrm{phys}}^{(k)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+
+\draw [connection]  (radon_adj-east)    -- node {\midarrow} (grad_phys-west);
+
+\pic[shift={ (3.5, -4.5, 0) }] at (x_k-east) 
+    {RightBandedBox={
+        name=conv1,
+        caption=Conv1 + ReLU,
+        xlabel={{ 1, 48 }},
+        zlabel=256,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=36,
+        width={ 1.6 , 3.8 },
+        depth=36
+        }
+    };
+
+\draw [connection]  (x_k-east)    -- node {\midarrow} (conv1-west);
+
+\pic[shift={(1.8, 0, 0)}] at (conv1-east) 
+    {Box={
+        name=tokenize,
+        caption=Tokenize $T_{2\times2}$,
+        xlabel={{192, }},
+        zlabel=128,
+        fill=\ConvColor,
+        height=24,
+        width=5.5,
+        depth=24
+        }
+    };
+
+\draw [connection]  (conv1-east)    -- node {\midarrow} (tokenize-west);
+
+\pic[shift={(1.8, 0, 0)}] at (tokenize-east) 
+    {Box={
+        name=seq_engine,
+        caption=MVA Engine $\mathcal{O}(N)$,
+        xlabel={{" ","dummy"}},
+        zlabel=16384,
+        fill=\SoftmaxColor,
+        opacity=0.85,
+        height=20,
+        width=4.0,
+        depth=20
+        }
+    };
+
+\draw [connection]  (tokenize-east)    -- node {\midarrow} (seq_engine-west);
+
+\pic[shift={(1.8, 0, 0)}] at (seq_engine-east) 
+    {Box={
+        name=untokenize,
+        caption=Untokenize $T_{2\times2}^{-1}$,
+        xlabel={{48, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=3.8,
+        depth=36
+        }
+    };
+
+\draw [connection]  (seq_engine-east)    -- node {\midarrow} (untokenize-west);
+
+\pic[shift={ (1.8, 0, 0) }] at (untokenize-east) 
+    {RightBandedBox={
+        name=conv2,
+        caption=Conv2 + ReLU,
+        xlabel={{ 48, 48 }},
+        zlabel=256,
+        fill=\ConvColor,
+        bandfill=\ConvReluColor,
+        height=36,
+        width={ 3.8 , 3.8 },
+        depth=36
+        }
+    };
+
+\draw [connection]  (untokenize-east)    -- node {\midarrow} (conv2-west);
+
+\pic[shift={(1.8, 0, 0)}] at (conv2-east) 
+    {Box={
+        name=conv3,
+        caption=Prior $\nabla R_\theta^{(k)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+
+\draw [connection]  (conv2-east)    -- node {\midarrow} (conv3-west);
+
+\pic[shift={(2.5, 4.5, 0)}] at (conv3-east) 
+    {Ball={
+        name=sum_grad,
+        fill=\SumColor,
+        opacity=0.75,
+        radius=2.5,
+        logo=$+$
+        }
+    };
+
+\draw [connection]  (grad_phys-east)    -- node {\midarrow} (sum_grad-west);
+
+\draw [connection]  (conv3-east)    -- node {\midarrow} (sum_grad-west);
+
+\pic[shift={(2.6, 0, 0)}] at (sum_grad-east) 
+    {Box={
+        name=x_next,
+        caption=State $x^{(k+1)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+
+\draw [connection]  (sum_grad-east)    -- node {\midarrow} (x_next-west);
+
+\path (x_k-southeast) -- (x_k-northeast) coordinate[pos=1.6] (x_k-top) ;
+\path (x_next-south)  -- (x_next-north)  coordinate[pos=1.6] (x_next-top) ;
+\draw [copyconnection]  (x_k-northeast)  
+-- node {\copymidarrow}(x_k-top)
+-- node {\copymidarrow}(x_next-top)
+-- node {\copymidarrow} (x_next-north);
+
+\pic[shift={(2.6, 0, 0)}] at (x_next-east) 
+    {Box={
+        name=unroll_cascade,
+        caption=Unrolling $\times 14$,
+        xlabel={{14, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=4.5,
+        depth=36
+        }
+    };
+
+\draw [connection]  (x_next-east)    -- node {\midarrow} (unroll_cascade-west);
+
+\pic[shift={(2.6, 0, 0)}] at (unroll_cascade-east) 
+    {Box={
+        name=x_final,
+        caption=Output $x^{(14)}$,
+        xlabel={{1, }},
+        zlabel=256,
+        fill=\ConvColor,
+        height=36,
+        width=1.6,
+        depth=36
+        }
+    };
+
+\draw [connection]  (unroll_cascade-east)    -- node {\midarrow} (x_final-west);
+
+\pic[shift={(2.2, 0, 0)}] at (x_final-east) 
+    {Box={
+        name=loss_mse,
+        caption=$\mathcal{L}_{\mathrm{MSE}}$,
+        xlabel={{MSE, }},
+        zlabel=Loss,
+        fill=\ConvColor,
+        height=18,
+        width=1.5,
+        depth=18
+        }
+    };
+
+\draw [connection]  (x_final-east)    -- node {\midarrow} (loss_mse-west);
+
+\end{tikzpicture}
+\end{document}

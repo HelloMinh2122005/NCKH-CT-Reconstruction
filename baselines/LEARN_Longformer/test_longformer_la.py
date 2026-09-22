@@ -19,8 +19,8 @@ def _safe_torch_load(*args, **kwargs):
     return _orig_torch_load(*args, **kwargs)
 torch.load = _safe_torch_load
 
-# Import DataModule và Mô hình
-from data.datamodule_LA import LimitedAngleCTDataModule
+# Import DataModule Factory và Mô hình
+from data.datamodule_factory import get_datamodule
 from baselines.LEARN_Longformer.models import LEARN_Longformer_LA
 
 
@@ -37,6 +37,16 @@ def parse_args():
         type=str,
         required=True,
         help="Đường dẫn đến file trọng số .ckpt đã huấn luyện"
+    )
+    
+    # Cấu hình dữ liệu đa tập hợp (AAPM, DeepLesion, LIDC)
+    parser.add_argument(
+        "--dataset_type", "--dataset_name",
+        dest="dataset_type",
+        type=str,
+        choices=["aapm", "deeplesion", "lidc"],
+        default="aapm",
+        help="Lựa chọn tập dữ liệu kiểm thử: 'aapm', 'deeplesion' hoặc 'lidc' (mặc định: 'aapm')"
     )
     
     # Cấu hình dữ liệu
@@ -161,8 +171,9 @@ def main():
     model = LEARN_Longformer_LA.load_from_checkpoint(args.checkpoint_path)
     model.eval()
 
-    # Bước 5: Khởi tạo DataModule cho tập kiểm thử
-    datamodule = LimitedAngleCTDataModule(
+    # Bước 5: Khởi tạo DataModule cho tập kiểm thử độc lập (hỗ trợ AAPM, DeepLesion, LIDC)
+    datamodule = get_datamodule(
+        dataset_type=args.dataset_type,
         dicom_dir=args.dicom_dir,
         cache_dir=args.cache_dir,
         setting_tag=setting_tag,

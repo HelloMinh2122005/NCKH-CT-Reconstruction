@@ -74,7 +74,9 @@ class MoDL_CGSolver(nn.Module):
         (A^T A + lambda * I) x_k = A^T y + lambda * z_k
     trong đó:
         - A: Toán tử chiếu thẳng Radon (Forward Projection).
-        - A^T: Toán tử chiếu ngược FBP hoặc Backprojection.
+        - A^T: Toán tử chiếu ngược liên hợp chuẩn (Adjoint RayTransform).
+               Lưu ý: Bắt buộc dùng toán tử liên hợp A^T (operator.adjoint), tuyệt đối không dùng
+               FBP vì FBP * A không đối xứng xác định dương (not SPD), làm CG phân kỳ.
         - y: Sinogram đo đạc thực tế từ máy quét góc giới hạn (LA-Sinogram).
         - z_k = D_w(x_{k-1}): Ảnh đã qua khối điều hòa CNN.
         - lambda: Trọng số cân bằng độ khớp dữ liệu và điều hòa tiên nghiệm (Learnable parameter lambda > 0).
@@ -97,11 +99,13 @@ class MoDL_CGSolver(nn.Module):
         x_init: Nghiệm khởi tạo cho CG (B, 1, 256, 256)
         rhs: Vế phải của hệ phương trình b = A^T y + lambda * z (B, 1, 256, 256)
         lambda_val: Trọng số chính quy hóa lambda
+        forward_op: Toán tử chiếu thẳng A
+        backward_op: Toán tử chiếu ngược liên hợp A^T (Adjoint)
         """
         x = x_init.clone()
 
         def matvec(p: torch.Tensor) -> torch.Tensor:
-            # Tính (A^T A + lambda * I) p
+            # Tính (A^T A + lambda * I) p với backward_op là toán tử liên hợp chuẩn A^T
             return backward_op(forward_op(p)) + lambda_val * p
 
         r = rhs - matvec(x)
@@ -177,8 +181,8 @@ class MoDL_LA(pl.LightningModule):
             nn.Parameter(torch.tensor(0.5)) for _ in range(n_iterations)
         ])
 
-        # Khởi tạo toán tử Radon xuôi (RayTransform) và ngược (FBP)
-        radon_op, fbp_op = self.radon_transform(
+        # Khởi tạo toán tử Radon xuôi (RayTransform), liên hợp ngược A^T (Adjoint) và FBP
+        radon_op, adjoint_op, fbp_op = self.radon_transform(
             num_view=num_view,
             start_ang=start_ang,
             end_ang=end_ang,
@@ -186,7 +190,9 @@ class MoDL_LA(pl.LightningModule):
             input_size=input_size,
         )
         self.forward_module = radon_op
-        self.backward_module = fbp_op
+        self.adjoint_module = adjoint_op
+        self.backward_module = adjoint_op  # Giữ backward_module là adjoint A^T để bảo đảm tính tương thích
+        self.fbp_module = fbp_op
 
         self.grid: Optional[torch.Tensor] = None
 
@@ -198,12 +204,12 @@ class MoDL_LA(pl.LightningModule):
           + y: Sinogram đo đạc góc giới hạn (Batch_size, 1, 64, 512)
         - Tại mỗi giai đoạn k = 0, ..., K-1:
           1. z_k = D_w(x_k)                 (Khử nhiễu / điều hòa miền ảnh)
-          2. b_k = A^T y + lambda_k * z_k    (Tính vế phải)
-          3. x_{k+1} = (A^T A + lambda_k I)^(-1) b_k  (Giải CG Data Consistency)
+          2. b_k = A^T y + lambda_k * z_k    (Tính vế phải bằng toán tử liên hợp chuẩn Adjoint)
+          3. x_{k+1} = (A^T A + lambda_k I)^(-1) b_k  (Giải CG Data Consistency đối xứng xác định dương)
         """
         x_curr = x_init
-        # Tính trước A^T y một lần duy nhất để tối ưu tốc độ tính toán
-        at_y = self.backward_module(y)
+        # Tính trước A^T y một lần duy nhất bằng toán tử liên hợp chuẩn Adjoint A^T để tối ưu tốc độ tính toán
+        at_y = self.adjoint_module(y)
 
         for k in range(self.n_iterations):
             # 1. Bước Điều Hòa Tiên Nghiệm (CNN Denoiser)
@@ -215,13 +221,13 @@ class MoDL_LA(pl.LightningModule):
             # 3. Tính vế phải rhs = A^T y + lambda * z_k
             rhs = at_y + lambda_k * z_k
 
-            # 4. Bước Nhất Quán Dữ Liệu (CG Solver)
+            # 4. Bước Nhất Quán Dữ Liệu (CG Solver): giải hệ (A^T A + lambda_k I) x = rhs
             x_curr = self.cg_solver(
                 x_init=x_curr,
                 rhs=rhs,
                 lambda_val=lambda_k,
                 forward_op=self.forward_module,
-                backward_op=self.backward_module,
+                backward_op=self.adjoint_module,
             )
 
         return x_curr
@@ -311,7 +317,14 @@ class MoDL_LA(pl.LightningModule):
         operator = odl.tomo.RayTransform(space, geometry, impl=impl)
         op_layer = odl_torch.operator.OperatorModule(operator)
 
+        # Toán tử chiếu ngược liên hợp thuần túy A^T (Adjoint RayTransform)
+        # Bắt buộc dùng cho bước giải lặp Conjugate Gradient (CG) để bảo đảm ma trận (A^T A + lambda I)
+        # đối xứng xác định dương (Symmetric Positive Definite - SPD), tránh phân kỳ nghiệm.
+        adjoint_operator = operator.adjoint
+        op_layer_adjoint = odl_torch.operator.OperatorModule(adjoint_operator)
+
+        # Toán tử FBP (Filtered Backprojection) dùng bộ lọc Ram-Lak phục vụ khởi tạo sơ bộ
         fbp = odl.tomo.fbp_op(operator, filter_type="Ram-Lak", frequency_scaling=0.9) * np.sqrt(2)
         op_layer_fbp = odl_torch.operator.OperatorModule(fbp)
 
-        return op_layer, op_layer_fbp
+        return op_layer, op_layer_adjoint, op_layer_fbp

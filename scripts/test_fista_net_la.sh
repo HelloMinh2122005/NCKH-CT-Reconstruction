@@ -56,7 +56,10 @@ export CUDA_VISIBLE_DEVICES="${BEST_GPU}"
 cd /datastore/uittogether3/LuuTru/MinhPD
 export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
 
-CKPT_PATH="${1:-/datastore/uittogether3/LuuTru/MinhPD/saved_models/FISTA_Net/last.ckpt}"
+CKPT_PATH="${1:-/datastore/uittogether3/LuuTru/MinhPD/saved_models/FISTA_Net/fista_net_la-epoch=49-val_psnr=35.01-val_ssim=0.9527.ckpt}"
+if [ ! -f "$CKPT_PATH" ]; then
+    CKPT_PATH="/datastore/uittogether3/LuuTru/MinhPD/saved_models/FISTA_Net/last.ckpt"
+fi
 
 echo "================================================================================"
 echo "🎯 ĐÁNH GIÁ 1: FISTA-Net trên Cấu hình Chuẩn LA-120° (64 views)"

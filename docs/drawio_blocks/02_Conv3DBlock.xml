@@ -1,0 +1,38 @@
+<shape aspect="variable" h="120" w="100" name="Conv3DBlock" strokewidth="inherit">
+  <connections>
+    <constraint x="0" y="0.57" perimeter="0" name="W"/>
+    <constraint x="1" y="0.43" perimeter="0" name="E"/>
+    <constraint x="0.5" y="0" perimeter="0" name="N"/>
+    <constraint x="0.4" y="1" perimeter="0" name="S"/>
+    <constraint x="0.4" y="0.57" perimeter="0" name="Center"/>
+  </connections>
+  <background>
+    <!-- 1. Mặt trên (Top Face) -->
+    <path>
+      <move x="0" y="16"/>
+      <line x="20" y="0"/>
+      <line x="100" y="0"/>
+      <line x="80" y="16"/>
+      <close/>
+    </path>
+    <!-- 2. Mặt bên phải (Right Depth Face - Channel Dimension) -->
+    <path>
+      <move x="80" y="16"/>
+      <line x="100" y="0"/>
+      <line x="100" y="104"/>
+      <line x="80" y="120"/>
+      <close/>
+    </path>
+    <!-- 3. Mặt trước (Front Feature Face - Spatial Resolution) -->
+    <path>
+      <move x="0" y="16"/>
+      <line x="80" y="16"/>
+      <line x="80" y="120"/>
+      <line x="0" y="120"/>
+      <close/>
+    </path>
+  </background>
+  <foreground>
+    <fillstroke/>
+  </foreground>
+</shape>

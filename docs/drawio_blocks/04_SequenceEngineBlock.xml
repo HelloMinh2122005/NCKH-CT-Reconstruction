@@ -1,0 +1,54 @@
+<shape aspect="variable" h="100" w="120" name="SequenceEngineBlock" strokewidth="inherit">
+  <connections>
+    <constraint x="0" y="0.58" perimeter="0" name="W"/>
+    <constraint x="1" y="0.42" perimeter="0" name="E"/>
+    <constraint x="0.5" y="0" perimeter="0" name="N"/>
+    <constraint x="0.42" y="1" perimeter="0" name="S"/>
+    <constraint x="0.42" y="0.58" perimeter="0" name="Center"/>
+  </connections>
+  <background>
+    <!-- 1. Mặt trên (Top Face) -->
+    <path>
+      <move x="0" y="16"/>
+      <line x="20" y="0"/>
+      <line x="120" y="0"/>
+      <line x="100" y="16"/>
+      <close/>
+    </path>
+    <!-- 2. Mặt bên phải (Right Depth Face) -->
+    <path>
+      <move x="100" y="16"/>
+      <line x="120" y="0"/>
+      <line x="120" y="84"/>
+      <line x="100" y="100"/>
+      <close/>
+    </path>
+    <!-- 3. Mặt trước (Front Face) -->
+    <path>
+      <move x="0" y="16"/>
+      <line x="100" y="16"/>
+      <line x="100" y="100"/>
+      <line x="0" y="100"/>
+      <close/>
+    </path>
+
+    <!-- 4. Khung lõi xử lý trung tâm (Core Attention Engine Inset Screen) -->
+    <path>
+      <move x="12" y="28"/>
+      <line x="88" y="28"/>
+      <line x="88" y="88"/>
+      <line x="12" y="88"/>
+      <close/>
+    </path>
+
+    <!-- 5. Các dải phân tầng Attention đa tỷ lệ (Sliding Window, Dilated, Global Anchors) -->
+    <path>
+      <move x="20" y="43"/><line x="80" y="43"/>
+      <move x="20" y="58"/><line x="80" y="58"/>
+      <move x="20" y="73"/><line x="80" y="73"/>
+    </path>
+  </background>
+  <foreground>
+    <fillstroke/>
+  </foreground>
+</shape>

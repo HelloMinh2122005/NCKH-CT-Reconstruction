@@ -1,0 +1,18 @@
+<shape aspect="variable" h="200" w="300" name="StageContainerBox" strokewidth="inherit">
+  <connections>
+    <constraint x="0" y="0.5" perimeter="0" name="W"/>
+    <constraint x="1" y="0.5" perimeter="0" name="E"/>
+    <constraint x="0.5" y="0" perimeter="0" name="N"/>
+    <constraint x="0.5" y="1" perimeter="0" name="S"/>
+  </connections>
+  <background>
+    <!-- 1. Hộp bao ngoài bo góc (Outer Rounded Container) -->
+    <roundrect x="0" y="15" w="300" h="185" arcsize="8"/>
+    
+    <!-- 2. Thẻ tiêu đề nổi bật phía trên (Header Pill / Badge) -->
+    <roundrect x="50" y="0" w="200" h="30" arcsize="15"/>
+  </background>
+  <foreground>
+    <fillstroke/>
+  </foreground>
+</shape>

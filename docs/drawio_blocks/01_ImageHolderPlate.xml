@@ -1,0 +1,46 @@
+<shape aspect="variable" h="140" w="120" name="ImageHolderPlate" strokewidth="inherit">
+  <connections>
+    <constraint x="0" y="0.5" perimeter="0" name="W"/>
+    <constraint x="1" y="0.5" perimeter="0" name="E"/>
+    <constraint x="0.5" y="0.06" perimeter="0" name="N"/>
+    <constraint x="0.5" y="0.94" perimeter="0" name="S"/>
+    <constraint x="0.55" y="0.5" perimeter="0" name="Center"/>
+  </connections>
+  <background>
+    <!-- 1. Gờ độ dày bên trái (Left Rim / Depth) -->
+    <path>
+      <move x="0" y="16"/>
+      <line x="12" y="0"/>
+      <line x="12" y="124"/>
+      <line x="0" y="140"/>
+      <close/>
+    </path>
+    <!-- 2. Gờ vát phía trên (Top Rim) -->
+    <path>
+      <move x="0" y="16"/>
+      <line x="12" y="0"/>
+      <line x="120" y="16"/>
+      <line x="108" y="32"/>
+      <close/>
+    </path>
+    <!-- 3. Mặt nghiêng chính để dán ảnh CT / Sinogram (Main Skewed Face) -->
+    <path>
+      <move x="12" y="0"/>
+      <line x="120" y="16"/>
+      <line x="120" y="140"/>
+      <line x="12" y="124"/>
+      <close/>
+    </path>
+    <!-- 4. Khung viền chỉ dẫn lồng ảnh bên trong (Inner Inset Alignment Frame) -->
+    <path>
+      <move x="20" y="12"/>
+      <line x="112" y="25"/>
+      <line x="112" y="131"/>
+      <line x="20" y="118"/>
+      <close/>
+    </path>
+  </background>
+  <foreground>
+    <fillstroke/>
+  </foreground>
+</shape>

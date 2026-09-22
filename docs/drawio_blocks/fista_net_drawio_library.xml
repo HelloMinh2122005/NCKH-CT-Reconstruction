@@ -1,0 +1,233 @@
+<shapes>
+  <!-- =========================================================================
+       1. BLOCK CHÈN ẢNH PHỐI CẢNH 3D (IMAGE HOLDER PLATE)
+       Dùng cho: Sinogram y, Ảnh FBP x^(0), Ảnh tái tạo cuối x^(14), Ground Truth x*
+       ========================================================================= -->
+  <shape aspect="variable" h="140" w="120" name="ImageHolderPlate" strokewidth="inherit">
+    <connections>
+      <constraint x="0" y="0.5" perimeter="0" name="W"/>
+      <constraint x="1" y="0.5" perimeter="0" name="E"/>
+      <constraint x="0.5" y="0.06" perimeter="0" name="N"/>
+      <constraint x="0.5" y="0.94" perimeter="0" name="S"/>
+      <constraint x="0.55" y="0.5" perimeter="0" name="Center"/>
+    </connections>
+    <background>
+      <path>
+        <move x="0" y="16"/><line x="12" y="0"/><line x="12" y="124"/><line x="0" y="140"/><close/>
+      </path>
+      <path>
+        <move x="0" y="16"/><line x="12" y="0"/><line x="120" y="16"/><line x="108" y="32"/><close/>
+      </path>
+      <path>
+        <move x="12" y="0"/><line x="120" y="16"/><line x="120" y="140"/><line x="12" y="124"/><close/>
+      </path>
+      <path>
+        <move x="20" y="12"/><line x="112" y="25"/><line x="112" y="131"/><line x="20" y="118"/><close/>
+      </path>
+    </background>
+    <foreground>
+      <fillstroke/>
+    </foreground>
+  </shape>
+
+  <!-- =========================================================================
+       2. BLOCK CONV / TENSOR FEATURE MAP 3D (CONV 3D BLOCK)
+       Dùng cho: Forward Radon A, Adjoint A^T, Conv1, Conv2, Conv3, Physical Gradient
+       ========================================================================= -->
+  <shape aspect="variable" h="120" w="100" name="Conv3DBlock" strokewidth="inherit">
+    <connections>
+      <constraint x="0" y="0.57" perimeter="0" name="W"/>
+      <constraint x="1" y="0.43" perimeter="0" name="E"/>
+      <constraint x="0.5" y="0" perimeter="0" name="N"/>
+      <constraint x="0.4" y="1" perimeter="0" name="S"/>
+      <constraint x="0.4" y="0.57" perimeter="0" name="Center"/>
+    </connections>
+    <background>
+      <path>
+        <move x="0" y="16"/><line x="20" y="0"/><line x="100" y="0"/><line x="80" y="16"/><close/>
+      </path>
+      <path>
+        <move x="80" y="16"/><line x="100" y="0"/><line x="100" y="104"/><line x="80" y="120"/><close/>
+      </path>
+      <path>
+        <move x="0" y="16"/><line x="80" y="16"/><line x="80" y="120"/><line x="0" y="120"/><close/>
+      </path>
+    </background>
+    <foreground>
+      <fillstroke/>
+    </foreground>
+  </shape>
+
+  <!-- =========================================================================
+       3. BLOCK PATCH TOKENIZER T_2x2 (CHIA LƯỚI TENSOR 4x4)
+       Dùng cho: Khối cắt Patch Tokenizer T_(2x2) thành 16k tokens vi mô
+       ========================================================================= -->
+  <shape aspect="variable" h="120" w="100" name="PatchTokenizerBlock" strokewidth="inherit">
+    <connections>
+      <constraint x="0" y="0.57" perimeter="0" name="W"/>
+      <constraint x="1" y="0.43" perimeter="0" name="E"/>
+      <constraint x="0.5" y="0" perimeter="0" name="N"/>
+      <constraint x="0.4" y="1" perimeter="0" name="S"/>
+      <constraint x="0.4" y="0.57" perimeter="0" name="Center"/>
+    </connections>
+    <background>
+      <path>
+        <move x="0" y="16"/><line x="20" y="0"/><line x="100" y="0"/><line x="80" y="16"/><close/>
+      </path>
+      <path>
+        <move x="80" y="16"/><line x="100" y="0"/><line x="100" y="104"/><line x="80" y="120"/><close/>
+      </path>
+      <path>
+        <move x="0" y="16"/><line x="80" y="16"/><line x="80" y="120"/><line x="0" y="120"/><close/>
+      </path>
+      <!-- Lưới chia patch 4x4 mặt trước -->
+      <path>
+        <move x="20" y="16"/><line x="20" y="120"/>
+        <move x="40" y="16"/><line x="40" y="120"/>
+        <move x="60" y="16"/><line x="60" y="120"/>
+      </path>
+      <path>
+        <move x="0" y="42"/><line x="80" y="42"/>
+        <move x="0" y="68"/><line x="80" y="68"/>
+        <move x="0" y="94"/><line x="80" y="94"/>
+      </path>
+      <!-- Gióng lưới lên mặt trên -->
+      <path>
+        <move x="20" y="16"/><line x="40" y="0"/>
+        <move x="40" y="16"/><line x="60" y="0"/>
+        <move x="60" y="16"/><line x="80" y="0"/>
+      </path>
+      <!-- Gióng lưới sang mặt bên -->
+      <path>
+        <move x="80" y="42"/><line x="100" y="26"/>
+        <move x="80" y="68"/><line x="100" y="52"/>
+        <move x="80" y="94"/><line x="100" y="78"/>
+      </path>
+    </background>
+    <foreground>
+      <fillstroke/>
+    </foreground>
+  </shape>
+
+  <!-- =========================================================================
+       4. BLOCK SEQUENCE ATTENTION ENGINE
+       Dùng cho: Sequence Attention Engine O(N) (Longformer / LongNet / Mamba)
+       ========================================================================= -->
+  <shape aspect="variable" h="100" w="120" name="SequenceEngineBlock" strokewidth="inherit">
+    <connections>
+      <constraint x="0" y="0.58" perimeter="0" name="W"/>
+      <constraint x="1" y="0.42" perimeter="0" name="E"/>
+      <constraint x="0.5" y="0" perimeter="0" name="N"/>
+      <constraint x="0.42" y="1" perimeter="0" name="S"/>
+      <constraint x="0.42" y="0.58" perimeter="0" name="Center"/>
+    </connections>
+    <background>
+      <path>
+        <move x="0" y="16"/><line x="20" y="0"/><line x="120" y="0"/><line x="100" y="16"/><close/>
+      </path>
+      <path>
+        <move x="100" y="16"/><line x="120" y="0"/><line x="120" y="84"/><line x="100" y="100"/><close/>
+      </path>
+      <path>
+        <move x="0" y="16"/><line x="100" y="16"/><line x="100" y="100"/><line x="0" y="100"/><close/>
+      </path>
+      <path>
+        <move x="12" y="28"/><line x="88" y="28"/><line x="88" y="88"/><line x="12" y="88"/><close/>
+      </path>
+      <path>
+        <move x="20" y="43"/><line x="80" y="43"/>
+        <move x="20" y="58"/><line x="80" y="58"/>
+        <move x="20" y="73"/><line x="80" y="73"/>
+      </path>
+    </background>
+    <foreground>
+      <fillstroke/>
+    </foreground>
+  </shape>
+
+  <!-- =========================================================================
+       5. BLOCK UNTOKENIZER T_2x2^(-1) (HỘI TỤ GẤP LẠI ẢNH 2D)
+       Dùng cho: Toán tử đảo Untokenizer T_(2x2)^(-1)
+       ========================================================================= -->
+  <shape aspect="variable" h="120" w="100" name="UntokenizerBlock" strokewidth="inherit">
+    <connections>
+      <constraint x="0" y="0.57" perimeter="0" name="W"/>
+      <constraint x="1" y="0.43" perimeter="0" name="E"/>
+      <constraint x="0.5" y="0" perimeter="0" name="N"/>
+      <constraint x="0.4" y="1" perimeter="0" name="S"/>
+      <constraint x="0.4" y="0.57" perimeter="0" name="Center"/>
+    </connections>
+    <background>
+      <path>
+        <move x="0" y="16"/><line x="20" y="0"/><line x="100" y="0"/><line x="80" y="16"/><close/>
+      </path>
+      <path>
+        <move x="80" y="16"/><line x="100" y="0"/><line x="100" y="104"/><line x="80" y="120"/><close/>
+      </path>
+      <path>
+        <move x="0" y="16"/><line x="80" y="16"/><line x="80" y="120"/><line x="0" y="120"/><close/>
+      </path>
+      <path>
+        <move x="0" y="42"/><line x="40" y="68"/>
+        <move x="0" y="94"/><line x="40" y="68"/>
+        <move x="20" y="16"/><line x="40" y="68"/>
+        <move x="20" y="120"/><line x="40" y="68"/>
+        <move x="40" y="68"/><line x="80" y="42"/>
+        <move x="40" y="68"/><line x="80" y="94"/>
+      </path>
+    </background>
+    <foreground>
+      <fillstroke/>
+    </foreground>
+  </shape>
+
+  <!-- =========================================================================
+       6. BLOCK NÚT CỘNG GRADIENT 3D (+) (SUMMATION NODE)
+       Dùng cho: Nút cộng tổng hợp Gradient vật lý + Tiên nghiệm
+       ========================================================================= -->
+  <shape aspect="variable" h="60" w="60" name="SummationNode3D" strokewidth="inherit">
+    <connections>
+      <constraint x="0" y="0.5" perimeter="0" name="W"/>
+      <constraint x="1" y="0.5" perimeter="0" name="E"/>
+      <constraint x="0.5" y="0" perimeter="0" name="N"/>
+      <constraint x="0.5" y="1" perimeter="0" name="S"/>
+      <constraint x="0.15" y="0.15" perimeter="0" name="NW"/>
+      <constraint x="0.15" y="0.85" perimeter="0" name="SW"/>
+      <constraint x="0.85" y="0.15" perimeter="0" name="NE"/>
+      <constraint x="0.85" y="0.85" perimeter="0" name="SE"/>
+      <constraint x="0.5" y="0.5" perimeter="0" name="Center"/>
+    </connections>
+    <background>
+      <ellipse x="0" y="0" w="60" h="60"/>
+      <ellipse x="5" y="5" w="50" h="50"/>
+      <path>
+        <move x="26" y="16"/><line x="34" y="16"/><line x="34" y="26"/><line x="44" y="26"/>
+        <line x="44" y="34"/><line x="34" y="34"/><line x="34" y="44"/><line x="26" y="44"/>
+        <line x="26" y="34"/><line x="16" y="34"/><line x="16" y="26"/><line x="26" y="26"/><close/>
+      </path>
+    </background>
+    <foreground>
+      <fillstroke/>
+    </foreground>
+  </shape>
+
+  <!-- =========================================================================
+       7. BLOCK KHUNG UNROLLING STAGE CONTAINER (STAGE CONTAINER BOX)
+       Dùng cho: Khung bao bọc Stage (k -> k+1) viền đứt nét kèm huy hiệu tiêu đề
+       ========================================================================= -->
+  <shape aspect="variable" h="200" w="300" name="StageContainerBox" strokewidth="inherit">
+    <connections>
+      <constraint x="0" y="0.5" perimeter="0" name="W"/>
+      <constraint x="1" y="0.5" perimeter="0" name="E"/>
+      <constraint x="0.5" y="0" perimeter="0" name="N"/>
+      <constraint x="0.5" y="1" perimeter="0" name="S"/>
+    </connections>
+    <background>
+      <roundrect x="0" y="15" w="300" h="185" arcsize="8"/>
+      <roundrect x="50" y="0" w="200" h="30" arcsize="15"/>
+    </background>
+    <foreground>
+      <fillstroke/>
+    </foreground>
+  </shape>
+</shapes>

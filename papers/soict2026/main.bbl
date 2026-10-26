@@ -1,0 +1,78 @@
+\begin{thebibliography}{10}
+\providecommand{\url}[1]{\texttt{#1}}
+\providecommand{\urlprefix}{URL }
+\providecommand{\doi}[1]{https://doi.org/#1}
+
+\bibitem{adler2018learned}
+Adler, J., {\"O}ktem, O.: Learned primal-dual reconstruction. IEEE Transactions on Medical Imaging \textbf{37}(6), 1322--1332 (2018)
+
+\bibitem{aggarwal2019modl}
+Aggarwal, H.K., Mani, M.P., Jacob, M.: {MoDL}: Model-based deep learning architecture for inverse problems. IEEE Transactions on Medical Imaging \textbf{38}(2), 394--405 (2019)
+
+\bibitem{beltagy2020longformer}
+Beltagy, I., Peters, M.E., Cohan, A.: Longformer: The long-document transformer. arXiv preprint arXiv:2004.05150 (2020)
+
+\bibitem{bui2026mva}
+Bui, D.C., Le, D.T., Nguyen, K.: Long-sequence modeling for sparse-view {CT} reconstruction. Machine Vision and Applications (Under Review) (2026)
+
+\bibitem{chen2018learn}
+Chen, H., Zhang, Y., Chen, Y., Chen, J., Zhang, W., Sun, H., Lv, Y., Liao, P., Zhou, J., Wang, G.: {LEARN}: Learned experts' assessment-based reconstruction network for sparse-data {CT}. IEEE Transactions on Medical Imaging \textbf{37}(6), 1333--1347 (2018)
+
+\bibitem{dao2024mamba2}
+Dao, T., Gu, A.: Transformers are {SSMs}: Generalized models and efficient algorithms through structured state space duality. In: International Conference on Machine Learning (ICML). pp. 10041--10071 (2024)
+
+\bibitem{ding2023longnet}
+Ding, J., Ma, S., Dong, L., Zhang, X., Huang, S., Wang, W., Zheng, N., Wei, F.: {LongNet}: Scaling transformers to 1,000,000,000 tokens. arXiv preprint arXiv:2307.02486 (2023)
+
+\bibitem{dosovitskiy2020vit}
+Dosovitskiy, A., Beyer, L., Kolesnikov, A., Weissenborn, D., Zhai, X., Unterthiner, T., Dehghani, M., Minderer, M., Heigold, G., Gelly, S., et~al.: An image is worth 16x16 words: Transformers for image recognition at scale. In: International Conference on Learning Representations (ICLR) (2021)
+
+\bibitem{gu2023mamba}
+Gu, A., Dao, T.: Mamba: Linear-time sequence modeling with selective state spaces. arXiv preprint arXiv:2312.00752 (2023)
+
+\bibitem{kak2001principles}
+Kak, A.C., Slaney, M.: Principles of Computerized Tomographic Imaging. SIAM (2001)
+
+\bibitem{lin2019dudonet}
+Lin, W.A., Liao, H., Peng, C., Sun, X., Zhang, J., Luo, J., Chellappa, R., Zhou, S.K.: {DuDoNet}: Dual domain network for {CT} metal artifact reduction. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). pp. 10512--10521 (2019)
+
+\bibitem{liu2021swin}
+Liu, Z., Lin, Y., Cao, Y., Hu, H., Wei, Y., Zhang, Z., Lin, S., Guo, B.: Swin transformer: Hierarchical vision transformer using shifted windows. In: Proceedings of the IEEE/CVF International Conference on Computer Vision (ICCV). pp. 10012--10022 (2021)
+
+\bibitem{ma2024umamba}
+Ma, J., Li, F., Wang, B.: {U-Mamba}: Enhancing long-range dependency for biomedical image segmentation. arXiv preprint arXiv:2401.04722 (2024)
+
+\bibitem{mccollough2016low}
+McCollough, C.H., Bartley, A.C., Carter, R.E., Chen, B., Drees, T.A., Edwards, P., Holmes, D.R., Huang, A.E., Leng, S., McMillan, K.L., et~al.: Low-dose {CT} for the detection and classification of metastatic liver lesions: Results of the 2016 {AAPM} low-dose {CT} grand challenge. Medical Physics \textbf{44}(10), e339--e352 (2017)
+
+\bibitem{radon1917}
+Radon, J.: {\"U}ber die Bestimmung von Funktionen durch ihre Integralwerte l{\"a}ngs gewisser Mannigfaltigkeiten. Berichte {\"u}ber die Verhandlungen der K{\"o}niglich S{\"a}chsischen Gesellschaft der Wissenschaften zu Leipzig \textbf{69}, 262--277 (1917)
+
+\bibitem{ronneberger2015u}
+Ronneberger, O., Fischer, P., Brox, T.: {U-Net}: Convolutional networks for biomedical image segmentation. In: International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI). pp. 234--241. Springer (2015)
+
+\bibitem{sidky2008image}
+Sidky, E.Y., Pan, X.: Image reconstruction in circular cone-beam computed tomography by constrained, total-variation minimization. Physics in Medicine \& Biology \textbf{53}(17), 4777--4807 (2008)
+
+\bibitem{vaswani2017attention}
+Vaswani, A., Shazeer, N., Parmar, N., Uszkoreit, J., Jones, L., Gomez, A.N., Kaiser, {\L}., Polosukhin, I.: Attention is all you need. In: Advances in Neural Information Processing Systems (NeurIPS). vol.~30 (2017)
+
+\bibitem{wang2020deep}
+Wang, G., Ye, J.C., De~Man, B.: Deep learning for computed tomography---every breath you take. Physics in Medicine \& Biology \textbf{65}(24), 245001 (2020)
+
+\bibitem{wang2022dudotrans}
+Wang, C., Shang, K., Zhang, H., Li, Q., Lee, S.G., et~al.: {DuDoTrans}: Dual-domain transformer for sparse-view {CT} reconstruction. In: International Workshop on Machine Learning for Medical Image Reconstruction (MLMIR). pp. 84--94. Springer (2022)
+
+\bibitem{wang2023regformer}
+Wang, D., Chen, Z., Wu, W., et~al.: A transformer-based iterative reconstruction model for sparse-view {CT} reconstruction. In: International Conference on Medical Image Computing and Computer-Assisted Intervention (MICCAI). pp. 112--122. Springer (2022)
+
+\bibitem{xiong2021nystromformer}
+Xiong, Y., Zeng, Z., Chakraborty, R., Tan, M., Fung, G., Li, Y., Singh, V.: {Nystr{\"o}mformer}: A {Nystr{\"o}m}-based algorithm for approximating self-attention. In: Proceedings of the AAAI Conference on Artificial Intelligence. vol.~35, pp. 14138--14148 (2021)
+
+\bibitem{zhang2018ista}
+Zhang, J., Ghanem, B.: {ISTA-Net}: Interpretable optimization-inspired deep network for image compressive sensing. In: Proceedings of the IEEE/CVF Conference on Computer Vision and Pattern Recognition (CVPR). pp. 1828--1837 (2018)
+
+\bibitem{zhu2024visionmamba}
+Zhu, L., Liao, B., Zhang, Q., Wang, X., Liu, W., Wang, X.: Vision {Mamba}: Efficient visual representation learning with bidirectional state space model. In: International Conference on Machine Learning (ICML) (2024)
+
+\end{thebibliography}

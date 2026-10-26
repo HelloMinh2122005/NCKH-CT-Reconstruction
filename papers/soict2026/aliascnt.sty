@@ -1,0 +1,20 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{aliascnt}[2018/09/07 v1.5 Alias counters (HO)]
+\newcommand*{\newaliascnt}[2]{%
+  \@ifundefined{c@#2}{%
+    \@latex@error{Counter #2 undefined}\@ehc
+  }{%
+    \@ifundefined{c@#1}{%
+      \expandafter\let\csname c@#1\expandafter\endcsname\csname c@#2\endcsname
+      \expandafter\let\csname p@#1\expandafter\endcsname\csname p@#2\endcsname
+      \expandafter\let\csname cl@#1\expandafter\endcsname\csname cl@#2\endcsname
+      \expandafter\let\csname the#1\expandafter\endcsname\csname the#2\endcsname
+    }{%
+      \@latex@error{Counter #1 already defined}\@ehc
+    }%
+  }%
+}
+\newcommand*{\aliascntresetthe}[1]{%
+  \expandafter\let\csname the#1\expandafter\endcsname\csname thealias@#1\endcsname
+}
+\endinput

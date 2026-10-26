@@ -1,0 +1,133 @@
+\relax 
+\@writefile{toc}{\contentsline {title}{Benchmarking Long-Sequence Attention and State-Space Mechanisms in Deep Unfolding Networks for Limited-Angle CT Reconstruction}{1}{}\protected@file@percent }
+\@writefile{toc}{\authcount {3}}
+\@writefile{toc}{\contentsline {author}{Dinh-Minh Phan \and Doanh C. Bui \and Khang Nguyen}{1}{}\protected@file@percent }
+\citation{wang2020deep,kak2001principles}
+\citation{chen2018learn,sidky2008image}
+\citation{kak2001principles}
+\citation{chen2018learn,sidky2008image}
+\citation{sidky2008image}
+\citation{chen2018learn}
+\citation{adler2018learned}
+\citation{aggarwal2019modl}
+\citation{zhang2018ista}
+\citation{wang2023regformer}
+\citation{chen2018learn}
+\citation{lin2019dudonet}
+\citation{wang2022dudotrans}
+\@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{2}{}\protected@file@percent }
+\newlabel{sec:intro}{{1}{2}}
+\newlabel{eq:unroll_basic}{{1}{2}}
+\citation{kak2001principles}
+\citation{bui2026mva}
+\citation{chen2018learn,ronneberger2015u}
+\citation{dosovitskiy2020vit,vaswani2017attention}
+\citation{liu2021swin}
+\citation{bui2026mva}
+\citation{beltagy2020longformer}
+\citation{ding2023longnet}
+\citation{gu2023mamba,dao2024mamba2}
+\citation{zhu2024visionmamba}
+\citation{ma2024umamba}
+\citation{chen2018learn}
+\citation{wang2022dudotrans}
+\citation{radon1917}
+\citation{kak2001principles}
+\citation{kak2001principles}
+\@writefile{toc}{\contentsline {section}{\numberline {2}Background and Problem Formulation}{4}{}\protected@file@percent }
+\newlabel{sec:background}{{2}{4}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.1}Forward Model of Limited-Angle CT}{4}{}\protected@file@percent }
+\newlabel{eq:radon}{{2}{4}}
+\newlabel{eq:discrete_forward}{{3}{4}}
+\citation{chen2018learn}
+\@writefile{toc}{\contentsline {subsection}{\numberline {2.2}Deep Unfolding Framework: LEARN}{5}{}\protected@file@percent }
+\newlabel{eq:opt_problem}{{5}{5}}
+\newlabel{eq:learn_unroll_stage}{{6}{5}}
+\newlabel{eq:loss_mse}{{7}{5}}
+\@writefile{lof}{\contentsline {figure}{\numberline {1}{\ignorespaces Architectural overview of the deep unfolding framework with long-sequence regularization priors. Top: The $T$-stage iterative unrolling network ($t \in \{0, \dots  , T-1\}$, corresponding to stage $k \in \{0, \dots  , K-1\}$ with $K = 14$ in text) unrolls regularized gradient descent, alternating between tomographic data consistency via analytical backprojection ($\lambda ^t A^T(A x^t - y)$) and a learned neural regularizer $\mathcal  {G}(x_t)$ producing residual update $\nabla _{x_t} R$. Bottom: Detailed structure of the long-sequence regularizer $\mathcal  {G}(\cdot )$. The intermediate CT estimate ($H \times W$) is tokenized into non-overlapping $p \times p$ patches to form a sequence of length $HW/p^2$, processed through sub-quadratic sequence mechanisms (LongNet, Longformer, Mamba) to capture long-range streak dependencies across the tomographic slice, and decoded back to image space via convolutional layers.}}{6}{}\protected@file@percent }
+\newlabel{fig:methodology}{{1}{6}}
+\@writefile{toc}{\contentsline {section}{\numberline {3}Long-Sequence Architectures as Deep Unfolding Priors}{6}{}\protected@file@percent }
+\newlabel{sec:architectures}{{3}{6}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Regularization Prior Block Formulation and Weight Sharing}{6}{}\protected@file@percent }
+\newlabel{sec:reg_block}{{3.1}{6}}
+\citation{beltagy2020longformer}
+\newlabel{eq:reg_conv1}{{8}{7}}
+\newlabel{eq:reg_unfold}{{9}{7}}
+\newlabel{eq:reg_engine}{{10}{7}}
+\newlabel{eq:reg_fold}{{11}{7}}
+\newlabel{eq:reg_conv3}{{12}{7}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}LEARN\_Longformer: Sliding Window with Global Anchors}{7}{}\protected@file@percent }
+\citation{ding2023longnet}
+\citation{gu2023mamba}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.3}LEARN\_LongNet: Multi-Scale Exponentially Dilated Attention}{8}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}LEARN\_Mamba: Selective State-Space Sequential Priors}{8}{}\protected@file@percent }
+\citation{mccollough2016low}
+\newlabel{eq:mamba_rec}{{22}{9}}
+\newlabel{eq:mamba_discr}{{23}{9}}
+\newlabel{eq:mamba_out}{{24}{9}}
+\@writefile{toc}{\contentsline {section}{\numberline {4}Experimental Benchmark and Analysis}{9}{}\protected@file@percent }
+\newlabel{sec:experiments}{{4}{9}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Experimental Setup}{9}{}\protected@file@percent }
+\citation{wang2022dudotrans}
+\citation{chen2018learn}
+\citation{gu2023mamba}
+\citation{ding2023longnet}
+\citation{beltagy2020longformer}
+\citation{wang2022dudotrans}
+\citation{chen2018learn}
+\citation{gu2023mamba}
+\citation{ding2023longnet}
+\citation{beltagy2020longformer}
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Quantitative reconstruction benchmark under moderate limited-angle geometry ($120^\circ $, 64 views) on the Mayo Clinic LDCT test set (Patient \texttt  {L310}, 214 slices). All deep unfolding models operate with $K = 14$ stages and $N = 16,384$ tokens. Latency denotes average GPU inference time per $256 \times 256$ slice on an NVIDIA A100. Best baseline results are in \textbf  {bold}, second-best are \underline  {underlined}.}}{10}{}\protected@file@percent }
+\newlabel{tab:benchmark_120}{{1}{10}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Quantitative Benchmark Results}{10}{}\protected@file@percent }
+\citation{kak2001principles}
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Quantitative reconstruction benchmark under severe limited-angle geometry ($90^\circ $, 64 views, missing $180^\circ $ Fourier angular wedge, $50\%$ frequency null space under Hermitian symmetry) on the Mayo Clinic LDCT test set (Patient \texttt  {L310}, 214 slices). Best baseline results are in \textbf  {bold}, second-best are \underline  {underlined}.}}{11}{}\protected@file@percent }
+\newlabel{tab:benchmark_90}{{2}{11}}
+\@writefile{lof}{\contentsline {figure}{\numberline {2}{\ignorespaces Multi-regime visual comparison of reconstructed CT slices on the Mayo Clinic LDCT benchmark (Patient \texttt  {L310}, Slice 050). Top row: Moderate $120^\circ $ scanning ($64$ views). Bottom row: Severe $90^\circ $ scanning ($64$ views, $180^\circ $ 2D Fourier missing-wedge void, $50\%$ frequency void). Columns illustrate analytical FBP, canonical CNN-based LEARN, feedforward dual-domain DuDoTrans, and sequence-based unrolling models (LEARN\_Mamba, LEARN\_LongNet, LEARN\_Longformer). Metrics stamped above each panel denote the overall test-set mean (PSNR [dB] | SSIM) across all 214 slices of Patient \texttt  {L310} for baseline reference (individual Slice 050 metrics for Longformer are 33.73 dB / 0.9107 at $120^\circ $). Yellow bounding boxes denote an anatomical Region of Interest (ROI) spanning the lateral rib boundary and peripheral soft-tissue interfaces, magnified by $3\times $ in the bottom-left insets. Quantitatively, LEARN\_Longformer achieves sharper boundary fidelity and tissue preservation at $120^\circ $, while under extreme $90^\circ $ truncation, canonical LEARN exhibits conservative smoothing while sequence models suffer from the unconstrained ill-conditioned null space.}}{13}{}\protected@file@percent }
+\newlabel{fig:visual_comparison_roi}{{2}{13}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Qualitative Visual Comparison}{13}{}\protected@file@percent }
+\@writefile{lof}{\contentsline {figure}{\numberline {3}{\ignorespaces Residual absolute error maps $|x_{\text  {recon}} - x^*|$ scaled by a factor of 5 using the 'jet' colormap under moderate $120^\circ $ scanning (Patient \texttt  {L310}, Slice 050): (a) LEARN\_Mamba, (b) LEARN\_LongNet, and (c) LEARN\_Longformer. Blue indicates near-zero error energy, while red denotes severe discrepancy. LEARN\_Longformer exhibits near-uniform blue background, corroborating its streak reduction across both streak pathways and soft-tissue parenchyma.}}{14}{}\protected@file@percent }
+\newlabel{fig:error_maps}{{3}{14}}
+\citation{bui2026mva}
+\citation{xiong2021nystromformer}
+\citation{bui2026mva}
+\@writefile{lof}{\contentsline {figure}{\numberline {4}{\ignorespaces Evolution of Longformer self-attention maps across $K = 14$ deep unrolling iterations under moderate limited-angle scanning ($120^\circ $, 64 views, Patient \texttt  {L310}, Slice 050). Each panel visualizes the dynamic attention distribution of the global anchor token reshaped to $128 \times 128$ spatial resolution, displayed using percentile clipping (1st to 99th percentile) with logarithmic contrast normalization. In early iterations ($t=1 \to 5$), attention concentrates heavily along the peripheral boundaries and high-frequency streak trajectory interfaces. In intermediate and final iterations ($t=6 \to 14$), attention shifts dynamically to refine soft-tissue contrast and internal organ contours, achieving high-fidelity reconstruction ($33.73\text  { dB}$ PSNR, $0.9107$ SSIM).}}{15}{}\protected@file@percent }
+\newlabel{fig:attn_evolution}{{4}{15}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Discussion and Future Directions}{15}{}\protected@file@percent }
+\newlabel{sec:discussion}{{5}{15}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Geometric Duality: Sparse-View vs. Limited-Angle Tomography}{15}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Structural Vulnerability of 1D Causal Scanning}{16}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Trade-Off Between Architectural Complexity and Clinical Latency}{16}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.4}Convergence Ceiling of First-Order Unrolling and Dual-Domain Synergy}{17}{}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.5}Ablation Perspectives and Architectural Scoping}{17}{}\protected@file@percent }
+\newlabel{sec:ablation_scoping}{{5.5}{17}}
+\bibstyle{splncs04}
+\bibdata{refs}
+\bibcite{adler2018learned}{1}
+\bibcite{aggarwal2019modl}{2}
+\bibcite{beltagy2020longformer}{3}
+\bibcite{bui2026mva}{4}
+\bibcite{chen2018learn}{5}
+\bibcite{dao2024mamba2}{6}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion}{18}{}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{18}}
+\bibcite{ding2023longnet}{7}
+\bibcite{dosovitskiy2020vit}{8}
+\bibcite{gu2023mamba}{9}
+\bibcite{kak2001principles}{10}
+\bibcite{lin2019dudonet}{11}
+\bibcite{liu2021swin}{12}
+\bibcite{ma2024umamba}{13}
+\bibcite{mccollough2016low}{14}
+\bibcite{radon1917}{15}
+\bibcite{ronneberger2015u}{16}
+\bibcite{sidky2008image}{17}
+\bibcite{vaswani2017attention}{18}
+\bibcite{wang2020deep}{19}
+\bibcite{wang2022dudotrans}{20}
+\bibcite{wang2023regformer}{21}
+\bibcite{xiong2021nystromformer}{22}
+\bibcite{zhang2018ista}{23}
+\bibcite{zhu2024visionmamba}{24}
+\gdef \@abspage@last{20}

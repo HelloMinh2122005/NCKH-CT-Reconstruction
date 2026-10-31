@@ -36,6 +36,12 @@ def parse_args():
     parser.add_argument("--gaussian_level", type=float, default=0.0)
     parser.add_argument("--batch_size", type=int, default=1)
     parser.add_argument("--num_workers", type=int, default=4)
+    parser.add_argument(
+        "--test_patients",
+        nargs="+",
+        default=["L310"],
+        help="Mã bệnh nhân kiểm thử độc lập (mặc định: L310)"
+    )
     return parser.parse_args()
 
 
@@ -56,6 +62,7 @@ def main():
     print("🔍 ĐÁNH GIÁ MÔ HÌNH BASELINE: RegFormer (Local-Nonlocal Regularization)")
     print(f"- Tệp checkpoint: {args.ckpt_path}")
     print(f"- Tập dữ liệu: {args.dataset_type.upper()} | Dải góc: {angle_range_deg}° (Views: {args.num_view})")
+    print(f"- Bệnh nhân kiểm thử: {args.test_patients}")
     print("=" * 80)
 
     dm = get_datamodule(
@@ -73,6 +80,7 @@ def main():
         use_precomputed=True,
         batch_size=args.batch_size,
         num_workers=args.num_workers,
+        test_patients=args.test_patients,
     )
 
     model = RegFormer_LA.load_from_checkpoint(

@@ -81,10 +81,18 @@ class LimitedAngleCT_Provider(Dataset):
 
         paths = []
         for patient_id in patients:
-            pattern = glob.glob(
-                os.path.join(self.dicom_dir, split_name, patient_id, "full_3mm", f"{patient_id}_FD_3_1.CT.*.*.*.*.*.*.*.*.*.IMA")
-            )
-            paths.extend(pattern)
+            # Hỗ trợ linh hoạt các định dạng tên file ảnh DICOM/IMA (legacy Mayo Clinic hoặc symlink đánh số chuẩn)
+            patterns = [
+                os.path.join(self.dicom_dir, split_name, patient_id, "full_3mm", f"{patient_id}_FD_3_1.CT.*.IMA"),
+                os.path.join(self.dicom_dir, split_name, patient_id, "full_3mm", f"{patient_id}_FD_3_1.CT.*.*.*.*.*.*.*.*.*.IMA"),
+                os.path.join(self.dicom_dir, split_name, patient_id, "full_3mm", "*.IMA"),
+                os.path.join(self.dicom_dir, split_name, patient_id, "full_3mm", "*.dcm")
+            ]
+            for p in patterns:
+                matches = glob.glob(p)
+                if matches:
+                    paths.extend(matches)
+                    break
 
         # Sắp xếp danh sách đường dẫn theo thứ tự để đảm bảo tính nhất quán (reproducibility)
         self.slices_path = sorted(paths)

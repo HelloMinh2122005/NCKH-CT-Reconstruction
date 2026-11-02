@@ -1,0 +1,96 @@
+=== HPC-UIT COMPUTE NODE PROBE ===
+[INFO] Start at: Sun Nov  1 07:50:56 PM +07 2026
+[INFO] Hostname: h200node01
+[INFO] SLURM_JOB_ID: 8433
+[INFO] SLURM_JOB_PARTITION: small
+[INFO] Git commit: 52089d1c7c9030a632258a3ee2282f2fa94aa346
+
+--- 1. GPU Information ---
+Sun Nov  1 19:50:56 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:DF:00.0 Off |                   On |
+| N/A   51C    P0            198W /  700W |    9177MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0    8   0   0  |              15MiB / 16384MiB    | 16      0 |  1   0    1    0    1 |
+|                  |               0MiB / 14809MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+
+--- 2. CPU and RAM ---
+CPU(s):                                  224
+Model name:                              Intel(R) Xeon(R) Platinum 8480C
+Thread(s) per core:                      2
+Core(s) per socket:                      56
+NUMA node0 CPU(s):                       0-55,112-167
+NUMA node1 CPU(s):                       56-111,168-223
+               total        used        free      shared  buff/cache   available
+Mem:           2.0Ti       156Gi        42Gi       9.3Gi       1.8Ti       1.8Ti
+Swap:             0B          0B          0B
+
+--- 3. Storage and Filesystem ---
+Filesystem           Size  Used Avail Use% Mounted on
+10.206.3.12:/nfs-ai  170T   88T   83T  52% /datastore
+drwxr-xr-x 6 doanhbc Domain Users 152 Nov  1 19:50 /datastore/doanhbc/minhdphan
+
+--- 4. System Python and Compilers ---
+python3: /cm/local/apps/python3/bin/python3
+Python 3.12.13
+gcc: /usr/bin/gcc
+gcc (Ubuntu 13.3.0-6ubuntu2~24.04.1) 13.3.0
+nvcc: 
+/var/spool/slurmd/job08433/slurm_script: line 65: nvcc: command not found
+conda: 
+/var/spool/slurmd/job08433/slurm_script: line 67: conda: command not found
+
+--- 5. Environment Modules ---
+Currently Loaded Modulefiles:
+ 1) slurm/slurm/25.05   2) python3  
+Available modules:
+---------------------------- /cm/local/modulefiles -----------------------------
+boost/1.81.0        freeipmi/1.6.16  module-git   python3            
+cluster-tools/11.0  gcc/14.2.0       module-info  python312          
+cm-bios-tools       gmp/6.3.0        modules      sedutil/1.16.0     
+cm-nvfwupd/2.1.1    hwloc2/2.8.0     mpc/1.3.1    shared             
+cm-pmix3/3.1.7      ipmitool/1.8.19  mpfr/4.2.1   slurm/slurm/25.05  
+cm-pmix4/4.1.3      lua/5.4.7        null         ucx/1.18.0         
+cmd                 luajit           openldap     use.own            
+dot                 mariadb-libs     prs          
+
+---------------------------- /cm/shared/modulefiles ----------------------------
+cm-pmix3/3.1.7           hdf5_18/1.8.21         openblas/dynamic/0.3.28  
+cm-pmix4/4.1.3           hpl/2.3                openmpi/gcc/64/4.1.8     
+cuda12.9/blas/12.9.1     hwloc/1.11.13          openmpi4/gcc/4.1.8       
+cuda12.9/fft/12.9.1      hwloc2/2.8.0           ucx/1.18.0               
+cuda12.9/toolkit/12.9.1  iperf/3.17.1           
+default-environment      mvapich2/gcc/64/2.3.7  
+
+--- 6. Internet Access from Compute Node ---
+PyPI (https://pypi.org): HTTP/2 200 
+GitHub (https://github.com): HTTP/2 200 
+HuggingFace (https://huggingface.co): HTTP/2 200 
+TCIA (https://services.cancerimagingarchive.net): HTTP/1.1 404 Not Found
+
+[INFO] Probe completed successfully at Sun Nov  1 07:50:59 PM +07 2026
+[INFO] cleanup rc=0 at Sun Nov  1 07:50:59 PM +07 2026

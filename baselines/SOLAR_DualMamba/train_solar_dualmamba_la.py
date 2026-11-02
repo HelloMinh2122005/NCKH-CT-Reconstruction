@@ -26,11 +26,12 @@ from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
 # Tương thích PyTorch 2.6+
-_orig_torch_load = torch.load
-def _safe_torch_load(*args, **kwargs):
-    kwargs["weights_only"] = False
-    return _orig_torch_load(*args, **kwargs)
-torch.load = _safe_torch_load
+if hasattr(torch, "load"):
+    _orig_torch_load = torch.load
+    def _safe_torch_load(*args, **kwargs):
+        kwargs["weights_only"] = False
+        return _orig_torch_load(*args, **kwargs)
+    torch.load = _safe_torch_load
 
 # Import DataModule Factory và Mô hình SOLAR_DualMamba
 from data.datamodule_factory import get_datamodule
@@ -94,7 +95,7 @@ def parse_args():
     parser.add_argument(
         "--angle_range_deg",
         type=float,
-        default=120.0,
+        default=90.0,
         help="Độ rộng cung quét góc giới hạn tính bằng độ (ví dụ: 120 độ)"
     )
     parser.add_argument(
@@ -161,7 +162,9 @@ def parse_args():
     )
     parser.add_argument(
         "--use_precomputed",
-        action="store_true",
+        type=lambda x: str(x).lower() in ("true", "1", "yes"),
+        nargs="?",
+        const=True,
         default=True,
         help="Đọc trực tiếp từ file cache .npy đã tính sẵn"
     )
@@ -200,6 +203,12 @@ def parse_args():
         default=1e-5,
         help="Tốc độ học tối thiểu trong lịch hạ Cosine Annealing (mặc định = 1e-5)"
     )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Hạt giống ngẫu nhiên phục vụ tái lập kết quả theo quyết định Q5 (mặc định = 42)"
+    )
     
     # 6. Thư mục Checkpoint & Logging
     parser.add_argument(
@@ -222,12 +231,27 @@ def parse_args():
         default=None,
         help="Đường dẫn đến checkpoint .ckpt để tiếp tục huấn luyện (Resume Training)"
     )
+    parser.add_argument(
+        "--limit_train_batches",
+        type=int,
+        default=None,
+        help="Số lượng batch huấn luyện tối đa mỗi epoch (phục vụ smoke test / debug)"
+    )
+    parser.add_argument(
+        "--limit_val_batches",
+        type=int,
+        default=None,
+        help="Số lượng batch kiểm định tối đa mỗi epoch (phục vụ smoke test / debug)"
+    )
     
     return parser.parse_args()
 
 
 def main():
     args = parse_args()
+
+    # Thiết lập seed tái lập thực nghiệm theo quyết định Q5 (spec-1-decisions.md)
+    pl.seed_everything(args.seed, workers=True)
 
     # Tính toán góc bắt đầu và kết thúc (radian)
     angle_range_deg = args.angle_range_deg
@@ -252,6 +276,7 @@ def main():
     print(f"- Dải góc quét: {angle_range_deg}° (Views: {args.num_view}, Detectors: {args.num_detectors})")
     print(f"- Kích thước ảnh: {args.input_size}x{args.input_size} | Unrolling Stages: {args.n_iterations}")
     print(f"- Số Epochs: {args.max_epochs} | Batch size: {args.batch_size} | CG iters: {args.cg_iters}")
+    print(f"- Hạt giống ngẫu nhiên (seed): {args.seed} (pl.seed_everything)")
     print(f"- Thư mục Checkpoint: {args.output_dir}")
     print("=" * 80)
 
@@ -301,8 +326,8 @@ def main():
     
     checkpoint_callback = ModelCheckpoint(
         dirpath=args.output_dir,
-        filename="solar_dualmamba_la-{epoch:02d}-{val_psnr:.2f}-{val_ssim:.4f}",
-        save_top_k=3,
+        filename="solar_dualmamba_la-{epoch:02d}-{val_psnr:.4f}-{val_ssim:.4f}",
+        save_top_k=1,
         monitor="val_psnr",
         mode="max",
         save_last=True,
@@ -318,10 +343,28 @@ def main():
         logger=logger,
         callbacks=[checkpoint_callback, lr_monitor],
         log_every_n_steps=10,
+        limit_train_batches=args.limit_train_batches,
+        limit_val_batches=args.limit_val_batches,
     )
+
+    # Kiểm tra nghiêm ngặt số lượng lát cắt tập kiểm định (Validation) trên L110 (Q7)
+    datamodule.setup("fit")
+    val_count = len(datamodule.val_dataset) if hasattr(datamodule, "val_dataset") and datamodule.val_dataset is not None else 0
+    print(f"📊 Kiểm tra tập Validation (L110): {val_count} lát cắt được nạp.")
+    if val_count == 0:
+        raise RuntimeError(
+            "CRITICAL ERROR: Tập kiểm định (Validation) tải được 0 lát cắt từ L110! "
+            "Dừng ngay lập tức để không lưu checkpoint sai lệch (NO fallback)."
+        )
 
     # 4. Bắt đầu quá trình huấn luyện
     trainer.fit(model, datamodule=datamodule, ckpt_path=args.resume_ckpt)
+    
+    # Đo và in lượng VRAM lớn nhất đã cấp phát trên GPU (CUDA Peak Memory)
+    if torch.cuda.is_available():
+        peak_vram_mb = torch.cuda.max_memory_allocated() / (1024 ** 2)
+        print(f"🔥 Peak VRAM allocated: {peak_vram_mb:.2f} MB ({peak_vram_mb / 1024:.2f} GB)")
+
     print("\n🎉 Huấn luyện SOLAR_DualMamba hoàn thành thành công!")
 
 

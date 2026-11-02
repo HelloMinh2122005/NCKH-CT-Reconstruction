@@ -12,7 +12,7 @@
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=32G
-#SBATCH --time=01:30:00
+#SBATCH --time=02:00:00
 #SBATCH --gres=gpu:1g.18gb:1
 
 set -euo pipefail
@@ -56,47 +56,111 @@ source "$ENV_DIR/bin/activate"
 set -u
 
 echo "=== 2. Nâng cấp pip và wheel ==="
+# Nâng cấp công cụ cài đặt pip, setuptools và wheel lên phiên bản mới nhất
 pip install --upgrade pip setuptools wheel
 
 echo "=== 3. Cài đặt PyTorch và CUDA ops ==="
 # Cài đặt PyTorch tương thích CUDA 12
-pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu124 || \
-pip install torch torchvision torchaudio
+# Ghim chính xác PyTorch 2.8.0+cu128 cùng torchvision và torchaudio từ index CUDA 12.8 của PyTorch
+pip install \
+    "torch==2.8.0+cu128" \
+    "torchvision==0.23.0+cu128" \
+    "torchaudio==2.8.0+cu128" \
+    --index-url https://download.pytorch.org/whl/cu128
 
 echo "=== 4. Cài đặt các gói lõi từ requirements.txt ==="
+# Cài đặt các gói phụ thuộc lõi với phiên bản được ghim chính xác tuyệt đối (fail-fast, không dùng range)
 pip install \
-    "pytorch-lightning>=2.0.0" \
-    "torchmetrics>=1.0.0,<=1.8.2" \
-    "pydicom>=2.4.0,<=2.4.4" \
-    "transformers>=4.30.0,<=4.57.6" \
-    "scipy>=1.10.0" \
-    "numpy>=1.23.0" \
-    "Pillow>=9.5.0" \
-    "tqdm>=4.65.0" \
-    "matplotlib>=3.7.0" \
-    "tensorboard>=2.12.0" \
-    "einops>=0.6.0"
+    "pytorch-lightning==2.5.0" \
+    "torchmetrics==1.8.2" \
+    "pydicom==2.4.4" \
+    "transformers==4.57.6" \
+    "scipy==1.13.1" \
+    "numpy==1.26.4" \
+    "Pillow==10.4.0" \
+    "tqdm==4.67.1" \
+    "matplotlib==3.9.2" \
+    "tensorboard==2.18.0" \
+    "einops==0.8.0"
 
 echo "=== 5. Cài đặt Tomography & Mamba Packages ==="
 # Cài đặt ASTRA-Toolbox và ODL
-pip install astra-toolbox odl || echo "[WARN] ODL/Astra pip install needs verification from probe output"
+# Ghim chính xác astra-toolbox 2.3.0 và odl 0.8.3, loại bỏ fallback để đảm bảo fail-fast
+pip install \
+    "astra-toolbox==2.3.0" \
+    "odl==0.8.3"
+
+# Nạp module CUDA toolkit 12.9 trước khi cài đặt mamba-ssm để cung cấp nvcc và CUDA headers biên dịch
+module load cuda12.9/toolkit/12.9.1
+nvcc --version
 
 # Cài đặt Mamba-SSM (yêu cầu torch đã sẵn sàng)
-pip install "mamba-ssm>=2.0.0,<=2.3.1" --no-build-isolation || echo "[WARN] mamba-ssm install needs probe info"
+# Biên dịch mamba-ssm 2.3.1 từ nguồn với --no-build-isolation bằng nvcc từ module cuda12.9
+pip install "mamba-ssm==2.3.1" --no-build-isolation
 
 echo "=== 6. Kiểm tra Import và CUDA Invariants ==="
+# Khối kiểm thử cuối cùng: kiểm tra tính toàn vẹn của PyTorch CUDA op, mamba_ssm selective scan và ODL+ASTRA FanBeam
 python -c "
+import sys
+import numpy as np
 import torch
+
+# 1. Kiểm tra toán tử CUDA qua PyTorch
+print('[CHECK 1/3] Kiểm tra PyTorch và CUDA...')
 print('PyTorch Version:', torch.__version__)
 print('CUDA Available:', torch.cuda.is_available())
-if torch.cuda.is_available():
-    print('Device Name:', torch.cuda.get_device_name(0))
-    x = torch.randn(10, 10, device='cuda')
-    print('Tensor CUDA test:', (x @ x).norm().item())
+if not torch.cuda.is_available():
+    print('LỖI: CUDA không khả dụng trong PyTorch!', file=sys.stderr)
+    sys.exit(1)
+print('Device Name:', torch.cuda.get_device_name(0))
+x = torch.randn(10, 10, device='cuda')
+matmul_norm = (x @ x).norm().item()
+print('Tensor CUDA matmul norm:', matmul_norm)
+assert matmul_norm > 0, 'Toán tử matmul trên GPU trả về chuẩn bằng 0'
+print('PyTorch CUDA op test: PASSED')
+
+# 2. Kiểm tra mamba_ssm và selective scan CUDA kernel trên GPU
+print('[CHECK 2/3] Kiểm tra mamba_ssm và selective scan CUDA kernel...')
+import mamba_ssm
+from mamba_ssm.ops.selective_scan_interface import selective_scan_fn
+from mamba_ssm import Mamba
+print('Mamba-SSM Version:', mamba_ssm.__version__)
+mamba_layer = Mamba(d_model=64, d_state=16, d_conv=4, expand=2).to('cuda')
+x_mamba = torch.randn(2, 16, 64, device='cuda')
+y_mamba = mamba_layer(x_mamba)
+print('Mamba forward output shape:', y_mamba.shape)
+assert y_mamba.shape == x_mamba.shape, 'Đầu ra Mamba forward không khớp kích thước đầu vào'
+print('mamba_ssm selective scan test: PASSED')
+
+# 3. Kiểm tra ASTRA và ODL với FanBeamGeometry (src_radius=600, det_radius=290)
+print('[CHECK 3/3] Kiểm tra ODL và ASTRA-Toolbox FanBeam forward projection...')
+import odl
+import astra
+print('ODL Version:', odl.__version__)
+print('ASTRA Version:', astra.__version__)
+xx = 200
+space = odl.uniform_discr([-xx, -xx], [xx, xx], [256, 256], dtype='float32')
+angle_partition = odl.uniform_partition(0, np.radians(120), 64)
+detector_partition = odl.uniform_partition(-480, 480, 512)
+geometry = odl.tomo.FanBeamGeometry(
+    angle_partition,
+    detector_partition,
+    src_radius=600,
+    det_radius=290
+)
+impl = 'astra_cuda' if torch.cuda.is_available() else 'astra_cpu'
+print('Sử dụng toán tử Radon ODL với backend:', impl)
+operator = odl.tomo.RayTransform(space, geometry, impl=impl)
+phantom = space.one()
+sino = operator(phantom)
+sino_norm = float(np.linalg.norm(sino))
+print('FanBeam forward projection sino norm:', sino_norm)
+assert sino_norm > 0, 'Sinogram forward projection norm phải lớn hơn 0'
+print('ODL và ASTRA FanBeam test: PASSED')
 "
 
 echo "=== 7. Danh sách gói (pip freeze) ==="
+# Xuất toàn bộ danh sách gói đã cài đặt để lưu vết phục vụ kiểm tra provenance
 pip freeze
 
 echo "=== SETUP HOÀN TẤT THÀNH CÔNG TẠI $(date) ==="
-

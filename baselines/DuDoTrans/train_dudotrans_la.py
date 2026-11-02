@@ -15,11 +15,12 @@ from pytorch_lightning.callbacks import ModelCheckpoint, LearningRateMonitor
 from pytorch_lightning.loggers import TensorBoardLogger
 
 # Tương thích PyTorch 2.6+
-_orig_torch_load = torch.load
-def _safe_torch_load(*args, **kwargs):
-    kwargs["weights_only"] = False
-    return _orig_torch_load(*args, **kwargs)
-torch.load = _safe_torch_load
+if hasattr(torch, "load"):
+    _orig_torch_load = torch.load
+    def _safe_torch_load(*args, **kwargs):
+        kwargs["weights_only"] = False
+        return _orig_torch_load(*args, **kwargs)
+    torch.load = _safe_torch_load
 
 # Import DataModule Factory và Mô hình DuDoTrans
 from data.datamodule_factory import get_datamodule
@@ -84,7 +85,7 @@ def parse_args():
     parser.add_argument(
         "--angle_range_deg",
         type=float,
-        default=120.0,
+        default=90.0,
         help="Độ rộng cung quét góc giới hạn tính bằng độ (ví dụ: 120 độ)"
     )
     parser.add_argument(
@@ -188,6 +189,12 @@ def parse_args():
         default=None,
         help="Đường dẫn đến checkpoint .ckpt để tiếp tục huấn luyện (Resume Training)"
     )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=42,
+        help="Hạt giống ngẫu nhiên phục vụ tái lập kết quả theo quyết định Q5 (mặc định: 42)"
+    )
     
     return parser.parse_args()
 
@@ -195,6 +202,9 @@ def parse_args():
 
 def main():
     args = parse_args()
+    
+    # Thiết lập seed tái lập thực nghiệm theo quyết định Q5 (spec-1-decisions.md)
+    pl.seed_everything(args.seed, workers=True)
     
     if args.start_ang_deg is not None and args.end_ang_deg is not None:
         start_ang_deg = args.start_ang_deg
@@ -219,6 +229,7 @@ def main():
     print(f"- Dải góc quét: [{start_ang_deg:.1f}°, {end_ang_deg:.1f}°] (Cung quét {angle_range_deg:.1f}°)")
     print(f"- Số góc chiếu (num_view): {args.num_view} | Detectors: {args.num_detectors}")
     print(f"- Cấu hình Dual-Domain: feature_dim={args.feature_dim}, lambda_sino={args.lambda_sino}")
+    print(f"- Hạt giống ngẫu nhiên (seed): {args.seed} (pl.seed_everything)")
     print(f"- Setting Tag: {setting_tag}")
     print(f"- Tập dữ liệu (dataset_type): {args.dataset_type.upper()}")
     print(f"- Thư mục lưu Checkpoint: {args.output_dir}")
@@ -280,7 +291,7 @@ def main():
     
     trainer = pl.Trainer(
         max_epochs=args.max_epochs,
-        accelerator="gpu",
+        accelerator="gpu" if torch.cuda.is_available() else "cpu",
         devices=1,
         logger=logger,
         callbacks=[checkpoint_callback, lr_monitor],
@@ -288,8 +299,23 @@ def main():
         enable_progress_bar=True,
     )
     
+    # Kiểm tra nghiêm ngặt số lượng lát cắt tập kiểm định (Validation) trên L110 (Q7)
+    dm.setup("fit")
+    val_count = len(dm.val_dataset) if hasattr(dm, "val_dataset") and dm.val_dataset is not None else 0
+    print(f"📊 Kiểm tra tập Validation (L110): {val_count} lát cắt được nạp.")
+    if val_count == 0:
+        raise RuntimeError(
+            "CRITICAL ERROR: Tập kiểm định (Validation) tải được 0 lát cắt từ L110! "
+            "Dừng ngay lập tức để không lưu checkpoint sai lệch (NO fallback)."
+        )
+
     print("\n▶️ Bắt đầu tiến trình Trainer.fit()...")
     trainer.fit(model, datamodule=dm, ckpt_path=args.resume_ckpt)
+    
+    # Đo và in lượng VRAM lớn nhất đã cấp phát trên GPU (CUDA Peak Memory)
+    if torch.cuda.is_available():
+        peak_vram_mb = torch.cuda.max_memory_allocated() / (1024 ** 2)
+        print(f"🔥 Peak VRAM allocated: {peak_vram_mb:.2f} MB ({peak_vram_mb / 1024:.2f} GB)")
     
     print("\n✅ HUẤN LUYỆN HOÀN TẤT THÀNH CÔNG!")
     print(f"- Checkpoint tốt nhất được lưu tại: {checkpoint_callback.best_model_path}")

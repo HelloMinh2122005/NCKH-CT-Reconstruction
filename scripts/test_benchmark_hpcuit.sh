@@ -9,6 +9,7 @@
 #SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/test_benchmark_hpcuit/log/%j.err
 #SBATCH --account=uit
 #SBATCH --partition=small
+#SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=32G
@@ -22,6 +23,7 @@ ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 mkdir -p "$REPO/scripts/output/test_benchmark_hpcuit/log"
+mkdir -p "$REPO/reports"
 
 cleanup() {
     local rc=$?
@@ -53,40 +55,73 @@ export HF_HOME=$XDG_CACHE_HOME/hf
 export TRITON_CACHE_DIR=$XDG_CACHE_HOME/triton
 
 # Cấu hình danh sách bệnh nhân kiểm thử đa trung tâm / multi-patient test cohort
-TEST_PATIENTS=("L310")
+# Theo split.md: L058, L064, L094, L107 (4 bệnh nhân, tổng cộng 757 lát cắt)
+TEST_PATIENTS=("L058" "L064" "L094" "L107")
+CSV_OUTPUT="$REPO/reports/benchmark_per_slice_results.csv"
 
-echo "[INFO] Khởi động đánh giá benchmark hàng loạt trên các checkpoint sẵn có..."
+echo "[INFO] Khởi động đánh giá benchmark hàng loạt trên các checkpoint Wave A sẵn có..."
 echo "[INFO] Danh sách test patients: ${TEST_PATIENTS[*]}"
+echo "[INFO] Tệp CSV kết quả benchmark: $CSV_OUTPUT"
+
+# Hàm phụ trợ đánh giá từng cấu hình mô hình và góc quét
+run_model_eval() {
+    local MODEL="$1"
+    local SCRIPT_NAME="$2"
+    local ANGLE="$3"
+    local CKPT_DIR="$REPO/saved_models/${MODEL}_${ANGLE}"
+
+    echo "================================================================================"
+    echo "🎯 ĐÁNH GIÁ: ${MODEL} LA-${ANGLE}° (64 views)"
+    echo "================================================================================"
+
+    if [ ! -d "$CKPT_DIR" ]; then
+        echo "[WARN] Bỏ qua ${MODEL}_${ANGLE}: Thư mục không tồn tại ($CKPT_DIR)"
+        return 0
+    fi
+
+    # Kiểm tra xem có file checkpoint nào trong thư mục hay không
+    local NUM_CKPT
+    NUM_CKPT=$(find "$CKPT_DIR" -name "*.ckpt" 2>/dev/null | wc -l)
+    if [ "$NUM_CKPT" -eq 0 ]; then
+        echo "[WARN] Bỏ qua ${MODEL}_${ANGLE}: Không tìm thấy checkpoint nào trong $CKPT_DIR"
+        return 0
+    fi
+
+    python -u "$SCRIPT_NAME" \
+        --ckpt_path "$CKPT_DIR" \
+        --dataset_type aapm \
+        --dicom_dir "$DATASETS/aapm/split/" \
+        --cache_dir "$DATASETS/aapm/limited_angle/" \
+        --angle_range_deg "${ANGLE}.0" \
+        --num_view 64 \
+        --num_detectors 512 \
+        --input_size 256 \
+        --poisson_level 0 \
+        --gaussian_level 0 \
+        --batch_size 1 \
+        --num_workers 4 \
+        --test_patients "${TEST_PATIENTS[@]}" \
+        --output_csv "$CSV_OUTPUT" \
+        --job_id "${SLURM_JOB_ID:-local}" \
+        --method "${MODEL}"
+}
 
 # Ví dụ mẫu đánh giá LEARN LA-120°
-LEARN_120_CKPT="$REPO/saved_models/LEARN_120/LEARN_AAPM_LA_120deg_view64/last.ckpt"
-if [ -f "$LEARN_120_CKPT" ]; then
-    echo "================================================================================"
-    echo "🎯 ĐÁNH GIÁ: LEARN LA-120° (64 views)"
-    echo "================================================================================"
-    python -u baselines/LEARN/test_learn_la.py \
-        --ckpt_path "$LEARN_120_CKPT" \
-        --cache_dir "$DATASETS/aapm/limited_angle/" \
-        --angle_range_deg 120.0 \
-        --num_view 64 \
-        --batch_size 1 \
-        --test_patients "${TEST_PATIENTS[@]}"
-fi
+# Đánh giá LEARN cho cả 2 góc quét 90° và 120°
+run_model_eval "LEARN" "baselines/LEARN/test_learn_la.py" "90"
+run_model_eval "LEARN" "baselines/LEARN/test_learn_la.py" "120"
+
+# Đánh giá RegFormer cho cả 2 góc quét 90° và 120°
+run_model_eval "RegFormer" "baselines/RegFormer/test_regformer_la.py" "90"
+run_model_eval "RegFormer" "baselines/RegFormer/test_regformer_la.py" "120"
+
+# Đánh giá DuDoTrans cho cả 2 góc quét 90° và 120°
+run_model_eval "DuDoTrans" "baselines/DuDoTrans/test_dudotrans_la.py" "90"
+run_model_eval "DuDoTrans" "baselines/DuDoTrans/test_dudotrans_la.py" "120"
 
 # Ví dụ mẫu đánh giá SOLAR_DualMamba LA-90°
-SOLAR_90_CKPT="$REPO/saved_models/SOLAR_DualMamba_90/SOLAR_DualMamba_AAPM_LA_90deg_view64/last.ckpt"
-if [ -f "$SOLAR_90_CKPT" ]; then
-    echo "================================================================================"
-    echo "🎯 ĐÁNH GIÁ: SOLAR_DualMamba LA-90° (64 views)"
-    echo "================================================================================"
-    python -u baselines/SOLAR_DualMamba/test_solar_dualmamba_la.py \
-        --ckpt_path "$SOLAR_90_CKPT" \
-        --cache_dir "$DATASETS/aapm/limited_angle/" \
-        --angle_range_deg 90.0 \
-        --num_view 64 \
-        --batch_size 1 \
-        --test_patients "${TEST_PATIENTS[@]}"
-fi
+# Đánh giá mô hình đề xuất SOLAR_DualMamba cho cả 2 góc quét 90° và 120°
+run_model_eval "SOLAR_DualMamba" "baselines/SOLAR_DualMamba/test_solar_dualmamba_la.py" "90"
+run_model_eval "SOLAR_DualMamba" "baselines/SOLAR_DualMamba/test_solar_dualmamba_la.py" "120"
 
 echo "[INFO] Batched benchmark hoàn tất thành công lúc $(date)"
-

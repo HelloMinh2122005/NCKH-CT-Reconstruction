@@ -71,6 +71,24 @@ def parse_args():
         default=0.0,
         help="Độ lệch chuẩn của nhiễu Gaussian (0 nếu không thêm nhiễu, 0.05 cho nhiễu cảm biến)"
     )
+    parser.add_argument(
+        "--train_patients",
+        nargs="+",
+        default=None,
+        help="Danh sách mã bệnh nhân cho tập huấn luyện (mặc định: None, sử dụng 8 bệnh nhân mặc định của AAPM)"
+    )
+    parser.add_argument(
+        "--val_patients",
+        nargs="+",
+        default=None,
+        help="Danh sách mã bệnh nhân cho tập kiểm định (mặc định: None, sử dụng bệnh nhân L333)"
+    )
+    parser.add_argument(
+        "--test_patients",
+        nargs="+",
+        default=None,
+        help="Danh sách mã bệnh nhân cho tập kiểm thử độc lập (mặc định: None, sử dụng bệnh nhân L310)"
+    )
     return parser.parse_args()
 
 
@@ -152,6 +170,7 @@ def main():
         transform=transform,
         use_precomputed=False,
         return_path=True,
+        patient_list=args.train_patients,
         test=False,
         valid=False
     )
@@ -173,6 +192,7 @@ def main():
         transform=transform,
         use_precomputed=False,
         return_path=True,
+        patient_list=args.val_patients,
         test=False,
         valid=True
     )
@@ -195,6 +215,7 @@ def main():
         transform=transform,
         use_precomputed=False,
         return_path=True,
+        patient_list=args.test_patients,
         test=True
     )
     generate_split(test_dataset, os.path.join(test_folder, "sino"), os.path.join(test_folder, "fbp_u"))

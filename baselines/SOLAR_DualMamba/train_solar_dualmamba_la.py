@@ -243,6 +243,13 @@ def parse_args():
         default=None,
         help="Số lượng batch kiểm định tối đa mỗi epoch (phục vụ smoke test / debug)"
     )
+    parser.add_argument(
+        "--ablate",
+        type=str,
+        choices=["none", "a", "b", "c", "d"],
+        default="none",
+        help="Cấu hình loại bỏ thành phần (ablation switch): none, a (bỏ sinogram), b (GD DC), c (conv sinogram), d (CNN regularizer)"
+    )
     
     return parser.parse_args()
 
@@ -276,6 +283,7 @@ def main():
     print(f"- Dải góc quét: {angle_range_deg}° (Views: {args.num_view}, Detectors: {args.num_detectors})")
     print(f"- Kích thước ảnh: {args.input_size}x{args.input_size} | Unrolling Stages: {args.n_iterations}")
     print(f"- Số Epochs: {args.max_epochs} | Batch size: {args.batch_size} | CG iters: {args.cg_iters}")
+    print(f"- Cấu hình Ablation (--ablate): {args.ablate}")
     print(f"- Hạt giống ngẫu nhiên (seed): {args.seed} (pl.seed_everything)")
     print(f"- Thư mục Checkpoint: {args.output_dir}")
     print("=" * 80)
@@ -314,6 +322,7 @@ def main():
         sino_loss_weight=args.sino_loss_weight,
         initial_lr=args.initial_lr,
         final_lr=args.final_lr,
+        ablate=args.ablate,
     )
 
     os.makedirs(args.output_dir, exist_ok=True)

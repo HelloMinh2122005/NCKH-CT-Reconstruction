@@ -73,6 +73,13 @@ def parse_args():
         default="SOLAR_DualMamba",
         help="Tên phương pháp đánh giá (mặc định: SOLAR_DualMamba)"
     )
+    parser.add_argument(
+        "--ablate",
+        type=str,
+        choices=["none", "a", "b", "c", "d"],
+        default="none",
+        help="Cấu hình loại bỏ thành phần (ablation switch): none, a, b, c, d"
+    )
     return parser.parse_args()
 
 
@@ -134,13 +141,21 @@ def main():
         test_patients=args.test_patients,
     )
 
+    # Thiết lập tham số truyền vào load_from_checkpoint
+    load_kwargs = {
+        "num_view": args.num_view,
+        "num_detectors": args.num_detectors,
+        "start_ang": start_ang,
+        "end_ang": end_ang,
+        "input_size": args.input_size,
+    }
+    # Chỉ truyền ablate khi người dùng truyền cờ --ablate trên dòng lệnh (U8)
+    if "--ablate" in sys.argv:
+        load_kwargs["ablate"] = args.ablate
+
     model = SOLAR_DualMamba_LA.load_from_checkpoint(
         ckpt_path,
-        num_view=args.num_view,
-        num_detectors=args.num_detectors,
-        start_ang=start_ang,
-        end_ang=end_ang,
-        input_size=args.input_size,
+        **load_kwargs,
     )
     model.eval()
 

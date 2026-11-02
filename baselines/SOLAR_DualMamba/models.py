@@ -216,6 +216,43 @@ class AngularSinogramMambaBlock(nn.Module):
         return shortcut + out
 
 
+class SinoConvBlock(nn.Module):
+    """
+    Khối Tích Chập Sinogram Cục Bộ (SinoConvBlock) thay thế cho Angular Bi-Mamba (Ablation c).
+    
+    Nguyên lý Kiến trúc & Toán học:
+    Thay thế cơ chế quét toàn cục hai chiều Bi-Mamba trên trục góc V bằng mạng tích chập cục bộ
+    residual 3x3 với chuẩn hóa nhóm GroupNorm (4 nhóm) và phi tuyến SiLU:
+        f_{out} = f + Conv3x3_{C->C}(SiLU(GN_4(Conv3x3_{C->C}(f))))
+    Đầu vào: Đặc trưng sinogram f có kích thước (B, C, V, D).
+    Đầu ra: Đặc trưng sinogram f_{out} cùng kích thước (B, C, V, D).
+    """
+    def __init__(self, channels: int = 48, num_groups: int = 4):
+        super().__init__()
+        # Lớp tích chập 3x3 thứ nhất bảo toàn số kênh: (B, C, V, D) -> (B, C, V, D)
+        self.conv1 = nn.Conv2d(channels, channels, kernel_size=3, padding=1)
+        # Chuẩn hóa nhóm GroupNorm với 4 nhóm trên C kênh: (B, C, V, D)
+        self.gn = nn.GroupNorm(num_groups=num_groups, num_channels=channels)
+        # Hàm kích hoạt SiLU
+        self.act = nn.SiLU()
+        # Lớp tích chập 3x3 thứ hai bảo toàn số kênh: (B, C, V, D) -> (B, C, V, D)
+        self.conv2 = nn.Conv2d(channels, channels, kernel_size=3, padding=1)
+
+    def forward(self, f: torch.Tensor) -> torch.Tensor:
+        # Đường tắt phần dư shortcut: (B, C, V, D)
+        residual = f
+        # Tích chập qua lớp 1: (B, C, V, D)
+        out = self.conv1(f)
+        # Chuẩn hóa nhóm: (B, C, V, D)
+        out = self.gn(out)
+        # Kích hoạt phi tuyến: (B, C, V, D)
+        out = self.act(out)
+        # Tích chập qua lớp 2: (B, C, V, D)
+        out = self.conv2(out)
+        # Kết nối phần dư: (B, C, V, D)
+        return residual + out
+
+
 class SinogramMambaRestorationNet(nn.Module):
     """
     Mạng Khôi Phục & Ngoại Suy Sinogram (Sinogram Inpainting & Extrapolation Network).
@@ -223,16 +260,23 @@ class SinogramMambaRestorationNet(nn.Module):
     Đầu vào: Sinogram góc giới hạn thô y (B, 1, 64, 512).
     Đầu ra: Sinogram đã được chữa lành và bù đắp dải góc (B, 1, 64, 512).
     """
-    def __init__(self, in_channels: int = 1, feature_dim: int = 48, num_blocks: int = 2):
+    def __init__(self, in_channels: int = 1, feature_dim: int = 48, num_blocks: int = 2, ablate: str = "none"):
         super().__init__()
         self.shallow_conv = nn.Sequential(
             nn.Conv2d(in_channels, feature_dim, kernel_size=3, padding=1),
             nn.LeakyReLU(0.2, inplace=True),
         )
-        self.mamba_blocks = nn.ModuleList([
-            AngularSinogramMambaBlock(in_channels=feature_dim)
-            for _ in range(num_blocks)
-        ])
+        # Nếu cấu hình ablate == 'c', thay thế Bi-Mamba bằng SinoConvBlock
+        if ablate == "c":
+            self.mamba_blocks = nn.ModuleList([
+                SinoConvBlock(channels=feature_dim, num_groups=4)
+                for _ in range(num_blocks)
+            ])
+        else:
+            self.mamba_blocks = nn.ModuleList([
+                AngularSinogramMambaBlock(in_channels=feature_dim)
+                for _ in range(num_blocks)
+            ])
         self.out_conv = nn.Conv2d(feature_dim, in_channels, kernel_size=3, padding=1)
 
     def forward(self, sino: torch.Tensor) -> torch.Tensor:
@@ -412,13 +456,17 @@ class LocalCNNBranch(nn.Module):
 
 class RegFormerDualBranchRegularizer(nn.Module):
     """Khối Điều hòa Tiên nghiệm Miền Ảnh Kết hợp Cục bộ và Swin Window Attention."""
-    def __init__(self, in_channels: int = 1, out_channels: int = 1, feature_dim: int = 48, window_size: int = 8):
+    def __init__(self, in_channels: int = 1, out_channels: int = 1, feature_dim: int = 48, window_size: int = 8, ablate: str = "none"):
         super().__init__()
         self.shallow_conv = nn.Conv2d(in_channels, feature_dim, kernel_size=3, padding=1)
         nn.init.normal_(self.shallow_conv.weight, mean=0.0, std=0.01)
 
         self.local_branch = LocalCNNBranch(in_channels=feature_dim, out_channels=feature_dim)
-        self.nonlocal_branch = SwinTransformerBlock(dim=feature_dim, window_size=window_size, num_heads=4)
+        # Nếu cấu hình ablate == 'd', thay thế nhánh phi cục bộ Swin bằng LocalCNNBranch độc lập
+        if ablate == "d":
+            self.nonlocal_branch = LocalCNNBranch(in_channels=feature_dim, out_channels=feature_dim)
+        else:
+            self.nonlocal_branch = SwinTransformerBlock(dim=feature_dim, window_size=window_size, num_heads=4)
 
         self.fusion = nn.Sequential(
             nn.Conv2d(feature_dim * 2, feature_dim, kernel_size=1),
@@ -465,10 +513,12 @@ class SOLAR_DualMamba_LA(pl.LightningModule):
         sino_loss_weight: float = 0.1,
         initial_lr: float = 1e-4,
         final_lr: float = 1e-5,
+        ablate: str = "none",
     ):
         super().__init__()
         self.save_hyperparameters()
 
+        self.ablate = ablate
         self.n_iterations = n_iterations
         self.cg_iters = cg_iters
         self.num_view = num_view
@@ -492,21 +542,46 @@ class SOLAR_DualMamba_LA(pl.LightningModule):
         self.backward_module = fbp_curr
 
         # 1. Module Miền Chiếu: Mạng Khôi Phục Sinogram bằng Angular Bi-Mamba
-        self.sino_restoration = SinogramMambaRestorationNet(in_channels=1, feature_dim=feature_dim, num_blocks=2)
+        # [spec-1] Biến thể c thay thế bằng SinoConvBlock; biến thể a loại bỏ hoàn toàn
+        if self.ablate == "a":
+            # Biến thể a: Bỏ nhánh sinogram (ŷ = y), không khởi tạo mạng khôi phục sinogram
+            self.sino_restoration = None
+        else:
+            self.sino_restoration = SinogramMambaRestorationNet(
+                in_channels=1,
+                feature_dim=feature_dim,
+                num_blocks=2,
+                ablate=self.ablate,
+            )
 
         # 2. Module Miền Ảnh: Bộ giải Newton-CG và Khối điều hòa kép Swin
-        self.cg_solver = SafeCGSolver(cg_iters=cg_iters)
+        if self.ablate == "b":
+            # Biến thể b: Dùng bước lặp gradient tường minh kiểu LEARN, không tạo bộ giải SafeCGSolver
+            self.cg_solver = None
+        else:
+            self.cg_solver = SafeCGSolver(cg_iters=cg_iters)
+
         self.image_regularizer = RegFormerDualBranchRegularizer(
-            in_channels=1, out_channels=1, feature_dim=feature_dim, window_size=window_size
+            in_channels=1,
+            out_channels=1,
+            feature_dim=feature_dim,
+            window_size=window_size,
+            ablate=self.ablate,
         )
 
         # Tham số bước nhảy khả học cho từng stage unrolling
-        self.raw_lambda = nn.ParameterList([
-            nn.Parameter(torch.tensor(0.54, dtype=torch.float32)) for _ in range(n_iterations)
-        ])
-        self.raw_mu = nn.ParameterList([
-            nn.Parameter(torch.tensor(-2.25, dtype=torch.float32)) for _ in range(n_iterations)
-        ])
+        if self.ablate == "b":
+            # Biến thể b: Bước nhảy tường minh alpha_t khả học (init -2.25 ứng với softplus(-2.25)+1e-4 ~ 0.1003)
+            self.raw_alpha = nn.ParameterList([
+                nn.Parameter(torch.tensor(-2.25, dtype=torch.float32)) for _ in range(n_iterations)
+            ])
+        else:
+            self.raw_lambda = nn.ParameterList([
+                nn.Parameter(torch.tensor(0.54, dtype=torch.float32)) for _ in range(n_iterations)
+            ])
+            self.raw_mu = nn.ParameterList([
+                nn.Parameter(torch.tensor(-2.25, dtype=torch.float32)) for _ in range(n_iterations)
+            ])
 
     def radon_transform(
         self,
@@ -557,32 +632,48 @@ class SOLAR_DualMamba_LA(pl.LightningModule):
         3. Image Domain: 8 stages tối ưu hóa bậc 2 Newton-CG + Swin Attention.
         """
         # Bước 1: Khôi phục Sinogram qua Angular Bi-Mamba
-        sino_restored = self.sino_restoration(sino_measured)  # (B, 1, 64, 512)
+        if self.ablate == "a":
+            # Biến thể a: Bỏ nhánh sinogram, trả về trực tiếp sinogram thô ŷ = y: (B, 1, V, D)
+            sino_restored = sino_measured
+        else:
+            sino_restored = self.sino_restoration(sino_measured)  # (B, 1, 64, 512)
 
         # Khởi tạo ảnh: sử dụng FBP ban đầu
         x_t = x_fbp.clone()
         bp_restored = self.backward_module(sino_restored)
 
         # Bước 2: 8 stages Unrolling Bậc 2
-        for t in range(self.n_iterations):
-            lambda_t = F.softplus(self.raw_lambda[t]) + 1e-4
-            mu_t = F.softplus(self.raw_mu[t]) + 1e-4
+        if self.ablate == "b":
+            # Biến thể b: Bước lặp gradient tường minh kiểu LEARN tại K=8 stages (spec-1 §2 row b)
+            for t in range(self.n_iterations):
+                # Bước nhảy alpha_t đảm bảo dương qua hàm Softplus: alpha_t = softplus(raw_alpha[t]) + 1e-4
+                alpha_t = F.softplus(self.raw_alpha[t]) + 1e-4
+                # Gradient điều hòa tiên nghiệm miền ảnh: (B, 1, H, W)
+                grad_r = self.image_regularizer(x_t)
+                # Gradient thành phần Data Consistency: F(A(x_t) - ŷ): (B, 1, H, W)
+                dc_grad = self.backward_module(self.forward_module(x_t) - sino_restored)
+                # Cập nhật trạng thái ảnh: x_{t+1} = x_t - alpha_t * F(A(x_t) - ŷ) - grad_r
+                x_t = x_t - alpha_t * dc_grad - grad_r             # (B, 1, H, W)
+        else:
+            for t in range(self.n_iterations):
+                lambda_t = F.softplus(self.raw_lambda[t]) + 1e-4
+                mu_t = F.softplus(self.raw_mu[t]) + 1e-4
 
-            # Tính gradient điều hòa từ khối RegFormer kép
-            grad_r = self.image_regularizer(x_t)
+                # Tính gradient điều hòa từ khối RegFormer kép
+                grad_r = self.image_regularizer(x_t)
 
-            # Vế phải b_t: sử dụng Sinogram đã được phục hồi làm mục tiêu dữ liệu
-            b_t = lambda_t * bp_restored + mu_t * x_t - grad_r
+                # Vế phải b_t: sử dụng Sinogram đã được phục hồi làm mục tiêu dữ liệu
+                b_t = lambda_t * bp_restored + mu_t * x_t - grad_r
 
-            # Bộ giải bậc 2 Newton-CG Matrix-Free
-            x_t = self.cg_solver(
-                x_init=x_t,
-                b_t=b_t,
-                lambda_t=lambda_t,
-                mu_t=mu_t,
-                forward_op=self.forward_module,
-                backward_op=self.backward_module,
-            )
+                # Bộ giải bậc 2 Newton-CG Matrix-Free
+                x_t = self.cg_solver(
+                    x_init=x_t,
+                    b_t=b_t,
+                    lambda_t=lambda_t,
+                    mu_t=mu_t,
+                    forward_op=self.forward_module,
+                    backward_op=self.backward_module,
+                )
 
         return x_t, sino_restored
 

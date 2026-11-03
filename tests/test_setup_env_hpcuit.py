@@ -47,6 +47,9 @@ class TestSetupEnvHpcuit(unittest.TestCase):
             "astra-toolbox": "2.3.0",
             "torchmetrics": "1.8.2",
             "pydicom": "2.4.4",
+            "future": "1.0.0",
+            "nvidia-cuda-runtime-cu12": "12.8.90",
+            "nvidia-cufft-cu12": "11.3.3.83",
         }
         for pkg, ver in expected_pins.items():
             pattern = rf'["\']?{re.escape(pkg)}=={re.escape(ver)}["\']?'
@@ -115,6 +118,41 @@ class TestSetupEnvHpcuit(unittest.TestCase):
         # 4. pip freeze
         self.assertIn("pip freeze", self.script_content)
 
+    def test_clean_venv_recreation(self):
+        """Xác minh xóa sạch thư mục venv cũ (rm -rf $ENV_DIR) trước khi tạo mới để tránh venv hỏng."""
+        rm_match = re.search(r'rm\s+-rf\s+["\']?\$ENV_DIR["\']?', self.script_content)
+        venv_match = re.search(r'python3\s+-m\s+venv\s+["\']?\$ENV_DIR["\']?', self.script_content)
+        self.assertIsNotNone(rm_match, "Thiếu lệnh xóa sạch venv cũ: rm -rf \"$ENV_DIR\"")
+        self.assertIsNotNone(venv_match, "Thiếu lệnh tạo venv: python3 -m venv \"$ENV_DIR\"")
+        self.assertLess(
+            rm_match.start(),
+            venv_match.start(),
+            "Lệnh 'rm -rf \"$ENV_DIR\"' phải được thực thi trước 'python3 -m venv \"$ENV_DIR\"'",
+        )
+
+    def test_no_deps_protection(self):
+        """Xác minh các gói astra-toolbox, odl và nvidia CUDA runtime được cài đặt với --no-deps để chống clobbering."""
+        # Kiểm tra pip install --no-deps cho astra-toolbox và odl
+        astra_no_deps = re.search(
+            r'pip install --no-deps[\s\\]+["\']astra-toolbox==2\.3\.0["\'][\s\\]+["\']odl==0\.8\.3["\']',
+            self.script_content,
+        )
+        self.assertIsNotNone(
+            astra_no_deps,
+            "Cài đặt astra-toolbox và odl phải sử dụng cờ --no-deps để chống unpin/downgrade nvidia runtime",
+        )
+
+        # Kiểm tra pip install --no-deps cho nvidia runtime wheels từ pytorch index
+        nvidia_no_deps = re.search(
+            r'pip install --no-deps[\s\\]+["\']nvidia-cuda-runtime-cu12==12\.8\.90["\'][\s\\]+["\']nvidia-cufft-cu12==11\.3\.3\.83["\'][\s\\]+--index-url\s+https://download\.pytorch\.org/whl/cu128',
+            self.script_content,
+        )
+        self.assertIsNotNone(
+            nvidia_no_deps,
+            "Phải tái cài đặt nvidia-cuda-runtime-cu12 và nvidia-cufft-cu12 với --no-deps từ index PyTorch cu128",
+        )
+
 
 if __name__ == "__main__":
     unittest.main()
+

@@ -47,9 +47,9 @@ mkdir -p "$XDG_CACHE_HOME" "$PIP_CACHE_DIR" "$TORCH_HOME" "$HF_HOME" "$TRITON_CA
 nvidia-smi
 
 echo "=== 1. Tạo Virtual Environment tại $ENV_DIR ==="
-if [ ! -d "$ENV_DIR" ]; then
-    python3 -m venv "$ENV_DIR"
-fi
+# Xóa môi trường cũ nếu có để đảm bảo tạo lại venv sạch hoàn toàn
+rm -rf "$ENV_DIR"
+python3 -m venv "$ENV_DIR"
 
 set +u
 source "$ENV_DIR/bin/activate"
@@ -81,14 +81,22 @@ pip install \
     "tqdm==4.67.1" \
     "matplotlib==3.9.2" \
     "tensorboard==2.18.0" \
-    "einops==0.8.0"
+    "einops==0.8.0" \
+    "future==1.0.0"
 
 echo "=== 5. Cài đặt Tomography & Mamba Packages ==="
 # Cài đặt ASTRA-Toolbox và ODL
 # Ghim chính xác astra-toolbox 2.3.0 và odl 0.8.3, loại bỏ fallback để đảm bảo fail-fast
-pip install \
+# Cài đặt với cờ --no-deps để tránh pip resolver tự động hạ cấp nvidia-cuda-runtime-cu12
+pip install --no-deps \
     "astra-toolbox==2.3.0" \
     "odl==0.8.3"
+
+# Tái xác nhận và cài đặt lại nvidia-cuda-runtime-cu12 và nvidia-cufft-cu12 tương thích CUDA 12.8 với --no-deps
+pip install --no-deps \
+    "nvidia-cuda-runtime-cu12==12.8.90" \
+    "nvidia-cufft-cu12==11.3.3.83" \
+    --index-url https://download.pytorch.org/whl/cu128
 
 # Nạp module CUDA toolkit 12.9 trước khi cài đặt mamba-ssm để cung cấp nvcc và CUDA headers biên dịch
 module load cuda12.9/toolkit/12.9.1

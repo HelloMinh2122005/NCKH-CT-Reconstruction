@@ -27,7 +27,7 @@
 #SBATCH --partition=small
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
-#SBATCH --mem=32G
+#SBATCH --mem=8G
 #SBATCH --time=00:30:00
 #SBATCH --gres=gpu:1g.18gb:1
 

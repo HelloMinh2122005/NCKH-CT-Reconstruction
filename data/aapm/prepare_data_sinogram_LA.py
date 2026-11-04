@@ -1,3 +1,4 @@
+import gc
 import os
 import sys
 from pathlib import Path
@@ -16,6 +17,32 @@ try:
     from data.CTSlice_Provider_LA import LimitedAngleCT_Provider
 except ImportError:
     from CTSlice_Provider_LA import LimitedAngleCT_Provider
+
+
+def save_atomic_npy(target_file: str, array: np.ndarray) -> None:
+    """
+    Lưu mảng numpy ra tệp nguyên tử (atomic write) nhằm ngăn chặn tệp bị cắt cụt do lỗi NFS:
+    - Ghi dữ liệu mảng ra tệp tạm <target_file>.tmp bằng luồng nhị phân wb.
+    - Dùng os.replace để tráo đổi nguyên tử tệp tạm vào vị trí tệp đích cuối cùng.
+    """
+    tmp_file = target_file + ".tmp"
+    with open(tmp_file, "wb") as f:
+        np.save(f, array)
+    os.replace(tmp_file, target_file)
+
+
+def is_valid_cache_file(sino_file: str, fbp_file: str) -> bool:
+    """
+    Kiểm tra tính hợp lệ và toàn vẹn của cặp tệp cache sinogram và FBP:
+    - Cả 2 tệp phải tồn tại trên hệ thống tệp.
+    - Cả 2 tệp phải có kích thước tối thiểu >= 1000 bytes (tránh tệp 128 bytes chỉ có header do NFS stall).
+    """
+    if os.path.exists(sino_file) and os.path.exists(fbp_file):
+        try:
+            return os.path.getsize(sino_file) >= 1000 and os.path.getsize(fbp_file) >= 1000
+        except OSError:
+            return False
+    return False
 
 
 def parse_args():
@@ -110,7 +137,8 @@ def generate_split(provider, save_sino_path, save_fbp_path):
         fbp_file = os.path.join(save_fbp_path, f"{stem}.npy")
 
         # Bỏ qua ngay lập tức nếu file đã tồn tại trên đĩa mà không cần tính Radon
-        if os.path.exists(sino_file) and os.path.exists(fbp_file):
+        # Kiểm tra bổ sung kích thước file >= 1000 bytes nhằm loại bỏ các file bị cắt cụt do đứt gãy mạng NFS
+        if is_valid_cache_file(sino_file, fbp_file):
             continue
 
         # Lấy dữ liệu và thực hiện phép chiếu Radon + FBP on-the-fly
@@ -120,8 +148,15 @@ def generate_split(provider, save_sino_path, save_fbp_path):
         fbp_np = fbp_u.cpu().numpy() if isinstance(fbp_u, torch.Tensor) else fbp_u
 
         # Lưu mảng numpy
-        np.save(sino_file, sino_np)
-        np.save(fbp_file, fbp_np)
+        # Lưu mảng numpy theo phương thức nguyên tử (atomic write qua file tạm .tmp)
+        save_atomic_npy(sino_file, sino_np)
+        save_atomic_npy(fbp_file, fbp_np)
+
+        # Thu dọn rác bộ nhớ RAM và giải phóng bộ nhớ đệm VRAM GPU định kỳ sau mỗi 500 lát cắt
+        if (i + 1) % 500 == 0:
+            gc.collect()
+            if hasattr(torch, "cuda") and torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
 
 def main():

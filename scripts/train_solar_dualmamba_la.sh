@@ -20,6 +20,13 @@
 
 set -euo pipefail
 
+# Hàm dọn dẹp tài nguyên khi kết thúc job hoặc bị ngắt đột ngột
+cleanup() {
+    local rc=$?
+    echo "[INFO] cleanup rc=$rc at $(date)"
+}
+trap cleanup EXIT
+
 # Ngưỡng VRAM yêu cầu tối thiểu (MB)
 REQUIRED_VRAM=16000
 
@@ -29,13 +36,6 @@ DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 # Đảm bảo thư mục log tồn tại trước khi Slurm ghi nhận
 mkdir -p "$REPO/scripts/output/train_solar_dualmamba_la/log"
-
-# Hàm dọn dẹp tài nguyên khi kết thúc job hoặc bị ngắt đột ngột
-cleanup() {
-    local rc=$?
-    echo "[INFO] cleanup rc=$rc at $(date)"
-}
-trap cleanup EXIT
 
 echo "=== HPC-UIT TRAINING: SOLAR_DualMamba ==="
 echo "[INFO] start at $(date)"

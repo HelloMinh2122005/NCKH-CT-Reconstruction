@@ -117,7 +117,7 @@ class TestSmokeArgsAndScript(unittest.TestCase):
 
         # Kiểm tra partition và qos
         self.assertRegex(content, r"#SBATCH\s+--partition=small\b")
-        self.assertRegex(content, r"#SBATCH\s+--qos=mig1-18\b")
+        self.assertNotRegex(content, r"#SBATCH\s+--qos=")
         self.assertRegex(content, r"#SBATCH\s+--gres=gpu:1g\.18gb:1\b")
         self.assertRegex(content, r"#SBATCH\s+--time=00:30:00\b")
 

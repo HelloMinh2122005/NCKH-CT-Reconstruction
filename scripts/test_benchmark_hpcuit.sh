@@ -18,18 +18,18 @@
 
 set -euo pipefail
 
+cleanup() {
+    local rc=$?
+    echo "[INFO] cleanup rc=$rc at $(date)"
+}
+trap cleanup EXIT
+
 REPO=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction
 ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 mkdir -p "$REPO/scripts/output/test_benchmark_hpcuit/log"
 mkdir -p "$REPO/reports"
-
-cleanup() {
-    local rc=$?
-    echo "[INFO] cleanup rc=$rc at $(date)"
-}
-trap cleanup EXIT
 
 echo "=== HPC-UIT BATCHED TEST BENCHMARK ==="
 echo "[INFO] Start at: $(date)"

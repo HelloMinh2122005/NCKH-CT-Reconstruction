@@ -23,11 +23,14 @@ def save_atomic_npy(target_file: str, array: np.ndarray) -> None:
     """
     Lưu mảng numpy ra tệp nguyên tử (atomic write) nhằm ngăn chặn tệp bị cắt cụt do lỗi NFS:
     - Ghi dữ liệu mảng ra tệp tạm <target_file>.tmp bằng luồng nhị phân wb.
+    - Thực hiện flush và fsync để đảm bảo toàn bộ dirty pages được commit xuống storage NFS.
     - Dùng os.replace để tráo đổi nguyên tử tệp tạm vào vị trí tệp đích cuối cùng.
     """
     tmp_file = target_file + ".tmp"
     with open(tmp_file, "wb") as f:
         np.save(f, array)
+        f.flush()
+        os.fsync(f.fileno())
     os.replace(tmp_file, target_file)
 
 

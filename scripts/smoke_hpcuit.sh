@@ -23,7 +23,6 @@
 #SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/smoke_hpcuit/log/%j.out
 #SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/smoke_hpcuit/log/%j.err
 #SBATCH --account=uit
-#SBATCH --qos=mig1-18
 #SBATCH --partition=small
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
@@ -32,6 +31,12 @@
 #SBATCH --gres=gpu:1g.18gb:1
 
 set -euo pipefail
+
+cleanup() {
+    local rc=$?
+    echo "[INFO] cleanup kết thúc với mã thoát rc=$rc lúc $(date)"
+}
+trap cleanup EXIT
 
 # ------------------------------------------------------------------------------
 # 1. ĐỊNH NGHĨA ĐƯỜNG DẪN KHÔNG GIAN LÀM VIỆC TẠI /datastore (BẢO VỆ $HOME 10 GB)
@@ -42,12 +47,6 @@ DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 # Thư mục chứa log bắt buộc phải được tạo trước khi Slurm xuất log
 mkdir -p "$REPO/scripts/output/smoke_hpcuit/log"
-
-cleanup() {
-    local rc=$?
-    echo "[INFO] cleanup kết thúc với mã thoát rc=$rc lúc $(date)"
-}
-trap cleanup EXIT
 
 echo "================================================================================"
 echo "🚀 BẮT ĐẦU SMOKE TEST HPC-UIT: LEARN & SOLAR_DualMamba"

@@ -61,11 +61,13 @@ class TestAtomicCacheAndCorruptFileGuard(unittest.TestCase):
     def tearDown(self):
         self.test_dir.cleanup()
 
-    def test_save_atomic_npy(self):
+    @patch("os.fsync")
+    def test_save_atomic_npy(self, mock_fsync):
         """
         Kiểm tra hàm save_atomic_npy ghi dữ liệu an toàn:
         - Tệp đích tồn tại với đúng dữ liệu mảng numpy.
         - Tệp tạm thời .tmp không còn tồn tại sau khi hoàn tất.
+        - os.fsync được kích hoạt để đảm bảo dirty pages commit xuống storage NFS.
         """
         target_path = os.path.join(self.sino_dir, "test_slice.npy")
         tmp_path = target_path + ".tmp"
@@ -75,6 +77,7 @@ class TestAtomicCacheAndCorruptFileGuard(unittest.TestCase):
 
         self.assertTrue(os.path.exists(target_path), "Tệp đích không tồn tại sau khi lưu nguyên tử.")
         self.assertFalse(os.path.exists(tmp_path), "Tệp tạm thời .tmp vẫn còn sót lại sau khi lưu.")
+        self.assertTrue(mock_fsync.called, "os.fsync phải được gọi để đảm bảo dữ liệu ghi bền vững xuống NFS.")
 
         loaded_data = np.load(target_path)
         np.testing.assert_allclose(loaded_data, data, err_msg="Dữ liệu mảng sau khi tải không khớp với dữ liệu gốc.")
@@ -207,6 +210,52 @@ class TestSlurmScriptMemorySettings(unittest.TestCase):
         self.assertEqual(self._get_mem_directive("scripts/train_learn_la.sh"), "16G")
         self.assertEqual(self._get_mem_directive("scripts/train_dudotrans_la.sh"), "16G")
         self.assertEqual(self._get_mem_directive("scripts/train_regformer_la.sh"), "16G")
+
+    def test_no_obsolete_qos_in_scripts(self):
+        """Xác minh không có kịch bản nào chứa chỉ thị --qos lỗi thời."""
+        scripts = [
+            "scripts/generate_la_dataset.sh",
+            "scripts/smoke_hpcuit.sh",
+            "scripts/test_benchmark_hpcuit.sh",
+            "scripts/train_solar_dualmamba_la.sh",
+            "scripts/train_learn_la.sh",
+            "scripts/train_dudotrans_la.sh",
+            "scripts/train_regformer_la.sh",
+        ]
+        for relpath in scripts:
+            script_path = os.path.join(REPO_ROOT, relpath)
+            with open(script_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            self.assertNotRegex(
+                content,
+                r"#SBATCH\s+--qos=",
+                f"Kịch bản {relpath} vẫn còn chỉ thị #SBATCH --qos (đã lỗi thời trên HPC-UIT)."
+            )
+
+    def test_trap_cleanup_order(self):
+        """Xác minh trap cleanup EXIT được khai báo trước mọi lệnh I/O như mkdir -p."""
+        scripts = [
+            "scripts/generate_la_dataset.sh",
+            "scripts/smoke_hpcuit.sh",
+            "scripts/test_benchmark_hpcuit.sh",
+            "scripts/train_solar_dualmamba_la.sh",
+            "scripts/train_learn_la.sh",
+            "scripts/train_dudotrans_la.sh",
+            "scripts/train_regformer_la.sh",
+        ]
+        for relpath in scripts:
+            script_path = os.path.join(REPO_ROOT, relpath)
+            with open(script_path, "r", encoding="utf-8") as f:
+                content = f.read()
+            trap_pos = content.find("trap cleanup EXIT")
+            mkdir_pos = content.find("mkdir -p")
+            self.assertNotEqual(trap_pos, -1, f"Không tìm thấy 'trap cleanup EXIT' trong {relpath}")
+            if mkdir_pos != -1:
+                self.assertLess(
+                    trap_pos,
+                    mkdir_pos,
+                    f"Trong {relpath}, 'trap cleanup EXIT' (vị trí {trap_pos}) phải đứng trước 'mkdir -p' (vị trí {mkdir_pos})."
+                )
 
 
 if __name__ == "__main__":

@@ -19,6 +19,12 @@
 
 set -euo pipefail
 
+cleanup() {
+    local rc=$?
+    echo "[INFO] cleanup rc=$rc at $(date)"
+}
+trap cleanup EXIT
+
 # Đường dẫn không gian làm việc trên cụm HPC-UIT
 REPO=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction
 ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
@@ -26,12 +32,6 @@ DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 # Đảm bảo thư mục log tồn tại trước khi sbatch thực thi
 mkdir -p "$REPO/scripts/output/generate_la_dataset/log"
-
-cleanup() {
-    local rc=$?
-    echo "[INFO] cleanup rc=$rc at $(date)"
-}
-trap cleanup EXIT
 
 echo "=== KHỞI ĐỘNG TIỀN XỬ LÝ SINH DỮ LIỆU LIMITED-ANGLE CT ==="
 echo "[INFO] start at $(date)"

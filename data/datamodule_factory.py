@@ -8,8 +8,6 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 from data.datamodule_LA import LimitedAngleCTDataModule
-from data.nih_deep_lesion.datamodule_LA_DeepLesion import LimitedAngleCT_DeepLesion_DataModule
-from data.lidc_idri.datamodule_LA_LIDC import LimitedAngleCT_LIDC_DataModule
 
 
 def get_datamodule(
@@ -61,6 +59,9 @@ def get_datamodule(
     dataset_type = (dataset_type or "aapm").lower()
 
     if dataset_type in ["deeplesion", "deep_lesion", "nih_deep_lesion"]:
+        # Nạp trễ (lazy import) để không gây lỗi thiếu thư viện skimage khi chạy với dữ liệu AAPM
+        from data.nih_deep_lesion.datamodule_LA_DeepLesion import LimitedAngleCT_DeepLesion_DataModule
+
         # Tự động gán đường dẫn cache chuẩn của DeepLesion nếu người dùng dùng path mặc định cũ của AAPM
         if cache_dir is None or "dataset/limited_angle" in cache_dir or "dataset/aapm" in cache_dir:
             cache_dir = "/datastore/uittogether3/LuuTru/MinhPD/dataset/nih_deep_lesion/limited_angle/"
@@ -82,6 +83,9 @@ def get_datamodule(
         )
 
     elif dataset_type in ["lidc", "lidc_idri"]:
+        # Nạp trễ (lazy import) cho bộ dữ liệu LIDC-IDRI
+        from data.lidc_idri.datamodule_LA_LIDC import LimitedAngleCT_LIDC_DataModule
+
         # Tự động gán đường dẫn dicom và cache chuẩn của LIDC-IDRI nếu người dùng dùng path mặc định cũ của AAPM
         if dicom_dir is None or "CT-Reconstruction/split" in dicom_dir or "dataset/aapm" in dicom_dir:
             dicom_dir = "/datastore/uittogether3/LuuTru/MinhPD/dataset/lidc_idri/dicom/"

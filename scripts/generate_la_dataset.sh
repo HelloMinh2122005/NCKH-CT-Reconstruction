@@ -84,42 +84,54 @@ TEST_PATIENTS=("L058" "L064" "L094" "L107")
 
 echo "[INFO] Cấu hình phân chia: Train=${#TRAIN_PATIENTS[@]} BN, Val=${#VAL_PATIENTS[@]} BN, Test=${#TEST_PATIENTS[@]} BN"
 
+# Hỗ trợ lựa chọn góc cần tạo qua biến môi trường TARGET_ANGLES (mặc định 90 cho Wave A để tiết kiệm quota)
+TARGET_ANGLES="${TARGET_ANGLES:-90.0}"
+echo "[INFO] Cấu hình góc quét mục tiêu (TARGET_ANGLES): $TARGET_ANGLES"
+
 # ================= RUN DATA GENERATION =================
 echo "[INFO] Launching Limited-Angle CT Data Preparation at $(date)"
 
 # 1. Benchmark 120-degree Limited Angle (64 views, No Noise)
-echo "--------------------------------------------------------------------------------"
-echo "🚀 [1/2] Đang tạo dữ liệu góc giới hạn LA-120° (64 views, 512 detectors, 256x256)"
-echo "--------------------------------------------------------------------------------"
-python -u data/aapm/prepare_data_sinogram_LA.py \
-    --data_dir "$DATASETS/aapm/split/" \
-    --output_dir "$DATASETS/aapm/limited_angle/" \
-    --angle_range_deg 120.0 \
-    --num_view 64 \
-    --num_detectors 512 \
-    --input_size 256 \
-    --poisson_level 0 \
-    --gaussian_level 0 \
-    --train_patients "${TRAIN_PATIENTS[@]}" \
-    --val_patients "${VAL_PATIENTS[@]}" \
-    --test_patients "${TEST_PATIENTS[@]}"
+if [[ " $TARGET_ANGLES " =~ " 120.0 " || " $TARGET_ANGLES " =~ " 120 " ]]; then
+    echo "--------------------------------------------------------------------------------"
+    echo "🚀 [1/2] Đang tạo dữ liệu góc giới hạn LA-120° (64 views, 512 detectors, 256x256)"
+    echo "--------------------------------------------------------------------------------"
+    python -u data/aapm/prepare_data_sinogram_LA.py \
+        --data_dir "$DATASETS/aapm/split/" \
+        --output_dir "$DATASETS/aapm/limited_angle/" \
+        --angle_range_deg 120.0 \
+        --num_view 64 \
+        --num_detectors 512 \
+        --input_size 256 \
+        --poisson_level 0 \
+        --gaussian_level 0 \
+        --train_patients "${TRAIN_PATIENTS[@]}" \
+        --val_patients "${VAL_PATIENTS[@]}" \
+        --test_patients "${TEST_PATIENTS[@]}"
+else
+    echo "[INFO] Bỏ qua LA-120° theo cấu hình TARGET_ANGLES='$TARGET_ANGLES' (tối ưu hạn ngạch đĩa cho Wave A)"
+fi
 
 # 2. Benchmark 90-degree Limited Angle (64 views, No Noise)
-echo "--------------------------------------------------------------------------------"
-echo "🚀 [2/2] Đang tạo dữ liệu góc giới hạn LA-90° (64 views, 512 detectors, 256x256)"
-echo "--------------------------------------------------------------------------------"
-python -u data/aapm/prepare_data_sinogram_LA.py \
-    --data_dir "$DATASETS/aapm/split/" \
-    --output_dir "$DATASETS/aapm/limited_angle/" \
-    --angle_range_deg 90.0 \
-    --num_view 64 \
-    --num_detectors 512 \
-    --input_size 256 \
-    --poisson_level 0 \
-    --gaussian_level 0 \
-    --train_patients "${TRAIN_PATIENTS[@]}" \
-    --val_patients "${VAL_PATIENTS[@]}" \
-    --test_patients "${TEST_PATIENTS[@]}"
+if [[ " $TARGET_ANGLES " =~ " 90.0 " || " $TARGET_ANGLES " =~ " 90 " ]]; then
+    echo "--------------------------------------------------------------------------------"
+    echo "🚀 [2/2] Đang tạo dữ liệu góc giới hạn LA-90° (64 views, 512 detectors, 256x256)"
+    echo "--------------------------------------------------------------------------------"
+    python -u data/aapm/prepare_data_sinogram_LA.py \
+        --data_dir "$DATASETS/aapm/split/" \
+        --output_dir "$DATASETS/aapm/limited_angle/" \
+        --angle_range_deg 90.0 \
+        --num_view 64 \
+        --num_detectors 512 \
+        --input_size 256 \
+        --poisson_level 0 \
+        --gaussian_level 0 \
+        --train_patients "${TRAIN_PATIENTS[@]}" \
+        --val_patients "${VAL_PATIENTS[@]}" \
+        --test_patients "${TEST_PATIENTS[@]}"
+else
+    echo "[INFO] Bỏ qua LA-90° theo cấu hình TARGET_ANGLES='$TARGET_ANGLES'"
+fi
 
 echo "[INFO] All Limited-Angle CT data preparation finished at $(date)"
 
@@ -130,6 +142,7 @@ if [ -f "$REPO/scripts/evaluate_fbp_la.py" ]; then
     echo "🎯 KÍCH HOẠT T3: ĐÁNH GIÁ BASELINE FBP (TEST COHORT: 120° & 90°)"
     echo "================================================================================"
     python -u "$REPO/scripts/evaluate_fbp_la.py" \
+        --angles $TARGET_ANGLES \
         --cache_dir "$DATASETS/aapm/limited_angle/" \
         --dicom_dir "$DATASETS/aapm/split/" \
         --output_dir "$REPO/reports/fbp_benchmark/" \
@@ -139,6 +152,7 @@ elif [ -f "$REPO/scripts/evaluate_fbp.py" ]; then
     echo "🎯 KÍCH HOẠT T3: ĐÁNH GIÁ BASELINE FBP (TEST COHORT: 120° & 90°)"
     echo "================================================================================"
     python -u "$REPO/scripts/evaluate_fbp.py" \
+        --angles $TARGET_ANGLES \
         --cache_dir "$DATASETS/aapm/limited_angle/" \
         --dicom_dir "$DATASETS/aapm/split/" \
         --output_dir "$REPO/reports/fbp_benchmark/" \

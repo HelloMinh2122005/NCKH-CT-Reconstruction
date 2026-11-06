@@ -2,19 +2,21 @@
 # ==============================================================================
 # BATCHED TEST BENCHMARK CHO CỤM HPC-UIT (MIG)
 # Đánh giá tuần tự nhiều checkpoint trong 1 job duy nhất để tiết kiệm slot submit (1h spacing)
+# Profile: hpc-uit, Partition: normal (gpu:2g.35gb:1)
+# Cấu hình cũ trước Change 24:
 # Profile: hpc-uit, Partition: small (gpu:1g.18gb:1)
 # ==============================================================================
 #SBATCH --job-name=test_benchmark_hpcuit
 #SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/test_benchmark_hpcuit/log/%j.out
 #SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/test_benchmark_hpcuit/log/%j.err
 #SBATCH --account=uit
-#SBATCH --partition=small
+#SBATCH --partition=normal
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
-#SBATCH --cpus-per-task=4
-#SBATCH --mem=8G
+#SBATCH --cpus-per-task=8
+#SBATCH --mem=16G
 #SBATCH --time=04:00:00
-#SBATCH --gres=gpu:1g.18gb:1
+#SBATCH --gres=gpu:2g.35gb:1
 
 set -euo pipefail
 

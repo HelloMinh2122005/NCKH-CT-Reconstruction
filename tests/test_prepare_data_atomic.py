@@ -202,7 +202,6 @@ class TestSlurmScriptMemorySettings(unittest.TestCase):
         """Xác minh các kịch bản nhẹ / sinh dữ liệu / benchmark được cấu hình --mem=8G."""
         self.assertEqual(self._get_mem_directive("scripts/generate_la_dataset.sh"), "8G")
         self.assertEqual(self._get_mem_directive("scripts/smoke_hpcuit.sh"), "8G")
-        self.assertEqual(self._get_mem_directive("scripts/test_benchmark_hpcuit.sh"), "8G")
 
     def test_train_scripts_mem_16g(self):
         """Xác minh các kịch bản huấn luyện mô hình được cấu hình --mem=16G."""
@@ -210,6 +209,17 @@ class TestSlurmScriptMemorySettings(unittest.TestCase):
         self.assertEqual(self._get_mem_directive("scripts/train_learn_la.sh"), "16G")
         self.assertEqual(self._get_mem_directive("scripts/train_dudotrans_la.sh"), "16G")
         self.assertEqual(self._get_mem_directive("scripts/train_regformer_la.sh"), "16G")
+        self.assertEqual(self._get_mem_directive("scripts/test_benchmark_hpcuit.sh"), "16G")
+
+    def test_benchmark_normal_partition_directives(self):
+        """Xác minh test_benchmark_hpcuit.sh cấu hình đúng phân vùng normal (Change 24)."""
+        script_path = os.path.join(REPO_ROOT, "scripts/test_benchmark_hpcuit.sh")
+        with open(script_path, "r", encoding="utf-8") as f:
+            content = f.read()
+        self.assertIn("#SBATCH --partition=normal", content)
+        self.assertIn("#SBATCH --gres=gpu:2g.35gb:1", content)
+        self.assertIn("#SBATCH --mem=16G", content)
+        self.assertIn("#SBATCH --cpus-per-task=8", content)
 
     def test_no_obsolete_qos_in_scripts(self):
         """Xác minh không có kịch bản nào chứa chỉ thị --qos lỗi thời."""

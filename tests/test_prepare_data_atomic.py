@@ -210,6 +210,10 @@ class TestSlurmScriptMemorySettings(unittest.TestCase):
         self.assertEqual(self._get_mem_directive("scripts/train_dudotrans_la.sh"), "16G")
         self.assertEqual(self._get_mem_directive("scripts/train_regformer_la.sh"), "16G")
         self.assertEqual(self._get_mem_directive("scripts/test_benchmark_hpcuit.sh"), "16G")
+        self.assertEqual(self._get_mem_directive("scripts/train_solar_dualmamba_la_ablate_a.sh"), "16G")
+        self.assertEqual(self._get_mem_directive("scripts/train_solar_dualmamba_la_ablate_b.sh"), "16G")
+        self.assertEqual(self._get_mem_directive("scripts/train_solar_dualmamba_la_ablate_c.sh"), "16G")
+        self.assertEqual(self._get_mem_directive("scripts/train_solar_dualmamba_la_ablate_d.sh"), "16G")
 
     def test_benchmark_normal_partition_directives(self):
         """Xác minh test_benchmark_hpcuit.sh cấu hình đúng phân vùng normal (Change 24)."""
@@ -231,6 +235,10 @@ class TestSlurmScriptMemorySettings(unittest.TestCase):
             "scripts/train_learn_la.sh",
             "scripts/train_dudotrans_la.sh",
             "scripts/train_regformer_la.sh",
+            "scripts/train_solar_dualmamba_la_ablate_a.sh",
+            "scripts/train_solar_dualmamba_la_ablate_b.sh",
+            "scripts/train_solar_dualmamba_la_ablate_c.sh",
+            "scripts/train_solar_dualmamba_la_ablate_d.sh",
         ]
         for relpath in scripts:
             script_path = os.path.join(REPO_ROOT, relpath)
@@ -252,6 +260,10 @@ class TestSlurmScriptMemorySettings(unittest.TestCase):
             "scripts/train_learn_la.sh",
             "scripts/train_dudotrans_la.sh",
             "scripts/train_regformer_la.sh",
+            "scripts/train_solar_dualmamba_la_ablate_a.sh",
+            "scripts/train_solar_dualmamba_la_ablate_b.sh",
+            "scripts/train_solar_dualmamba_la_ablate_c.sh",
+            "scripts/train_solar_dualmamba_la_ablate_d.sh",
         ]
         for relpath in scripts:
             script_path = os.path.join(REPO_ROOT, relpath)

@@ -35,13 +35,22 @@
 | SSH bằng key | ✅ | Login node `login01`. `$HOME` dùng chung: 3.9/10 GB |
 | Mã nguồn trên server | ✅ | Sparse clone commit `9129290`, **không có** `scripts/output/`. git 2.43.0, 230 MB |
 | Lệnh Slurm qua ssh | ✅ | Đã giải quyết: đường dẫn /cm/local/apps/slurm/current/bin và wrapper bash -lc |
-| Môi trường Python (`envs/longnet`) | ⬜ | Chưa làm (job `small`) |
+| Môi trường Python (`envs/longnet`) | ✅ | Job 9610: hoàn tất 100% (PyTorch 2.8+cu128, mamba-ssm, astra, odl) |
 | Dataset AAPM (TCIA) | ✅ | Đã hoàn tất: 60 bệnh nhân, 9,108 lát cắt tại /datastore/doanhbc/minhdphan/datasets/aapm/raw/ |
 | Chia tập train/val/test nhiều bệnh nhân | ✅ | Đã hoàn tất: 100% relative symlinks (test: 4 BN / 757 lát, val: 1 BN / 133 lát, train: 55 BN / 8,218 lát) |
-| Port script sang MIG | ⬜ | Đợt đầu: dataset, LEARN, RegFormer, DuDoTrans, LEARN_{Longformer,LongNet,Mamba}, SOLAR_DualMamba |
-| Smoke test (LEARN, 1 epoch) | ⬜ | |
+| Cache dữ liệu LA-90° (sinogram/FBP) | ✅ | Job 10432: 100% (8,218 train, 133 val, 757 test). FBP baseline test: PSNR 12.27 dB |
+| Huấn luyện Wave A (LA-90°, 50 epochs) | ✅ | 4/4 mô hình hoàn thành 100% (Jobs 10556, 10561, 10563, 10565) |
+| - SOLAR_DualMamba (Proposed) | ✅ | Job 10556: Best Val PSNR = 25.89 dB, SSIM = 0.6240, Peak VRAM = 5.26 GB |
+| - RegFormer (Baseline) | ✅ | Job 10565: Best Val PSNR = 23.80 dB, SSIM = 0.693, Peak VRAM = 4.20 GB |
+| - LEARN (Baseline) | ✅ | Job 10561: Best Val PSNR = 21.38 dB, SSIM = 0.676, Peak VRAM = 0.41 GB |
+| - DuDoTrans (Baseline) | ✅ | Job 10563: Best Val PSNR = 19.31 dB, SSIM = 0.503, Peak VRAM = 0.72 GB |
+| Đánh giá Benchmark Test Cohort (4 BN) | ✅ | Job 10667: COMPLETED (4 BN, 757 lát test 90°). SOLAR: 24.47±1.09 dB, SSIM 0.7214 (vượt RegFormer +2.23 dB, LEARN +3.36 dB, DuDoTrans +6.12 dB) |
 
-**Job trên HPC-UIT:** chưa có.
+**Checkpoints đã lưu (`saved_models/`):**
+- SOLAR_DualMamba: `saved_models/SOLAR_DualMamba_90/solar_dualmamba_la-epoch=05-val_psnr=25.8919-val_ssim=0.6240.ckpt`
+- RegFormer: `saved_models/RegFormer_90/RegFormer_AAPM_LA_90deg_view64/epoch=00-val_psnr=23.7951.ckpt`
+- LEARN: `saved_models/LEARN_90/LEARN_AAPM_LA_90deg_view64/epoch=01-val_psnr=21.3799.ckpt`
+- DuDoTrans: `saved_models/DuDoTrans_90/DuDoTrans_AAPM_LA_90deg_view64/epoch=11-val_psnr=19.3073.ckpt`
 
 ---
 

@@ -1,89 +1,69 @@
 #!/bin/bash
+# ==============================================================================
+# SCRIPT SINH DỮ LIỆU SINOGRAM & FBP CHO LIDC-IDRI TRÊN CỤM HPC-UIT
+# Profile: hpc-uit, Partition: small (gpu:1g.18gb:1), max time: 04:00:00, mem: 16G
+# ==============================================================================
 #SBATCH --job-name=gen_la_lidc
-#SBATCH --output=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/generate_la_dataset_lidc/log/%j.out
-#SBATCH --error=/datastore/uittogether3/LuuTru/MinhPD/scripts/output/generate_la_dataset_lidc/log/%j.err
+#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/generate_la_dataset_lidc/log/%j.out
+#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/generate_la_dataset_lidc/log/%j.err
+#SBATCH --account=uit
+#SBATCH --partition=small
 #SBATCH --nodes=1
 #SBATCH --ntasks=1
 #SBATCH --cpus-per-task=4
 #SBATCH --mem=16G
-#SBATCH --gres=mps:a100:2
-#SBATCH --time=24:00:00
+#SBATCH --time=04:00:00
+#SBATCH --gres=gpu:1g.18gb:1
 
 set -euo pipefail
-
-REQUIRED_VRAM=20000
 
 cleanup() {
     local rc=$?
     echo "[INFO] cleanup rc=$rc at $(date)"
-    if [ -n "${CUDA_MPS_PIPE_DIRECTORY:-}" ]; then
-        rm -rf "${CUDA_MPS_PIPE_DIRECTORY}" 2>/dev/null || true
-    fi
-    if [ -n "${CUDA_MPS_LOG_DIRECTORY:-}" ]; then
-        rm -rf "${CUDA_MPS_LOG_DIRECTORY}" 2>/dev/null || true
-    fi
 }
 trap cleanup EXIT
 
-echo "[INFO] start at $(date)"
-echo "[INFO] hostname=$(hostname)"
-echo "[INFO] SLURM_JOB_ID=${SLURM_JOB_ID:-<unset>}"
+REPO=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction
+ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
+DICOM_DIR=/datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/
+OUTPUT_DIR=/datastore/doanhbc/minhdphan/datasets/lidc_idri/limited_angle/
 
-module clear -f
-module load slurm/slurm/24.11
+mkdir -p "$REPO/scripts/output/generate_la_dataset_lidc/log"
+mkdir -p "$OUTPUT_DIR"
 
-source /datastore/uittogether3/tools/miniconda3/etc/profile.d/conda.sh
+echo "=========================================================="
+echo "    LIDC-IDRI LIMITED-ANGLE CT DATA PREPARATION           "
+echo "=========================================================="
+echo "[INFO] start at:         $(date)"
+echo "[INFO] hostname:         $(hostname)"
+echo "[INFO] SLURM_JOB_ID:     ${SLURM_JOB_ID:-<unset>}"
+echo "[INFO] Partition:        ${SLURM_JOB_PARTITION:-<unset>}"
+echo "[INFO] Git commit:       $(git -C "$REPO" rev-parse HEAD 2>/dev/null || echo '<git-not-found>')"
+echo "[INFO] Dicom source:     $DICOM_DIR"
+echo "[INFO] Cache target:     $OUTPUT_DIR"
+echo ""
 
-export NVCC_PREPEND_FLAGS="${NVCC_PREPEND_FLAGS:-}"
-export NVCC_APPEND_FLAGS="${NVCC_APPEND_FLAGS:-}"
+# GPU allocation check
+nvidia-smi
 
-set +u
-conda activate /datastore/uittogether3/tools/miniconda3/envs/LongNet
-set -u
-
-# ================= GPU CHECK =================
-unset CUDA_VISIBLE_DEVICES
-
-set +e
-CHECK_OUT=$(/usr/local/bin/gpu_check.sh "$REQUIRED_VRAM" "$SLURM_JOB_ID" 2>&1)
-EXIT_CODE=$?
-set -e
-
-echo "[INFO] gpu_check exit_code=$EXIT_CODE"
-echo "[INFO] gpu_check output=$CHECK_OUT"
-
-if [ "$EXIT_CODE" -eq 10 ]; then
-    echo "$CHECK_OUT"
-    exit 0
-elif [ "$EXIT_CODE" -eq 11 ]; then
-    echo "$CHECK_OUT"
+# Nạp môi trường Python venv
+if [ -f "$ENV_DIR/bin/activate" ]; then
+    source "$ENV_DIR/bin/activate"
+    echo "[INFO] Activated env at: $ENV_DIR"
+else
+    echo "[ERROR] Environment not found at $ENV_DIR"
     exit 1
-elif [ "$EXIT_CODE" -ne 0 ]; then
-    echo "[ERROR] gpu_check.sh returned unexpected exit code: $EXIT_CODE"
-    exit "$EXIT_CODE"
 fi
 
-BEST_GPU="$CHECK_OUT"
-echo "[INFO] BEST_GPU=$BEST_GPU"
-
-# ================= MPS SETUP =================
-export CUDA_MPS_PIPE_DIRECTORY="/tmp/nvidia-mps-job${SLURM_JOB_ID}"
-export CUDA_MPS_LOG_DIRECTORY="/tmp/nvidia-mps-log-job${SLURM_JOB_ID}"
-
-rm -rf "${CUDA_MPS_PIPE_DIRECTORY}" "${CUDA_MPS_LOG_DIRECTORY}"
-mkdir -p "${CUDA_MPS_PIPE_DIRECTORY}" "${CUDA_MPS_LOG_DIRECTORY}"
-
-export CUDA_VISIBLE_DEVICES="${BEST_GPU}"
+python3 --version
 
 # ================= RUN DATA GENERATION =================
-echo "[INFO] Launching Limited-Angle CT Data Preparation for LIDC-IDRI at $(date)"
+cd "$REPO"
+export PYTHONPATH="$REPO:${PYTHONPATH:-}"
 
-cd /datastore/uittogether3/LuuTru/MinhPD
-export PYTHONPATH="/datastore/uittogether3/LuuTru/MinhPD:${PYTHONPATH:-}"
-
-python -u data/lidc_idri/prepare_data_sinogram_LA_LIDC.py \
-    --dicom_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/lidc_idri/dicom/ \
-    --output_base_dir /datastore/uittogether3/LuuTru/MinhPD/dataset/lidc_idri/limited_angle/ \
+python3 -u data/lidc_idri/prepare_data_sinogram_LA_LIDC.py \
+    --dicom_dir "$DICOM_DIR" \
+    --output_base_dir "$OUTPUT_DIR" \
     --num_view 64 \
     --num_detectors 512 \
     --input_size 256 \
@@ -92,4 +72,6 @@ python -u data/lidc_idri/prepare_data_sinogram_LA_LIDC.py \
     --angles 120.0 90.0 \
     --splits train val test
 
+echo ""
 echo "[INFO] LIDC-IDRI Limited-Angle CT data preparation finished at $(date)"
+echo "=========================================================="

@@ -12,7 +12,15 @@ import json
 import zipfile
 import urllib.request
 import argparse
-import tqdm
+try:
+    import tqdm
+    def progress_bar(it, desc=""):
+        return tqdm.tqdm(it, desc=desc)
+except ImportError:
+    def progress_bar(it, desc=""):
+        if desc:
+            print(f"[{desc}]")
+        return it
 
 
 # Danh sách 12 bệnh nhân CT lồng ngực tiêu biểu kèm SeriesInstanceUID tương ứng
@@ -81,7 +89,7 @@ def main():
     parser.add_argument(
         "--output_dir",
         type=str,
-        default="/datastore/uittogether3/LuuTru/MinhPD/dataset/lidc_idri/dicom/",
+        default="/datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/",
         help="Thư mục đích lưu trữ các file DICOM"
     )
     args = parser.parse_args()
@@ -94,7 +102,7 @@ def main():
     print("=" * 70)
 
     total_slices = 0
-    for pat_info in tqdm.tqdm(LIDC_TARGET_PATIENTS, desc="Tiến trình tải LIDC-IDRI"):
+    for pat_info in progress_bar(LIDC_TARGET_PATIENTS, desc="Tiến trình tải LIDC-IDRI"):
         try:
             count = download_series(pat_info, args.output_dir)
             total_slices += count

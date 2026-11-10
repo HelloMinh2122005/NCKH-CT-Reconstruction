@@ -45,9 +45,15 @@
 | - LEARN (Baseline) | ✅ | Job 10561: Best Val PSNR = 21.38 dB, SSIM = 0.676, Peak VRAM = 0.41 GB |
 | - DuDoTrans (Baseline) | ✅ | Job 10563: Best Val PSNR = 19.31 dB, SSIM = 0.503, Peak VRAM = 0.72 GB |
 | Đánh giá Benchmark Test Cohort (4 BN) | ✅ | Job 10667: COMPLETED (4 BN, 757 lát test 90°). SOLAR: 24.47±1.09 dB, SSIM 0.7214 (vượt RegFormer +2.23 dB, LEARN +3.36 dB, DuDoTrans +6.12 dB) |
+| Huấn luyện Wave B (Ablation A: no sinogram ref) | ✅ | Job 11486: COMPLETED (50 ep, 00:51:11). Best Val PSNR = 26.59 dB, SSIM = 0.7127 (Epoch 20), Peak VRAM = 2.49 GB, MaxRSS = 12.62 GB |
+| Huấn luyện Wave B (Ablation B: GD DC K=8) | ✅ | Job 11826: COMPLETED (50 ep, Best Val PSNR = 23.42 dB, SSIM = 0.6255 tại Epoch 13, Peak VRAM = 5.23 GB) |
+| Huấn luyện Wave B (Ablation C: Conv2D thay Bi-Mamba) | ✅ | Job 11914: COMPLETED (50 ep, 00:53:18, Peak VRAM 2.55 GB). Best Val PSNR = 27.11 dB, SSIM = 0.6812 tại Epoch 11 |
 
 **Checkpoints đã lưu (`saved_models/`):**
 - SOLAR_DualMamba: `saved_models/SOLAR_DualMamba_90/solar_dualmamba_la-epoch=05-val_psnr=25.8919-val_ssim=0.6240.ckpt`
+- SOLAR_DualMamba Ablation A: `saved_models/SOLAR_DualMamba_90_abl-a/solar_dualmamba_la-epoch=20-val_psnr=26.5898-val_ssim=0.7127.ckpt`
+- SOLAR_DualMamba Ablation B: `saved_models/SOLAR_DualMamba_90_abl-b/solar_dualmamba_la-epoch=13-val_psnr=23.4243-val_ssim=0.6255.ckpt`
+- SOLAR_DualMamba Ablation C: `saved_models/SOLAR_DualMamba_90_abl-c/solar_dualmamba_la-epoch=11-val_psnr=27.1140-val_ssim=0.6812.ckpt`
 - RegFormer: `saved_models/RegFormer_90/RegFormer_AAPM_LA_90deg_view64/epoch=00-val_psnr=23.7951.ckpt`
 - LEARN: `saved_models/LEARN_90/LEARN_AAPM_LA_90deg_view64/epoch=01-val_psnr=21.3799.ckpt`
 - DuDoTrans: `saved_models/DuDoTrans_90/DuDoTrans_AAPM_LA_90deg_view64/epoch=11-val_psnr=19.3073.ckpt`

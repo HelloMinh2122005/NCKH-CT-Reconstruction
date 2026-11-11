@@ -49,6 +49,7 @@
 | Huấn luyện Wave B (Ablation B: GD DC K=8) | ✅ | Job 11826: COMPLETED (50 ep, Best Val PSNR = 23.42 dB, SSIM = 0.6255 tại Epoch 13, Peak VRAM = 5.23 GB) |
 | Huấn luyện Wave B (Ablation C: Conv2D thay Bi-Mamba) | ✅ | Job 11914: COMPLETED (50 ep, 00:53:18, Peak VRAM 2.55 GB). Best Val PSNR = 27.11 dB, SSIM = 0.6812 tại Epoch 11 |
 | Tải bộ dữ liệu LIDC-IDRI (12 BN TCIA) | ✅ | Job 12516: COMPLETED (00:11:35). Tải thành công 1,714 lát cắt DICOM (100% test BN 0011-0012: 256 lát; 100% val BN 0009-0010: 533 lát) |
+| Sinh cache Sinogram/FBP LIDC-IDRI (10 BN) | ⏳ | Job 12792: PENDING (đã nộp 21:51:42 trên partition small) |
 
 **Checkpoints đã lưu (`saved_models/`):**
 - SOLAR_DualMamba: `saved_models/SOLAR_DualMamba_90/solar_dualmamba_la-epoch=05-val_psnr=25.8919-val_ssim=0.6240.ckpt`

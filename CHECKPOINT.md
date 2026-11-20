@@ -2,6 +2,7 @@
 > **TRẠNG THÁI ACTIVE (Cập nhật: 26/10/2026)**: khởi động lại trên HPC-UIT sau khi mất cụm DGX-A100.
 >
 > *Lưu ý cho AI Agent:* File này chỉ lưu **trạng thái tức thời, job đang chạy và việc cần làm tiếp**. Giữ nó ngắn.
+> - **Checklist chuẩn duy nhất đến khi nộp luận văn:** [`.lab/THESIS_CHECKPOINT.md`](../../.lab/THESIS_CHECKPOINT.md) (trong workspace `agents-research`).
 > - Quy tắc bắt buộc và bản đồ tài liệu: [AGENTS.md](AGENTS.md).
 > - Thông số CT, cụm HPC-UIT, dataset: [SYSTEM_SPEC.md](SYSTEM_SPEC.md).
 > - Lịch sử, gồm trạng thái cuối cùng trên cụm A100 ngày 22/09/2026: [ARCHIVE_LOG.md](ARCHIVE_LOG.md) §6.
@@ -29,6 +30,8 @@
 
 ## 2. Trạng Thái Cụm HPC-UIT (`/datastore/doanhbc/minhdphan`, tài khoản dùng chung)
 
+> **Checklist chuẩn duy nhất đến khi nộp luận văn:** [`.lab/THESIS_CHECKPOINT.md`](../../.lab/THESIS_CHECKPOINT.md). Các mục huấn luyện và đánh giá DL Wave A / Wave B dưới đây (train 99 lát L143, pilot 1-BN) đã **bị cách ly vĩnh viễn** — không đưa vào bảng, không đưa vào bản thảo, không dùng làm tín hiệu.
+
 | Hạng mục | Trạng thái | Ghi chú / Bằng chứng |
 | :--- | :---: | :--- |
 | Mount SSHFS `hpc-uit-server/` | ✅ | 26/10/2026 |
@@ -39,24 +42,28 @@
 | Dataset AAPM (TCIA) | ✅ | Đã hoàn tất: 60 bệnh nhân, 9,108 lát cắt tại /datastore/doanhbc/minhdphan/datasets/aapm/raw/ |
 | Chia tập train/val/test nhiều bệnh nhân | ✅ | Đã hoàn tất: 100% relative symlinks (test: 4 BN / 757 lát, val: 1 BN / 133 lát, train: 55 BN / 8,218 lát) |
 | Cache dữ liệu LA-90° (sinogram/FBP) | ✅ | Job 10432: 100% (8,218 train, 133 val, 757 test). FBP baseline test: PSNR 12.27 dB |
-| Huấn luyện Wave A (LA-90°, 50 epochs) | ✅ | 4/4 mô hình hoàn thành 100% (Jobs 10556, 10561, 10563, 10565) |
-| - SOLAR_DualMamba (Proposed) | ✅ | Job 10556: Best Val PSNR = 25.89 dB, SSIM = 0.6240, Peak VRAM = 5.26 GB |
-| - RegFormer (Baseline) | ✅ | Job 10565: Best Val PSNR = 23.80 dB, SSIM = 0.693, Peak VRAM = 4.20 GB |
-| - LEARN (Baseline) | ✅ | Job 10561: Best Val PSNR = 21.38 dB, SSIM = 0.676, Peak VRAM = 0.41 GB |
-| - DuDoTrans (Baseline) | ✅ | Job 10563: Best Val PSNR = 19.31 dB, SSIM = 0.503, Peak VRAM = 0.72 GB |
-| Đánh giá Benchmark Test Cohort (4 BN) | ✅ | Job 10667: COMPLETED (4 BN, 757 lát test 90°). SOLAR: 24.47±1.09 dB, SSIM 0.7214 (vượt RegFormer +2.23 dB, LEARN +3.36 dB, DuDoTrans +6.12 dB) |
-| Huấn luyện Wave B (Ablation A: no sinogram ref) | ✅ | Job 11486: COMPLETED (50 ep, 00:51:11). Best Val PSNR = 26.59 dB, SSIM = 0.7127 (Epoch 20), Peak VRAM = 2.49 GB, MaxRSS = 12.62 GB |
-| Huấn luyện Wave B (Ablation B: GD DC K=8) | ✅ | Job 11826: COMPLETED (50 ep, Best Val PSNR = 23.42 dB, SSIM = 0.6255 tại Epoch 13, Peak VRAM = 5.23 GB) |
-| Huấn luyện Wave B (Ablation C: Conv2D thay Bi-Mamba) | ✅ | Job 11914: COMPLETED (50 ep, 00:53:18, Peak VRAM 2.55 GB). Best Val PSNR = 27.11 dB, SSIM = 0.6812 tại Epoch 11 |
-| Huấn luyện Wave B (Ablation D: Swin -> CNN) | ⏳ | Job 12831: PENDING (đã nộp 23:01:04 trên partition normal) |
+| Huấn luyện Wave A (LA-90°, 50 epochs) | cách ly (pilot 1-BN, train 99 lát L143) | 4/4 mô hình hoàn thành 100% trên pilot 1-BN (Jobs 10556, 10561, 10563, 10565) — cách ly vĩnh viễn |
+| - SOLAR_DualMamba (Proposed) | cách ly (pilot 1-BN, train 99 lát L143) | Job 10556: Best Val PSNR = 25.89 dB, SSIM = 0.6240, Peak VRAM = 5.26 GB (pilot 1-BN) |
+| - RegFormer (Baseline) | cách ly (pilot 1-BN, train 99 lát L143) | Job 10565: Best Val PSNR = 23.80 dB, SSIM = 0.693, Peak VRAM = 4.20 GB (pilot 1-BN) |
+| - LEARN (Baseline) | cách ly (pilot 1-BN, train 99 lát L143) | Job 10561: Best Val PSNR = 21.38 dB, SSIM = 0.676, Peak VRAM = 0.41 GB (pilot 1-BN) |
+| - DuDoTrans (Baseline) | cách ly (pilot 1-BN, train 99 lát L143) | Job 10563: Best Val PSNR = 19.31 dB, SSIM = 0.503, Peak VRAM = 0.72 GB (pilot 1-BN) |
+| Đánh giá Benchmark Test Cohort (4 BN, Wave A pilot) | cách ly (pilot 1-BN, train 99 lát L143) | Job 10667: COMPLETED (4 BN, 757 lát test 90°). Đánh giá trên checkpoint pilot 1-BN (train 99 lát L143) — cách ly vĩnh viễn, không dùng làm số liệu chuẩn hay tín hiệu |
+| Huấn luyện Wave B (Ablation A: no sinogram ref) | cách ly (pilot 1-BN, train 99 lát L143) | Job 11486: COMPLETED (50 ep, 00:51:11). Best Val PSNR = 26.59 dB, SSIM = 0.7127 (Epoch 20), Peak VRAM = 2.49 GB, MaxRSS = 12.62 GB (pilot 1-BN) |
+| Huấn luyện Wave B (Ablation B: GD DC K=8) | cách ly (pilot 1-BN, train 99 lát L143) | Job 11826: COMPLETED (50 ep, Best Val PSNR = 23.42 dB, SSIM = 0.6255 tại Epoch 13, Peak VRAM = 5.23 GB) (pilot 1-BN) |
+| Huấn luyện Wave B (Ablation C: Conv2D thay Bi-Mamba) | cách ly (pilot 1-BN, train 99 lát L143) | Job 11914: COMPLETED (50 ep, 00:53:18, Peak VRAM 2.55 GB). Best Val PSNR = 27.11 dB, SSIM = 0.6812 tại Epoch 11 (pilot 1-BN) |
+| Huấn luyện Wave B (Ablation D: Swin -> CNN) | cách ly (pilot 1-BN, train 99 lát L143) | Job 12831: COMPLETED (50 ep, 01:10:43, MaxRSS 13.34 GB, Peak VRAM 3.73 GB). Best Val PSNR = 26.71 dB, SSIM = 0.6707 tại Epoch 17. Final ep 49: val_psnr=24.90, val_ssim=0.592 (pilot 1-BN) |
 | Tải bộ dữ liệu LIDC-IDRI (12 BN TCIA) | ✅ | Job 12516: COMPLETED (00:11:35). Tải thành công 1,714 lát cắt DICOM (100% test BN 0011-0012: 256 lát; 100% val BN 0009-0010: 533 lát) |
-| Sinh cache Sinogram/FBP LIDC-IDRI (10 BN) | ⏳ | Job 12792: PENDING (đã nộp 21:51:42 trên partition small) |
+| Sinh cache Sinogram/FBP LIDC-IDRI (10 BN) | ❌ | Job 12792: FAILED (00:00:17, rc=1, MaxRSS 9.2 MB). ValueError: pixel data 79750 bytes vs expected 524288 bytes tại lát 0/925 |
+| Đánh giá Wave B Ablation Benchmark (4 BN) | cách ly (pilot 1-BN, train 99 lát L143) | Job 26535: COMPLETED (00:09:42, ExitCode 0:0, MaxRSS 3.73 GB, 4 BN / 757 lát). Đánh giá các checkpoint pilot 1-BN; xuất 3,028 dòng vào wave_b_ablation_per_slice_results.csv — cách ly vĩnh viễn |
+| Sinh cache Sinogram/FBP LA-120° (Wave C) | ⏳ | Job 42097: PENDING (thử lại sau Job 30579 FAILED, submit 2026-11-16T00:53:14, partition small, reason: Priority) `hpc-uit:42097` |
+| Đánh giá SOLAR_DualMamba last.ckpt (LA-90°, 4 BN) | cách ly (pilot 1-BN, train 99 lát L143) | Job 30623: COMPLETED (00:02:44, ExitCode 0:0, MaxRSS 3908432K, 4 BN / 757 lát). Đánh giá checkpoint pilot 1-BN; xuất 757 dòng vào solar_last_ckpt_per_slice_results.csv `hpc-uit:30623` — cách ly vĩnh viễn |
 
-**Checkpoints đã lưu (`saved_models/`):**
+**Checkpoints pilot 1-BN đã lưu (`saved_models/` — cách ly, train 99 lát L143, không dùng):**
 - SOLAR_DualMamba: `saved_models/SOLAR_DualMamba_90/solar_dualmamba_la-epoch=05-val_psnr=25.8919-val_ssim=0.6240.ckpt`
 - SOLAR_DualMamba Ablation A: `saved_models/SOLAR_DualMamba_90_abl-a/solar_dualmamba_la-epoch=20-val_psnr=26.5898-val_ssim=0.7127.ckpt`
 - SOLAR_DualMamba Ablation B: `saved_models/SOLAR_DualMamba_90_abl-b/solar_dualmamba_la-epoch=13-val_psnr=23.4243-val_ssim=0.6255.ckpt`
 - SOLAR_DualMamba Ablation C: `saved_models/SOLAR_DualMamba_90_abl-c/solar_dualmamba_la-epoch=11-val_psnr=27.1140-val_ssim=0.6812.ckpt`
+- SOLAR_DualMamba Ablation D: `saved_models/SOLAR_DualMamba_90_abl-d/solar_dualmamba_la-epoch=17-val_psnr=26.7106-val_ssim=0.6707.ckpt`
 - RegFormer: `saved_models/RegFormer_90/RegFormer_AAPM_LA_90deg_view64/epoch=00-val_psnr=23.7951.ckpt`
 - LEARN: `saved_models/LEARN_90/LEARN_AAPM_LA_90deg_view64/epoch=01-val_psnr=21.3799.ckpt`
 - DuDoTrans: `saved_models/DuDoTrans_90/DuDoTrans_AAPM_LA_90deg_view64/epoch=11-val_psnr=19.3073.ckpt`

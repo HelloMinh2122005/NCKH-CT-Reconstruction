@@ -1,0 +1,8 @@
+model,mean_ms,std_ms,fps,warmup_runs,test_runs,input_size,views,hardware_profile
+solar,196.053,29.837,5.10,20,100,256,64,HPC-UIT MIG Slice (gpu:2g.35gb:1)
+learn,54.218,2.833,18.44,20,100,256,64,HPC-UIT MIG Slice (gpu:2g.35gb:1)
+regformer,114.812,10.571,8.71,20,100,256,64,HPC-UIT MIG Slice (gpu:2g.35gb:1)
+dudotrans,11.171,0.057,89.52,20,100,256,64,HPC-UIT MIG Slice (gpu:2g.35gb:1)
+mamba,142.897,9.043,7.00,20,100,256,64,HPC-UIT MIG Slice (gpu:2g.35gb:1)
+longformer,169.490,10.647,5.90,20,100,256,64,HPC-UIT MIG Slice (gpu:2g.35gb:1)
+longnet,76.542,11.674,13.06,20,100,256,64,HPC-UIT MIG Slice (gpu:2g.35gb:1)

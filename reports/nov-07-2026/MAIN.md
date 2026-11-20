@@ -1,3 +1,14 @@
+> [!CAUTION]
+> **QUARANTINED — 1-BN pilot (train 99 lát L143), không dùng**
+>
+> Toàn bộ kết quả Deep Learning trên cụm HPC-UIT trong báo cáo này (Wave A: job `10556`, `10561`, `10563`, `10565`, test `10667`; cùng các job Wave B / last-ckpt `11486`, `11826`, `11914`, `12831`, `26535`, `30623`) đã huấn luyện nhầm trên chỉ **99 lát của 1 bệnh nhân (`L143`)** thay vì 8,218 lát / 55 bệnh nhân (xác nhận trong log `10556.out:52`, `10561.out:52`, `10563.out:52`, `10565.out:53`). **Mọi số liệu DL của pilot 1-BN bị cách ly vĩnh viễn (`status=quarantined_pilot`)** và **tuyệt đối không được dùng** làm kết quả luận văn, đưa vào bảng chính, hay làm "tín hiệu" định tính.
+>
+> - **Ngoại lệ hợp lệ tách riêng:** Baseline giải tích **FBP 90° (`hpc-uit:10432`)** trên 4 bệnh nhân test / 757 lát (`PSNR = 12.2725 ± 0.1567 dB`, `SSIM = 0.5008 ± 0.0954`, `RMSE = 0.289391 ± 0.010774`, log `scripts/output-hpc-uit/generate_la_dataset/log/10432.out:96-106`) là hợp lệ và độc lập với lỗi train 1-BN.
+> - **Lưu ý số legacy DGX-A100 (`legacy:*`):** Kết quả trên cụm A100 cũ (test đơn BN `L310` hoặc NIH DeepLesion) là hồ sơ lịch sử tách biệt, không gộp chung bảng với kết quả `hpc-uit`.
+> - **Nguồn chuẩn hiện hành:** Xem `.lab/THESIS_CHECKPOINT.md` và `.lab/20261026-restart-intake/reviews/professor-review-progress-2026-11-20.md`. Nội dung bên dưới được giữ nguyên trạng để bảo toàn lịch sử đối soát (một số diễn giải/thuật ngữ cũ chưa sửa theo review, ví dụ quét 90° bỏ trống 50% không gian Fourier chứ không phải "khuyết 270°", và solver là bước CG tiền điều kiện bằng FBP).
+
+---
+
 ## 1. BÁO CÁO CHI TIẾT CÁC BỘ DỮ LIỆU ĐÃ TẢI VỀ & XỬ LÝ (DATASETS & GEOMETRY)
 
 Dự án sử dụng 3 nguồn dữ liệu CT y tế tiêu chuẩn quốc tế, trong đó bộ dữ liệu lâm sàng chính là **AAPM Mayo Clinic Low Dose CT**:
@@ -12,9 +23,9 @@ Dự án sử dụng 3 nguồn dữ liệu CT y tế tiêu chuẩn quốc tế, 
 │   │   └── test/                        # 4 bệnh nhân L058, L064, L094, L107 (757 lát cắt CT)
 │   └── limited_angle/                   # Dữ liệu Cache Sinogram & FBP tốc độ cao (.npy)
 │       ├── limited_ang_90deg_numview_64_size_256_noise_0/   # Hoàn thành 100% (9,108 lát cắt)
-│       └── limited_ang_120deg_numview_64_size_256_noise_0/  # Hoàn thành 100% Train (8,218 lát)
+│       └── limited_ang_120deg_numview_64_size_256_noise_0/  # Xác minh 2026-11-13: CHỈ có test/ tồn tại (757 lát); train/ KHÔNG có trên đĩa
 ├── deeplesion/                          # Dữ liệu ngoại suy NIH DeepLesion (300 lát test)
-└── lidc_idri/                           # Dữ liệu phổi LIDC-IDRI (Lập manifest lọc sạch)
+└── lidc_idri/                           # Dữ liệu phổi LIDC-IDRI: Đã tải 1,714 lát DICOM thô (Job 12516); Job 12792 sinh cache thất bại tại slice 0
 ```
 
 ### 1.1. Bộ Dữ Liệu Lâm Sàng Chính: AAPM Mayo Clinic Low Dose CT (2016)
@@ -30,12 +41,12 @@ Dự án sử dụng 3 nguồn dữ liệu CT y tế tiêu chuẩn quốc tế, 
 - **Cấu hình hình học tạo ảnh (CT Projection Geometry):**
   - Mô phỏng chùm tia quạt (Fan-beam geometry) thông qua thư viện ODL và ASTRA-Toolbox.
   - Khoảng cách Nguồn - Tâm quay ($D_{SO}$): $600\text{ mm}$.
-  - Khoảng cách Nguồn - Đầu thu ($D_{SD}$): $1000\text{ mm}$ (Tỷ lệ khuếch đại hình học: $1.67$).
+  - Khoảng cách Nguồn - Đầu thu ($D_{SD}$): $890\text{ mm}$ ($D_{SO} = 600\text{ mm}, D_{OD} = 290\text{ mm}$, tỷ lệ khuếch đại hình học: $890/600 \approx 1.483$).
   - Số lượng kênh đầu thu (Detectors): $512\text{ channels}$.
   - Kích thước ảnh tái tạo: $256 \times 256\text{ pixels}$.
 - **Bộ Cache Sinogram và FBP Tốc Độ Cao (`.npy` float32):**
   - **Cung quét hẹp LA-90° (Góc khuyết $270^\circ$, 64 views):** Đã tạo hoàn tất **100% cả 3 tập** qua Job `10432` (**9,108 lát cắt**: 8,218 train, 133 val, 757 test).
-  - **Cung quét chuẩn LA-120° (Góc khuyết $240^\circ$, 64 views):** Đã tạo hoàn tất **100% tập train (8,218 lát cắt)** qua Jobs `9629`, `9877`.
+  - **Cung quét chuẩn LA-120° (Góc khuyết $240^\circ$, 64 views):** Xác minh thực tế (2026-11-13) xác nhận chỉ có `test/limited_ang_120deg...` (757 lát cắt) tồn tại trên cụm HPC-UIT, trong khi `train/limited_ang_120deg...` KHÔNG có trên đĩa (Jobs `9629`/`9877` bị nghẽn/stalled) và cần được sinh lại trước khi triển khai Wave C.
 
 ### 1.2. Bộ Dữ Liệu Ngoại Suy Đa Trung Tâm: NIH DeepLesion CT
 - **Mục đích:** Đánh giá khả năng khái quát hóa và độ ổn định của mô hình trên dữ liệu ngoài phân phối (out-of-distribution transferability).
@@ -43,7 +54,8 @@ Dự án sử dụng 3 nguồn dữ liệu CT y tế tiêu chuẩn quốc tế, 
 - **Cấu hình:** 64 góc chiếu, 512 detectors, $256 \times 256$.
 
 ### 1.3. Bộ Dữ Liệu LIDC-IDRI (Lung Image Database Consortium)
-- Dữ liệu quét cắt lớp lồng ngực chuyên biệt khối u phổi, đã được lập script lọc manifest TCIA và sẵn sàng cho chiến dịch mở rộng quy mô.
+- Job `12516` đã hoàn tất tải 1,714 lát cắt DICOM thô (256 test, 533 val, 925 train; ca 0001-0002 bị timed out từ TCIA).
+- Job `12792` thực hiện sinh cache nhưng thất bại tại slice 0 do lỗi không khớp độ dài dữ liệu pixel (pixel data length mismatch: 79,750 vs 524,288 bytes).
 
 ---
 
@@ -193,8 +205,8 @@ SOLAR_DualMamba (Đề xuất)      | 72818       | 0.225M    | 32.91 dB / 0.918
 ## 4. KẾT LUẬN & ĐỊNH HƯỚNG BƯỚC TIẾP THEO
 
 1. **Khẳng Định Vị Thế Khoa Học:**
-   - Kết quả Job `10667` trên cụm H200 chứng minh một cách hoàn hảo và có ý nghĩa thống kê tính ưu việt của mô hình **`SOLAR_DualMamba`**: **chiến thắng 4/4 bệnh nhân kiểm thử độc lập**, vượt baseline mạnh nhất là `RegFormer` **+2.23 dB PSNR** và **+0.0256 SSIM**, giảm **23.6% sai số RMSE**.
+   - Kết quả Job `10667` trên cụm H200 thể hiện tính ưu việt mô tả (descriptive superiority) của mô hình **`SOLAR_DualMamba`**: **chiến thắng 4/4 bệnh nhân kiểm thử độc lập** (đánh giá theo $\text{mean} \pm \text{std}$), vượt baseline mạnh nhất là `RegFormer` **+2.23 dB PSNR** và **+0.0256 SSIM**, giảm **23.6% sai số RMSE**. Theo `split.md`, với $n=4$ bệnh nhân kiểm thử (kiểm định Wilcoxon chính xác có $p_{\min} = 0.125$), không đưa ra khẳng định về ý nghĩa thống kê ở cấp độ bệnh nhân (no patient-level statistical significance claim).
    - Khắc phục triệt để và toàn diện nguyên nhân bài báo SOICT bị từ chối trước đây (đã có tập test đa bệnh nhân với đầy đủ khoảng tin cậy mean ± std).
-2. **Sẵn Sàng Triển Khai Wave B (Change 25):**
-   - Đã chuẩn bị 4 sbatch scripts cho 4 nhánh Ablation (A, B, C, D) tại commit `19ef8d3` trên cụm HPC-UIT.
-   - Hàng đợi Slurm hiện đang trống 100%, sẵn sàng đưa vào VPS Cron Dispatcher để tự động thực thi.
+2. **Tiến Độ Triển Khai Wave B (Ablation Studies):**
+   - Cả 4 job huấn luyện Wave B đã hoàn tất (`11486`, `11826`, `11914`, `12831`) với checkpoint được lưu đầy đủ.
+   - Bước tiếp theo là thực thi job benchmark kiểm thử đa bệnh nhân cho Wave B trên tập test 4 bệnh nhân để hoàn tất đánh giá đối sánh ablation.

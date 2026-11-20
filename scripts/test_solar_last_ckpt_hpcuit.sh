@@ -37,6 +37,8 @@ DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 mkdir -p "$REPO/scripts/output-hpc-uit/test_solar_last_ckpt_hpcuit/log"
 mkdir -p "$REPO/reports"
+# [2026-11-20 T1.6] Thư mục báo cáo đánh giá 55 BN độc lập
+mkdir -p "$REPO/reports/hpc-uit-55p"
 
 echo "=== HPC-UIT TEST: SOLAR_DualMamba LAST.CKPT EVALUATION ==="
 echo "[INFO] Start at: $(date)"
@@ -66,7 +68,8 @@ export TRITON_CACHE_DIR=$XDG_CACHE_HOME/triton
 # Cấu hình danh sách bệnh nhân kiểm thử đóng băng theo split.md
 # Gồm 4 bệnh nhân kiểm thử độc lập: L058, L064, L094, L107 (tổng cộng 757 lát cắt)
 TEST_PATIENTS=("L058" "L064" "L094" "L107")
-CSV_OUTPUT="$REPO/reports/solar_last_ckpt_per_slice_results.csv"
+# [2026-11-20 T1.6] Tách triệt để kết quả 55 BN sang reports/hpc-uit-55p/
+CSV_OUTPUT="$REPO/reports/hpc-uit-55p/solar_last_ckpt_per_slice_results.csv"
 
 # Xóa file CSV cũ nếu có để đảm bảo kết quả ghi mới hoàn toàn sạch sẽ
 rm -f "$CSV_OUTPUT"
@@ -76,7 +79,8 @@ echo "[INFO] Danh sách test patients: ${TEST_PATIENTS[*]}"
 echo "[INFO] Tệp CSV kết quả per-slice: $CSV_OUTPUT"
 
 # Đường dẫn tệp checkpoint last.ckpt của mô hình SOLAR LA-90°
-CKPT_FILE="$REPO/saved_models/SOLAR_DualMamba_90/last.ckpt"
+# [2026-11-20 T1.6] Đọc checkpoint từ saved_models_55p/
+CKPT_FILE="$REPO/saved_models_55p/SOLAR_DualMamba_90/last.ckpt"
 
 echo "================================================================================"
 echo "🎯 ĐÁNH GIÁ: SOLAR_DualMamba (last.ckpt) LA-90° (64 views)"

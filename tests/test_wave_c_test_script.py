@@ -196,7 +196,11 @@ class TestWaveCTestScriptsContract(unittest.TestCase):
         )
 
         # Kiểm tra đường dẫn xuất CSV và dọn dẹp file CSV cũ
-        self.assertIn("reports/wave_c_120_per_slice_results.csv", content)
+        # [2026-11-20 T1.6] Hỗ trợ thư mục reports/hpc-uit-55p/
+        self.assertTrue(
+            "reports/wave_c_120_per_slice_results.csv" in content or "reports/hpc-uit-55p/wave_c_120_per_slice_results.csv" in content,
+            "Thiếu đường dẫn xuất CSV wave_c_120"
+        )
         self.assertIn("rm -f", content)
 
     def test_solar_last_ckpt_target_and_fail_loudly(self):
@@ -208,7 +212,11 @@ class TestWaveCTestScriptsContract(unittest.TestCase):
             content = f.read()
 
         # Kiểm tra đường dẫn chính xác tới last.ckpt
-        self.assertIn("saved_models/SOLAR_DualMamba_90/last.ckpt", content)
+        # [2026-11-20 T1.6] Hỗ trợ gốc saved_models_55p/
+        self.assertTrue(
+            "saved_models/SOLAR_DualMamba_90/last.ckpt" in content or "saved_models_55p/SOLAR_DualMamba_90/last.ckpt" in content,
+            "Thiếu đường dẫn tới last.ckpt của SOLAR_DualMamba_90"
+        )
 
         # Kiểm tra góc quét 90 độ
         self.assertTrue(
@@ -225,7 +233,11 @@ class TestWaveCTestScriptsContract(unittest.TestCase):
         )
 
         # Kiểm tra file CSV xuất ra
-        self.assertIn("reports/solar_last_ckpt_per_slice_results.csv", content)
+        # [2026-11-20 T1.6] Hỗ trợ thư mục reports/hpc-uit-55p/
+        self.assertTrue(
+            "reports/solar_last_ckpt_per_slice_results.csv" in content or "reports/hpc-uit-55p/solar_last_ckpt_per_slice_results.csv" in content,
+            "Thiếu đường dẫn file CSV xuất ra"
+        )
         self.assertIn("rm -f", content)
 
     def test_cli_flags_validity_against_test_python_scripts(self):

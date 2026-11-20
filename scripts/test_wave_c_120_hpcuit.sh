@@ -38,6 +38,8 @@ DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 mkdir -p "$REPO/scripts/output-hpc-uit/test_wave_c_120_hpcuit/log"
 mkdir -p "$REPO/reports"
+# [2026-11-20 T1.6] Thư mục báo cáo đánh giá 55 BN độc lập
+mkdir -p "$REPO/reports/hpc-uit-55p"
 
 echo "=== HPC-UIT BATCHED TEST: WAVE C (LA-120°) EVALUATION ==="
 echo "[INFO] Start at: $(date)"
@@ -67,7 +69,8 @@ export TRITON_CACHE_DIR=$XDG_CACHE_HOME/triton
 # Cấu hình danh sách bệnh nhân kiểm thử đóng băng theo split.md
 # Gồm 4 bệnh nhân kiểm thử độc lập: L058, L064, L094, L107 (tổng cộng 757 lát cắt)
 TEST_PATIENTS=("L058" "L064" "L094" "L107")
-CSV_OUTPUT="$REPO/reports/wave_c_120_per_slice_results.csv"
+# [2026-11-20 T1.6] Tách triệt để kết quả 55 BN sang reports/hpc-uit-55p/
+CSV_OUTPUT="$REPO/reports/hpc-uit-55p/wave_c_120_per_slice_results.csv"
 
 # Xóa file CSV cũ nếu có để đảm bảo kết quả ghi mới hoàn toàn sạch sẽ
 rm -f "$CSV_OUTPUT"
@@ -86,7 +89,8 @@ run_model_eval() {
     local MODEL="${1:-}"
     local SCRIPT_NAME="${2:-}"
     local ANGLE="120"
-    local CKPT_DIR="$REPO/saved_models/${MODEL}_${ANGLE}"
+    # [2026-11-20 T1.6] Đọc checkpoint từ saved_models_55p/
+    local CKPT_DIR="$REPO/saved_models_55p/${MODEL}_${ANGLE}"
 
     echo "================================================================================"
     echo "🎯 ĐÁNH GIÁ WAVE C: ${MODEL} LA-${ANGLE}° (64 views)"

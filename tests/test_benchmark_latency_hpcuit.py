@@ -100,18 +100,20 @@ class TestBenchmarkLatencyHPCUIT(unittest.TestCase):
 
     def test_csv_columns_schema(self):
         """Kiểm tra schema 9 cột xuất ra CSV theo đúng đặc tả yêu cầu."""
+        # [2026-11-20 T1.9] Bổ sung peak_vram_mb (10 cột)
         expected_columns = [
             "model",
             "mean_ms",
             "std_ms",
             "fps",
+            "peak_vram_mb",
             "warmup_runs",
             "test_runs",
             "input_size",
             "views",
             "hardware_profile",
         ]
-        self.assertEqual(CSV_COLUMNS, expected_columns, "CSV schema phải gồm 9 cột chính xác theo yêu cầu")
+        self.assertEqual(CSV_COLUMNS, expected_columns, "CSV schema phải gồm 10 cột chính xác theo yêu cầu T1.9")
 
     def test_format_csv_row(self):
         """Kiểm tra logic định dạng các trường dữ liệu của dòng CSV."""
@@ -125,12 +127,14 @@ class TestBenchmarkLatencyHPCUIT(unittest.TestCase):
             input_size=256,
             views=64,
             hardware_profile="HPC-UIT MIG Slice",
+            peak_vram_mb=512.456,
         )
         expected_row = [
             "learn",
             "12.346",
             "0.789",
             "81.00",
+            "512.46",
             20,
             100,
             256,

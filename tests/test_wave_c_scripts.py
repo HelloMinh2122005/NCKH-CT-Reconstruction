@@ -180,7 +180,11 @@ class TestWaveCScriptsContract(unittest.TestCase):
                 f"Thiếu cấu hình ANGLE mặc định 120 trong {cfg['relpath']}"
             )
             # Kiểm tra đường dẫn lưu model và log khớp Model_120
-            self.assertIn(f"saved_models/{cfg['model_dir_name']}", content)
+            # [2026-11-20 T1.6] Hỗ trợ gốc mới saved_models_55p/
+            self.assertTrue(
+                f"saved_models/{cfg['model_dir_name']}" in content or f"saved_models_55p/{cfg['model_dir_name']}" in content,
+                f"Thiếu đường dẫn lưu model khớp {cfg['model_dir_name']}"
+            )
             self.assertIn(f"lightning_logs/{cfg['model_dir_name']}", content)
             # Kiểm tra cờ --seed 42
             self.assertIn("--seed 42", content)

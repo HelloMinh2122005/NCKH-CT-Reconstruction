@@ -24,11 +24,13 @@ if PROJECT_ROOT not in sys.path:
     sys.path.insert(0, PROJECT_ROOT)
 
 # Danh sách 9 cột chuẩn của file CSV kết quả đo latency theo GT-03 / Wave E
+# [2026-11-20 T1.9] Bổ sung cột peak_vram_mb (tổng cộng 10 cột)
 CSV_COLUMNS = [
     "model",
     "mean_ms",
     "std_ms",
     "fps",
+    "peak_vram_mb",
     "warmup_runs",
     "test_runs",
     "input_size",
@@ -37,13 +39,14 @@ CSV_COLUMNS = [
 ]
 
 
-def format_csv_row(model, mean_ms, std_ms, fps, warmup_runs, test_runs, input_size, views, hardware_profile):
+def format_csv_row(model, mean_ms, std_ms, fps, warmup_runs, test_runs, input_size, views, hardware_profile, peak_vram_mb=0.0):
     """Định dạng một dòng kết quả đo lường độ trễ cho tệp CSV."""
     return [
         str(model),
         f"{mean_ms:.3f}",
         f"{std_ms:.3f}",
         f"{fps:.2f}",
+        f"{peak_vram_mb:.2f}",
         int(warmup_runs),
         int(test_runs),
         int(input_size),
@@ -65,6 +68,7 @@ def parse_args(args=None):
     parser.add_argument("--angle_range_deg", type=float, default=120.0, help="Dải góc quét (mặc định 120.0)")
     parser.add_argument("--hardware_profile", type=str, default="HPC-UIT MIG Slice", help="Hồ sơ phần cứng đo lường (mặc định: HPC-UIT MIG Slice)")
     parser.add_argument("--output_csv", type=str, default=None, help="Đường dẫn file CSV xuất kết quả")
+    parser.add_argument("--ckpt_path", type=str, default=None, help="Đường dẫn file hoặc thư mục checkpoint để nạp trọng số (T1.9)")
     return parser.parse_args(args)
 
 
@@ -141,6 +145,30 @@ def load_model(args, device):
 
     model.to(device)
     model.eval()
+
+    # [2026-11-20 T1.9] Nạp trọng số checkpoint từ file hoặc thư mục nếu được chỉ định
+    if getattr(args, "ckpt_path", None):
+        ckpt_path = args.ckpt_path
+        if os.path.isdir(ckpt_path):
+            ckpts = [os.path.join(ckpt_path, f) for f in os.listdir(ckpt_path) if f.endswith(".ckpt")]
+            if ckpts:
+                best_ckpts = [f for f in ckpts if "val_psnr" in os.path.basename(f)]
+                ckpt_path = sorted(best_ckpts)[-1] if best_ckpts else sorted(ckpts)[0]
+            else:
+                ckpt_path = None
+        if ckpt_path and os.path.isfile(ckpt_path):
+            print(f"[INFO] Nạp trọng số checkpoint từ: {ckpt_path}")
+            try:
+                ckpt_data = torch.load(ckpt_path, map_location=device)
+                state_dict = ckpt_data.get("state_dict", ckpt_data)
+                clean_state = {}
+                for k, v in state_dict.items():
+                    clean_k = k[6:] if k.startswith("model.") else k
+                    clean_state[clean_k] = v
+                model.load_state_dict(clean_state, strict=False)
+            except Exception as e:
+                print(f"[WARN] Không thể nạp trọng số từ {ckpt_path}: {e}")
+
     return model
 
 
@@ -165,6 +193,10 @@ def main():
     assert fbp_input.dtype == torch.float32 and sino_input.dtype == torch.float32, "Dữ liệu đầu vào bắt buộc là FP32"
     assert fbp_input.shape[2:] == (args.input_size, args.input_size), "Kích thước ảnh fbp_input không khớp input_size"
     assert sino_input.shape[2:] == (args.num_view, args.num_detectors), "Kích thước sinogram không khớp num_view và num_detectors"
+
+    # [2026-11-20 T1.9] Reset thống kê bộ nhớ VRAM trước khi đo lường
+    if torch.cuda.is_available():
+        torch.cuda.reset_peak_memory_stats()
 
     print(f"[INFO] Thực hiện {args.warmup_runs} lượt warm-up...")
     with torch.no_grad():
@@ -191,6 +223,8 @@ def main():
     mean_ms = float(np.mean(latencies_ms))
     std_ms = float(np.std(latencies_ms))
     fps = 1000.0 / mean_ms
+    # [2026-11-20 T1.9] Đo lường đỉnh bộ nhớ VRAM (MB)
+    peak_vram_mb = float(torch.cuda.max_memory_allocated() / (1024 ** 2)) if torch.cuda.is_available() else 0.0
 
     print("=" * 70)
     print(f"📊 KẾT QUẢ ĐỘ TRỄ SUY LUẬN (LATENCY BENCHMARK):")
@@ -198,6 +232,7 @@ def main():
     print(f"  • Mean Latency:     {mean_ms:.2f} ms")
     print(f"  • Std Latency:      {std_ms:.2f} ms")
     print(f"  • FPS:              {fps:.2f} frames/sec")
+    print(f"  • Peak VRAM:        {peak_vram_mb:.2f} MB ({peak_vram_mb / 1024:.2f} GB)")
     print(f"  • Hardware Profile: {args.hardware_profile}")
     print("=" * 70)
 
@@ -219,6 +254,7 @@ def main():
                 input_size=args.input_size,
                 views=args.num_view,
                 hardware_profile=args.hardware_profile,
+                peak_vram_mb=peak_vram_mb,
             )
             writer.writerow(row)
         print(f"[INFO] Đã ghi kết quả vào CSV: {args.output_csv}")

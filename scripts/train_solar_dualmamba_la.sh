@@ -69,13 +69,18 @@ export HF_HOME=$XDG_CACHE_HOME/hf
 export TRITON_CACHE_DIR=$XDG_CACHE_HOME/triton
 
 # ================= CẤU HÌNH GÓC QUÉT & CHECKPOINT =================
+# [2026-11-20 T1.7] Tham số hóa số epoch: mặc định 50
 # Tham số hóa góc quét: mặc định 90 độ, có thể cấu hình 120 độ qua đối số $1
 ANGLE="${1:-90}"
 ANGLE_DEG="${ANGLE}.0"
+# Tham số hóa số epoch: mặc định 50 (T1.7)
+MAX_EPOCHS="${MAX_EPOCHS:-50}"
 echo "[INFO] Cấu hình góc quét: ${ANGLE_DEG}° (Views: 64)"
+echo "[INFO] MAX_EPOCHS: $MAX_EPOCHS"
 
 # Thư mục lưu checkpoint và log theo quy chuẩn saved_models/<Model>_<angle>/
-OUTPUT_DIR="$REPO/saved_models/SOLAR_DualMamba_${ANGLE}"
+# [2026-11-20 T1.6] Tách triệt để Checkpoint 55 BN: lưu vào saved_models_55p/<Model>_<angle>/
+OUTPUT_DIR="$REPO/saved_models_55p/SOLAR_DualMamba_${ANGLE}"
 LOG_DIR="$REPO/lightning_logs/SOLAR_DualMamba_${ANGLE}"
 mkdir -p "$OUTPUT_DIR" "$LOG_DIR"
 
@@ -99,6 +104,12 @@ TRAIN_PATIENTS=(
 echo "[INFO] Phân chia cố định: Train=${#TRAIN_PATIENTS[@]} BN, Val=${#VAL_PATIENTS[@]} BN, Test=${#TEST_PATIENTS[@]} BN"
 
 # ================= CƠ CHẾ RESUME TỪ LAST.CKPT =================
+# [2026-11-20 T1.6] Tách triệt để Checkpoint 55 BN (Chặn T2): Không tự động resume đè trong saved_models_55p.
+# Nếu thư mục đích $OUTPUT_DIR đã tồn tại và chứa bất kỳ tệp .ckpt nào, dừng ngay để bảo vệ checkpoint.
+if [ -d "$OUTPUT_DIR" ] && find "$OUTPUT_DIR" -name "*.ckpt" 2>/dev/null | grep -q .; then
+    echo "[ERROR] Thư mục đích $OUTPUT_DIR đã tồn tại và chứa checkpoint. Dừng ngay để bảo vệ checkpoint 55 BN (T1.6)." >&2
+    exit 1
+fi
 RESUME_CKPT=$(find "$OUTPUT_DIR" -name "last.ckpt" 2>/dev/null | head -n 1 || true)
 EXTRA_ARGS=()
 if [ -n "$RESUME_CKPT" ] && [ -f "$RESUME_CKPT" ]; then
@@ -128,7 +139,7 @@ python -u baselines/SOLAR_DualMamba/train_solar_dualmamba_la.py \
     --batch_size 1 \
     --n_iterations 8 \
     --cg_iters 4 \
-    --max_epochs 50 \
+    --max_epochs "$MAX_EPOCHS" \
     --lr 1e-4 \
     --final_lr 1e-5 \
     --seed 42 \

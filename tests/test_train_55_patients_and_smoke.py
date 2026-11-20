@@ -109,7 +109,11 @@ class TestTrainScripts55FrozenPatients(unittest.TestCase):
             )
 
             # Bảo toàn nguyên trạng --max_epochs 50, --batch_size 1, --time=24:00:00
-            self.assertIn("--max_epochs 50", content, f"{relpath} không được thay đổi --max_epochs 50")
+            # [2026-11-20 T1.7] Cho phép tham số hóa MAX_EPOCHS (mặc định 50)
+            self.assertTrue(
+                "--max_epochs 50" in content or '--max_epochs "$MAX_EPOCHS"' in content,
+                f"{relpath} không được thay đổi --max_epochs 50/MAX_EPOCHS"
+            )
             self.assertIn("--batch_size 1", content, f"{relpath} không được thay đổi --batch_size 1")
             self.assertIn("#SBATCH --time=24:00:00", content, f"{relpath} không được thay đổi --time=24:00:00")
 

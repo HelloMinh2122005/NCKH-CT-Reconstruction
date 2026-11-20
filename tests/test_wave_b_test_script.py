@@ -22,6 +22,11 @@ SCRIPT_PATH = os.path.join(REPO_ROOT, SCRIPT_RELPATH)
 if REPO_ROOT not in sys.path:
     sys.path.insert(0, REPO_ROOT)
 
+try:
+    import numpy
+except ImportError:
+    pass
+
 def _cluster_mock_modules():
     # Đảm bảo các module cluster-only được mock nếu chạy ở môi trường thiếu dependency
     mocks = {
@@ -148,7 +153,12 @@ class TestWaveBTestScriptContract(unittest.TestCase):
         with open(SCRIPT_PATH, "r", encoding="utf-8") as f:
             content = f.read()
 
-        self.assertIn("reports/wave_b_ablation_per_slice_results.csv", content)
+        # [2026-11-20 T1.6] Cho phép báo cáo tại reports/hpc-uit-55p hoặc reports/
+        self.assertTrue(
+            "reports/hpc-uit-55p/wave_b_ablation_per_slice_results.csv" in content
+            or "reports/wave_b_ablation_per_slice_results.csv" in content,
+            "Đường dẫn kết quả CSV phải nằm trong reports/hpc-uit-55p hoặc reports/"
+        )
         self.assertIn("--job_id", content)
 
     def test_bash_syntax_valid(self):

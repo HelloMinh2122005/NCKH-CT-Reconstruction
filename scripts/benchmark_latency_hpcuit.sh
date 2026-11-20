@@ -46,6 +46,8 @@ DATASETS=/datastore/doanhbc/minhdphan/datasets
 # Đảm bảo thư mục log Slurm và thư mục reports tồn tại trước khi chạy
 mkdir -p "$REPO/scripts/output-hpc-uit/benchmark_latency_hpcuit/log"
 mkdir -p "$REPO/reports"
+# [2026-11-20 T1.6] Thư mục báo cáo 55 BN độc lập
+mkdir -p "$REPO/reports/hpc-uit-55p"
 
 echo "=== HPC-UIT WAVE E: INFERENCE LATENCY & VRAM PROFILING BENCHMARK ==="
 echo "[INFO] Start at: $(date)"
@@ -74,7 +76,8 @@ export HF_HOME=$XDG_CACHE_HOME/hf
 export TRITON_CACHE_DIR=$XDG_CACHE_HOME/triton
 
 # Tệp CSV lưu trữ kết quả benchmark độ trễ suy luận chuẩn hóa theo Wave E
-CSV_OUTPUT="$REPO/reports/benchmark_latency_results.csv"
+# [2026-11-20 T1.6/T1.9] Xuất kết quả vào thư mục báo cáo riêng reports/hpc-uit-55p/
+CSV_OUTPUT="$REPO/reports/hpc-uit-55p/benchmark_latency_results.csv"
 
 # Nếu người dùng truyền danh sách mô hình từ dòng lệnh thì dùng danh sách đó,
 # ngược lại mặc định đo toàn bộ 4 mô hình cốt lõi của Wave A/E và 3 baseline mở rộng
@@ -91,36 +94,37 @@ echo "[INFO] Đường dẫn tệp CSV kết quả: $CSV_OUTPUT"
 
 # Hàm phụ trợ kiểm tra và đối soát đường dẫn checkpoint Wave A 90°
 # Giúp xác nhận nguồn gốc mô hình tương ứng trong saved_models/
+# [2026-11-20 T1.6/T1.9] Ưu tiên tìm trong saved_models_55p
 check_wave_a_checkpoint() {
     local MODEL_KEY="$1"
     local CKPT_DIR=""
 
     case "$MODEL_KEY" in
         "solar")
-            CKPT_DIR="$REPO/saved_models/SOLAR_DualMamba_90"
+            CKPT_DIR="$REPO/saved_models_55p/SOLAR_DualMamba_90"
             ;;
         "learn")
-            CKPT_DIR="$REPO/saved_models/LEARN_90"
+            CKPT_DIR="$REPO/saved_models_55p/LEARN_90"
             ;;
         "regformer")
-            CKPT_DIR="$REPO/saved_models/RegFormer_90"
+            CKPT_DIR="$REPO/saved_models_55p/RegFormer_90"
             ;;
         "dudotrans")
-            CKPT_DIR="$REPO/saved_models/DuDoTrans_90"
+            CKPT_DIR="$REPO/saved_models_55p/DuDoTrans_90"
             ;;
         "mamba")
-            CKPT_DIR="$REPO/saved_models/LEARN_Mamba_90"
+            CKPT_DIR="$REPO/saved_models_55p/LEARN_Mamba_90"
             ;;
         "longformer")
-            CKPT_DIR="$REPO/saved_models/LEARN_Longformer_90"
+            CKPT_DIR="$REPO/saved_models_55p/LEARN_Longformer_90"
             ;;
         "longnet")
-            CKPT_DIR="$REPO/saved_models/LEARN_LongNet_90"
+            CKPT_DIR="$REPO/saved_models_55p/LEARN_LongNet_90"
             ;;
     esac
 
+    FOUND_CKPT=""
     if [ -n "$CKPT_DIR" ] && [ -d "$CKPT_DIR" ]; then
-        local FOUND_CKPT
         FOUND_CKPT=$(find "$CKPT_DIR" -name "*.ckpt" 2>/dev/null | head -n 1)
         if [ -n "$FOUND_CKPT" ]; then
             echo "[INFO] Khớp checkpoint Wave A (90°): $FOUND_CKPT"
@@ -141,6 +145,11 @@ for MODEL in "${TARGET_MODELS[@]}"; do
     # Kiểm tra sự tồn tại của checkpoint Wave A (90°) tương ứng
     check_wave_a_checkpoint "$MODEL"
 
+    EXTRA_CKPT_ARG=()
+    if [ -n "${FOUND_CKPT:-}" ]; then
+        EXTRA_CKPT_ARG=(--ckpt_path "$FOUND_CKPT")
+    fi
+
     # Thực thi benchmark với batch_size=1, FP32, warmup=20, test_runs=100
     python -u scripts/benchmark_latency_hpcuit.py \
         --model "$MODEL" \
@@ -151,7 +160,8 @@ for MODEL in "${TARGET_MODELS[@]}"; do
         --test_runs 100 \
         --angle_range_deg 90.0 \
         --hardware_profile "HPC-UIT MIG Slice (gpu:2g.35gb:1)" \
-        --output_csv "$CSV_OUTPUT"
+        --output_csv "$CSV_OUTPUT" \
+        "${EXTRA_CKPT_ARG[@]}"
 
     # Ghi nhận trạng thái bộ nhớ VRAM sau khi benchmark từng mô hình
     if command -v nvidia-smi &>/dev/null; then

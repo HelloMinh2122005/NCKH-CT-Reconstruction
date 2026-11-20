@@ -7,8 +7,8 @@
 # Cập nhật HPC-UIT (MIG): Partition small (gpu:1g.18gb:1, 4 CPU, 32GB RAM)
 # ==============================================================================
 #SBATCH --job-name=test_dudotrans_la
-#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/test_dudotrans_la/log/%j.out
-#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/test_dudotrans_la/log/%j.err
+#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/test_dudotrans_la/log/%j.out
+#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/test_dudotrans_la/log/%j.err
 #SBATCH --account=uit
 #SBATCH --partition=small
 #SBATCH --nodes=1
@@ -27,7 +27,7 @@ REPO=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction
 ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 DATASETS=/datastore/doanhbc/minhdphan/datasets
 
-mkdir -p "$REPO/scripts/output/test_dudotrans_la/log"
+mkdir -p "$REPO/scripts/output-hpc-uit/test_dudotrans_la/log"
 mkdir -p "$REPO/reports"
 
 # Hàm dọn dẹp tài nguyên NVIDIA MPS khi kết thúc job hoặc bị ngắt đột ngột

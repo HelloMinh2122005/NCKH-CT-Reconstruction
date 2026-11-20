@@ -8,8 +8,8 @@
 # Partition: small = gpu:1g.18gb:1, 4 CPU, 32 GB RAM
 # ==============================================================================
 #SBATCH --job-name=test_fbp_la
-#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/test_fbp_la/log/%j.out
-#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/test_fbp_la/log/%j.err
+#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/test_fbp_la/log/%j.out
+#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/test_fbp_la/log/%j.err
 #SBATCH --account=uit
 #SBATCH --partition=small
 #SBATCH --ntasks=1
@@ -25,7 +25,7 @@ ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 # Tạo thư mục log trước khi thực thi lệnh Slurm
-mkdir -p "$REPO/scripts/output/test_fbp_la/log"
+mkdir -p "$REPO/scripts/output-hpc-uit/test_fbp_la/log"
 
 cleanup() {
     local rc=$?
@@ -37,6 +37,7 @@ echo "[INFO] start at $(date)"
 echo "[INFO] hostname=$(hostname)"
 echo "[INFO] SLURM_JOB_ID=${SLURM_JOB_ID:-<unset>}"
 echo "[INFO] partition=${SLURM_JOB_PARTITION:-<unset>}"
+echo "[INFO] Git commit: $(git -C "$REPO" rev-parse HEAD 2>/dev/null || echo '<git-not-found>')"
 
 # Ghi nhận cấu hình GPU MIG được cấp phát
 nvidia-smi

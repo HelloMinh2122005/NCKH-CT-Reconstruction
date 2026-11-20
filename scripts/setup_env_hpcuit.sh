@@ -5,8 +5,8 @@
 # Đích: /datastore/doanhbc/minhdphan/envs/longnet
 # ==============================================================================
 #SBATCH --job-name=setup_env_hpcuit
-#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/setup_env_hpcuit/log/%j.out
-#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/setup_env_hpcuit/log/%j.err
+#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/setup_env_hpcuit/log/%j.out
+#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/setup_env_hpcuit/log/%j.err
 #SBATCH --account=uit
 #SBATCH --partition=small
 #SBATCH --ntasks=1
@@ -20,7 +20,7 @@ set -euo pipefail
 REPO=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction
 ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 
-mkdir -p "$REPO/scripts/output/setup_env_hpcuit/log"
+mkdir -p "$REPO/scripts/output-hpc-uit/setup_env_hpcuit/log"
 mkdir -p "/datastore/doanhbc/minhdphan/envs"
 
 cleanup() {

@@ -76,11 +76,11 @@ class TestWaveBAblationScripts(unittest.TestCase):
             self.assertIn("#SBATCH --cpus-per-task=8", content)
             self.assertIn("#SBATCH --time=24:00:00", content)
             self.assertIn(
-                f"#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/{cfg['job_name']}/log/%j.out",
+                f"#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/{cfg['job_name']}/log/%j.out",
                 content
             )
             self.assertIn(
-                f"#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/{cfg['job_name']}/log/%j.err",
+                f"#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/{cfg['job_name']}/log/%j.err",
                 content
             )
 

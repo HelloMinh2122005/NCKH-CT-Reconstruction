@@ -20,8 +20,8 @@
 # Đây TUYỆT ĐỐI KHÔNG PHẢI là kết quả nghiên cứu hay số liệu thực nghiệm khoa học.
 # ==============================================================================
 #SBATCH --job-name=smoke_hpcuit
-#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/smoke_hpcuit/log/%j.out
-#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/smoke_hpcuit/log/%j.err
+#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/smoke_hpcuit/log/%j.out
+#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/smoke_hpcuit/log/%j.err
 #SBATCH --account=uit
 #SBATCH --partition=small
 #SBATCH --ntasks=1
@@ -46,7 +46,7 @@ ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 # Thư mục chứa log bắt buộc phải được tạo trước khi Slurm xuất log
-mkdir -p "$REPO/scripts/output/smoke_hpcuit/log"
+mkdir -p "$REPO/scripts/output-hpc-uit/smoke_hpcuit/log"
 
 echo "================================================================================"
 echo "🚀 BẮT ĐẦU SMOKE TEST HPC-UIT: LEARN & SOLAR_DualMamba"
@@ -95,7 +95,7 @@ fi
 # ------------------------------------------------------------------------------
 # Thư mục lưu checkpoint và log tạm thời cho smoke test (tách biệt hoàn toàn với saved_models chính)
 SMOKE_OUTPUT_DIR="$REPO/saved_models/smoke_test"
-SMOKE_LOG_DIR="$REPO/scripts/output/smoke_hpcuit/lightning_logs"
+SMOKE_LOG_DIR="$REPO/scripts/output-hpc-uit/smoke_hpcuit/lightning_logs"
 mkdir -p "$SMOKE_OUTPUT_DIR" "$SMOKE_LOG_DIR"
 
 # Thư mục chứa dữ liệu CT AAPM gốc phục vụ tạo sinogram trực tiếp on-the-fly
@@ -125,6 +125,7 @@ python -u baselines/LEARN/train_learn_la.py \
     --log_dir "$SMOKE_LOG_DIR" \
     --train_patients "$TRAIN_PATIENT" \
     --val_patients "${VAL_PATIENTS[@]}" \
+    --allow_custom_split \
     --angle_range_deg 120.0 \
     --num_view 64 \
     --num_detectors 512 \
@@ -159,6 +160,7 @@ python -u baselines/SOLAR_DualMamba/train_solar_dualmamba_la.py \
     --log_dir "$SMOKE_LOG_DIR" \
     --train_patients "$TRAIN_PATIENT" \
     --val_patients "${VAL_PATIENTS[@]}" \
+    --allow_custom_split \
     --angle_range_deg 120.0 \
     --num_view 64 \
     --num_detectors 512 \

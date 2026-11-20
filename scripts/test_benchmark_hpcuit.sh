@@ -7,8 +7,8 @@
 # Profile: hpc-uit, Partition: small (gpu:1g.18gb:1)
 # ==============================================================================
 #SBATCH --job-name=test_benchmark_hpcuit
-#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/test_benchmark_hpcuit/log/%j.out
-#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/test_benchmark_hpcuit/log/%j.err
+#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/test_benchmark_hpcuit/log/%j.out
+#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/test_benchmark_hpcuit/log/%j.err
 #SBATCH --account=uit
 #SBATCH --partition=normal
 #SBATCH --nodes=1
@@ -30,7 +30,7 @@ REPO=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction
 ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 DATASETS=/datastore/doanhbc/minhdphan/datasets
 
-mkdir -p "$REPO/scripts/output/test_benchmark_hpcuit/log"
+mkdir -p "$REPO/scripts/output-hpc-uit/test_benchmark_hpcuit/log"
 mkdir -p "$REPO/reports"
 
 echo "=== HPC-UIT BATCHED TEST BENCHMARK ==="

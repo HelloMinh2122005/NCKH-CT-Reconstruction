@@ -6,8 +6,8 @@
 # Tạo cache đồng thời cho 120° và 90° trong 1 job, sau đó chuỗi gọi đánh giá T3 FBP
 # ==============================================================================
 #SBATCH --job-name=generate_la_dataset
-#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/generate_la_dataset/log/%j.out
-#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/generate_la_dataset/log/%j.err
+#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/generate_la_dataset/log/%j.out
+#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/generate_la_dataset/log/%j.err
 #SBATCH --account=uit
 #SBATCH --partition=small
 #SBATCH --nodes=1
@@ -31,7 +31,7 @@ ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 # Đảm bảo thư mục log tồn tại trước khi sbatch thực thi
-mkdir -p "$REPO/scripts/output/generate_la_dataset/log"
+mkdir -p "$REPO/scripts/output-hpc-uit/generate_la_dataset/log"
 
 echo "=== KHỞI ĐỘNG TIỀN XỬ LÝ SINH DỮ LIỆU LIMITED-ANGLE CT ==="
 echo "[INFO] start at $(date)"

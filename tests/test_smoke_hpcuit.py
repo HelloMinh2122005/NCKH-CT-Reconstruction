@@ -9,23 +9,7 @@ import re
 import subprocess
 import sys
 import unittest
-from unittest.mock import MagicMock
-
-# Đảm bảo import giả lập khi môi trường cục bộ chưa có torch / pytorch_lightning
-for mod in [
-    "torch",
-    "pytorch_lightning",
-    "pytorch_lightning.callbacks",
-    "pytorch_lightning.loggers",
-    "data",
-    "data.datamodule_factory",
-    "baselines.LEARN.models",
-    "baselines.SOLAR_DualMamba.models",
-]:
-    if mod not in sys.modules:
-        sys.modules[mod] = MagicMock()
-if not hasattr(sys.modules["torch"], "load"):
-    sys.modules["torch"].load = MagicMock()
+from unittest.mock import MagicMock, patch
 
 REPO_ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if REPO_ROOT not in sys.path:
@@ -34,64 +18,89 @@ if REPO_ROOT not in sys.path:
 SCRIPT_PATH = os.path.join(REPO_ROOT, "scripts", "smoke_hpcuit.sh")
 
 
+def _cluster_mock_modules():
+    # Đảm bảo import giả lập khi môi trường cục bộ chưa có torch / pytorch_lightning
+    mocks = {
+        mod: MagicMock()
+        for mod in [
+            "torch",
+            "pytorch_lightning",
+            "pytorch_lightning.callbacks",
+            "pytorch_lightning.loggers",
+            "data",
+            "data.datamodule_factory",
+            "baselines.LEARN.models",
+            "baselines.SOLAR_DualMamba.models",
+        ]
+        if mod not in sys.modules
+    }
+    if "data.split_guards" not in sys.modules:
+        mocks["data.split_guards"] = MagicMock(unsafe=True)
+    if "torch" in mocks:
+        mocks["torch"].load = MagicMock()
+    return mocks
+
+
 class TestSmokeArgsAndScript(unittest.TestCase):
     """Bộ kiểm thử đơn vị cho smoke test trên HPC-UIT."""
 
     def test_learn_args_smoke_batches_and_precomputed(self):
         """Xác minh parse_args của LEARN hỗ trợ limit_train_batches, limit_val_batches và use_precomputed=False."""
-        from baselines.LEARN.train_learn_la import parse_args as parse_args_learn
+        with patch.dict(sys.modules, _cluster_mock_modules()):
+            from baselines.LEARN.train_learn_la import parse_args as parse_args_learn
 
-        # 1. Mặc định: limit_*_batches là None, use_precomputed là True
-        sys.argv = ["train_learn_la.py"]
-        args_default = parse_args_learn()
-        self.assertIsNone(args_default.limit_train_batches)
-        self.assertIsNone(args_default.limit_val_batches)
-        self.assertTrue(args_default.use_precomputed)
+            # 1. Mặc định: limit_*_batches là None, use_precomputed là True
+            sys.argv = ["train_learn_la.py"]
+            args_default = parse_args_learn()
+            self.assertIsNone(args_default.limit_train_batches)
+            self.assertIsNone(args_default.limit_val_batches)
+            self.assertTrue(args_default.use_precomputed)
 
-        # 2. Cấu hình smoke test: limit_train_batches=3, limit_val_batches=2, use_precomputed=False
-        sys.argv = [
-            "train_learn_la.py",
-            "--limit_train_batches", "3",
-            "--limit_val_batches", "2",
-            "--use_precomputed", "False",
-        ]
-        args_smoke = parse_args_learn()
-        self.assertEqual(args_smoke.limit_train_batches, 3)
-        self.assertEqual(args_smoke.limit_val_batches, 2)
-        self.assertFalse(args_smoke.use_precomputed)
+            # 2. Cấu hình smoke test: limit_train_batches=3, limit_val_batches=2, use_precomputed=False
+            sys.argv = [
+                "train_learn_la.py",
+                "--limit_train_batches", "3",
+                "--limit_val_batches", "2",
+                "--use_precomputed", "False",
+            ]
+            args_smoke = parse_args_learn()
+            self.assertEqual(args_smoke.limit_train_batches, 3)
+            self.assertEqual(args_smoke.limit_val_batches, 2)
+            self.assertFalse(args_smoke.use_precomputed)
 
-        # 3. Cờ bật --use_precomputed không kèm tham số vẫn trả về True (tương thích ngược)
-        sys.argv = ["train_learn_la.py", "--use_precomputed"]
-        args_flag = parse_args_learn()
-        self.assertTrue(args_flag.use_precomputed)
+            # 3. Cờ bật --use_precomputed không kèm tham số vẫn trả về True (tương thích ngược)
+            sys.argv = ["train_learn_la.py", "--use_precomputed"]
+            args_flag = parse_args_learn()
+            self.assertTrue(args_flag.use_precomputed)
 
     def test_solar_dualmamba_args_smoke_batches_and_precomputed(self):
         """Xác minh parse_args của SOLAR_DualMamba hỗ trợ limit_train_batches, limit_val_batches và use_precomputed=False."""
-        from baselines.SOLAR_DualMamba.train_solar_dualmamba_la import parse_args as parse_args_solar
+        with patch.dict(sys.modules, _cluster_mock_modules()):
+            from baselines.SOLAR_DualMamba.train_solar_dualmamba_la import parse_args as parse_args_solar
 
-        # 1. Mặc định
-        sys.argv = ["train_solar_dualmamba_la.py"]
-        args_default = parse_args_solar()
-        self.assertIsNone(args_default.limit_train_batches)
-        self.assertIsNone(args_default.limit_val_batches)
-        self.assertTrue(args_default.use_precomputed)
+            # 1. Mặc định
+            sys.argv = ["train_solar_dualmamba_la.py"]
+            args_default = parse_args_solar()
+            self.assertIsNone(args_default.limit_train_batches)
+            self.assertIsNone(args_default.limit_val_batches)
+            self.assertTrue(args_default.use_precomputed)
 
-        # 2. Cấu hình smoke test
-        sys.argv = [
-            "train_solar_dualmamba_la.py",
-            "--limit_train_batches", "3",
-            "--limit_val_batches", "2",
-            "--use_precomputed", "False",
-        ]
-        args_smoke = parse_args_solar()
-        self.assertEqual(args_smoke.limit_train_batches, 3)
-        self.assertEqual(args_smoke.limit_val_batches, 2)
-        self.assertFalse(args_smoke.use_precomputed)
+            # 2. Cấu hình smoke test
+            sys.argv = [
+                "train_solar_dualmamba_la.py",
+                "--limit_train_batches", "3",
+                "--limit_val_batches", "2",
+                "--use_precomputed", "False",
+            ]
+            args_smoke = parse_args_solar()
+            self.assertEqual(args_smoke.limit_train_batches, 3)
+            self.assertEqual(args_smoke.limit_val_batches, 2)
+            self.assertFalse(args_smoke.use_precomputed)
 
-        # 3. Cờ bật --use_precomputed không kèm tham số vẫn trả về True
-        sys.argv = ["train_solar_dualmamba_la.py", "--use_precomputed"]
-        args_flag = parse_args_solar()
-        self.assertTrue(args_flag.use_precomputed)
+            # 3. Cờ bật --use_precomputed không kèm tham số vẫn trả về True
+            sys.argv = ["train_solar_dualmamba_la.py", "--use_precomputed"]
+            args_flag = parse_args_solar()
+            self.assertTrue(args_flag.use_precomputed)
 
     def test_smoke_script_exists_and_syntax(self):
         """Xác minh script scripts/smoke_hpcuit.sh tồn tại và vượt qua kiểm tra bash -n."""
@@ -114,6 +123,12 @@ class TestSmokeArgsAndScript(unittest.TestCase):
         """Xác minh các chỉ thị Slurm và cấu trúc bắt buộc theo yêu cầu T4."""
         with open(SCRIPT_PATH, "r", encoding="utf-8") as f:
             content = f.read()
+
+        # [2026-11-20 T0.7] Kiểm tra ghi log vào scripts/output-hpc-uit và truyền --allow_custom_split cho subset <55 bệnh nhân
+        self.assertIn("scripts/output-hpc-uit/smoke_hpcuit/log/%j.out", content)
+        self.assertIn("scripts/output-hpc-uit/smoke_hpcuit/log/%j.err", content)
+        self.assertNotIn("scripts/output/", content)
+        self.assertEqual(content.count("--allow_custom_split"), 2)
 
         # Kiểm tra partition và qos
         self.assertRegex(content, r"#SBATCH\s+--partition=small\b")

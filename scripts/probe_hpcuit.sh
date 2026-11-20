@@ -4,8 +4,8 @@
 # Profile: hpc-uit, Partition: small (gpu:1g.18gb:1)
 # ==============================================================================
 #SBATCH --job-name=probe_hpcuit
-#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/probe_hpcuit/log/%j.out
-#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/probe_hpcuit/log/%j.err
+#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/probe_hpcuit/log/%j.out
+#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/probe_hpcuit/log/%j.err
 #SBATCH --account=uit
 #SBATCH --partition=small
 #SBATCH --ntasks=1
@@ -17,7 +17,7 @@
 set -euo pipefail
 
 REPO=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction
-mkdir -p "$REPO/scripts/output/probe_hpcuit/log"
+mkdir -p "$REPO/scripts/output-hpc-uit/probe_hpcuit/log"
 
 cleanup() {
     local rc=$?

@@ -7,8 +7,8 @@
 # Cụm máy chủ: HPC-UIT (MIG Partition normal: gpu:2g.35gb:1, 8 CPU, 16GB RAM)
 # ==============================================================================
 #SBATCH --job-name=train_solar_dualmamba_la_ablate_a
-#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/train_solar_dualmamba_la_ablate_a/log/%j.out
-#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output/train_solar_dualmamba_la_ablate_a/log/%j.err
+#SBATCH --output=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/train_solar_dualmamba_la_ablate_a/log/%j.out
+#SBATCH --error=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/scripts/output-hpc-uit/train_solar_dualmamba_la_ablate_a/log/%j.err
 #SBATCH --account=uit
 #SBATCH --partition=normal
 #SBATCH --nodes=1
@@ -35,7 +35,7 @@ ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 DATASETS=/datastore/doanhbc/minhdphan/datasets
 
 # Đảm bảo thư mục log tồn tại trước khi Slurm ghi nhận
-mkdir -p "$REPO/scripts/output/train_solar_dualmamba_la_ablate_a/log"
+mkdir -p "$REPO/scripts/output-hpc-uit/train_solar_dualmamba_la_ablate_a/log"
 
 echo "=== HPC-UIT TRAINING: SOLAR_DualMamba (Ablation A: No Sinogram Refinement) ==="
 echo "[INFO] start at $(date)"
@@ -81,14 +81,17 @@ VAL_PATIENTS=("L110")
 TEST_PATIENTS=("L058" "L064" "L094" "L107")
 
 # Lấy danh sách 55 bệnh nhân tập train từ thư mục split/train/ trên cụm
-TRAIN_PATIENT_ARGS=()
-if [ -d "$DATASETS/aapm/split/train" ]; then
-    TRAIN_PATIENTS=($(find "$DATASETS/aapm/split/train" -mindepth 1 -maxdepth 1 -type d -exec basename {} + 2>/dev/null | grep -v "L110" | sort || true))
-    if [ ${#TRAIN_PATIENTS[@]} -gt 0 ]; then
-        echo "[INFO] Đã tìm thấy ${#TRAIN_PATIENTS[@]} bệnh nhân tập train trên cụm."
-        TRAIN_PATIENT_ARGS=(--train_patients "${TRAIN_PATIENTS[@]}")
-    fi
-fi
+# [2026-11-19 GT-FIX-55PATIENTS-CHANGE35] Dùng danh sách 55 bệnh nhân đóng băng theo experiments/split.md và generate_la_dataset_120.sh (tránh find -exec basename bỏ qua symlink)
+TRAIN_PATIENTS=(
+    "L004" "L006" "L012" "L014" "L019" "L024" "L027" "L030" "L033" "L035"
+    "L036" "L043" "L044" "L045" "L048" "L049" "L056" "L057" "L071" "L072"
+    "L075" "L077" "L079" "L081" "L082" "L111" "L113" "L114" "L116" "L121"
+    "L123" "L125" "L127" "L129" "L131" "L133" "L134" "L136" "L138" "L143"
+    "L144" "L145" "L147" "L148" "L150" "L154" "L160" "L163" "L166" "L170"
+    "L171" "L172" "L175" "L178" "L179"
+)
+[ "${#TRAIN_PATIENTS[@]}" -eq 55 ] || { echo "[ERROR] TRAIN_PATIENTS phải có đúng 55 bệnh nhân, thực tế: ${#TRAIN_PATIENTS[@]}" >&2; exit 1; }
+echo "[INFO] Phân chia cố định: Train=${#TRAIN_PATIENTS[@]} BN, Val=${#VAL_PATIENTS[@]} BN, Test=${#TEST_PATIENTS[@]} BN"
 
 # ================= CƠ CHẾ RESUME TỪ LAST.CKPT =================
 RESUME_CKPT=$(find "$OUTPUT_DIR" -name "last.ckpt" 2>/dev/null | head -n 1 || true)
@@ -127,7 +130,7 @@ python -u baselines/SOLAR_DualMamba/train_solar_dualmamba_la.py \
     --seed 42 \
     --ablate a \
     --val_patients "${VAL_PATIENTS[@]}" \
-    "${TRAIN_PATIENT_ARGS[@]}" \
+    --train_patients "${TRAIN_PATIENTS[@]}" \
     --num_workers 4 \
     --use_precomputed \
     "${EXTRA_ARGS[@]}"

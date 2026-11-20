@@ -47,7 +47,12 @@ tqdm_mock = types.ModuleType("tqdm")
 tqdm_mock.tqdm = lambda x, **kwargs: x
 sys.modules["tqdm"] = tqdm_mock
 
-from data.aapm.prepare_data_sinogram_LA import generate_split, is_valid_cache_file, save_atomic_npy
+from data.aapm.prepare_data_sinogram_LA import (
+    cleanup_stale_tmp_files,
+    generate_split,
+    is_valid_cache_file,
+    save_atomic_npy,
+)
 
 
 class TestAtomicCacheAndCorruptFileGuard(unittest.TestCase):
@@ -180,6 +185,83 @@ class TestAtomicCacheAndCorruptFileGuard(unittest.TestCase):
         # Với 1005 lát cắt, tại lát 500 và 1000 phải gọi gc.collect() ít nhất 2 lần
         self.assertGreaterEqual(mock_gc_collect.call_count, 2, "gc.collect() phải được gọi ít nhất 2 lần khi duyệt 1005 lát cắt.")
 
+    @patch("os.fsync", side_effect=OSError(5, "Input/output error (mock NFS stall)"))
+    def test_save_atomic_npy_cleans_up_tmp_on_failure(self, mock_fsync):
+        """
+        Kiểm tra hàm save_atomic_npy tự động dọn dẹp file tạm .tmp khi gặp lỗi I/O:
+        - Khi os.fsync hoặc ghi dữ liệu ném OSError, tệp .tmp không được phép tồn tại trên đĩa.
+        - Ngoại lệ OSError phải được ném ra sau khi hết số lần retry.
+        """
+        target_path = os.path.join(self.sino_dir, "test_failure.npy")
+        tmp_path = target_path + ".tmp"
+        data = np.zeros((64, 512), dtype=np.float32)
+
+        with self.assertRaises(OSError):
+            save_atomic_npy(target_path, data, max_retries=2, retry_delay=0.01)
+
+        self.assertFalse(os.path.exists(tmp_path), "Tệp tạm .tmp phải được xóa dọn dẹp khi gặp lỗi.")
+        self.assertFalse(os.path.exists(target_path), "Tệp đích không được tạo ra khi ghi lỗi.")
+
+    @patch("os.fsync")
+    def test_save_atomic_npy_retries_transient_oserror(self, mock_fsync):
+        """
+        Kiểm tra hàm save_atomic_npy tự động thử lại khi gặp lỗi OSError tạm thời:
+        - Lần đầu fsync gặp lỗi OSError(5, "NFS transient stall").
+        - Lần thử lại tiếp theo fsync thành công.
+        - Tệp đích được ghi hợp lệ, tệp .tmp biến mất.
+        """
+        mock_fsync.side_effect = [OSError(5, "NFS transient stall"), None]
+        target_path = os.path.join(self.sino_dir, "test_retry.npy")
+        tmp_path = target_path + ".tmp"
+        data = np.ones((64, 512), dtype=np.float32)
+
+        save_atomic_npy(target_path, data, max_retries=3, retry_delay=0.01)
+
+        self.assertTrue(os.path.exists(target_path), "Tệp đích phải được tạo thành công sau khi retry.")
+        self.assertFalse(os.path.exists(tmp_path), "Tệp tạm .tmp phải được dọn dẹp sau khi ghi thành công.")
+        self.assertEqual(mock_fsync.call_count, 2, "os.fsync phải được gọi 2 lần (1 lần fail, 1 lần recover).")
+
+    def test_cleanup_stale_tmp_files(self):
+        """
+        Kiểm tra hàm cleanup_stale_tmp_files dọn dẹp các tệp *.tmp mồ côi:
+        - Giả lập tệp L027_FD_3_1.CT.00000106.npy.tmp (57,344 bytes) còn sót lại trong sino_dir và fbp_dir.
+        - Sau khi cleanup_stale_tmp_files, các tệp .tmp bị xóa sạch.
+        """
+        stale_sino_tmp = os.path.join(self.sino_dir, "stale_slice.npy.tmp")
+        stale_fbp_tmp = os.path.join(self.fbp_dir, "L027_FD_3_1.CT.00000106.npy.tmp")
+        with open(stale_sino_tmp, "wb") as f:
+            f.write(b"0" * 1024)
+        with open(stale_fbp_tmp, "wb") as f:
+            f.write(b"0" * 57344)
+
+        self.assertTrue(os.path.exists(stale_sino_tmp))
+        self.assertTrue(os.path.exists(stale_fbp_tmp))
+
+        cleanup_stale_tmp_files(self.sino_dir, self.fbp_dir)
+
+        self.assertFalse(os.path.exists(stale_sino_tmp), "Tệp .tmp trong sino_dir phải được dọn dẹp.")
+        self.assertFalse(os.path.exists(stale_fbp_tmp), "Tệp .tmp trong fbp_dir phải được dọn dẹp.")
+
+    @patch("sys.stdout.flush")
+    @patch("sys.stderr.flush")
+    def test_generate_split_logs_and_reraises_on_persistent_failure(self, mock_err_flush, mock_out_flush):
+        """
+        Kiểm tra generate_split khi gặp lỗi bền vững (persistent failure):
+        - Ghi nhật ký chi tiết vào cả stdout và stderr.
+        - Kích hoạt .flush() trên cả stdout và stderr.
+        - Re-raise ngoại lệ để Slurm job thất bại có kiểm soát, không âm thầm bỏ qua lát cắt bị hỏng.
+        """
+        mock_provider = MagicMock()
+        mock_provider.__len__.return_value = 1
+        mock_provider.slices_path = ["/path/to/L027/full_3mm/L027_FD_3_1.CT.00000106.IMA"]
+        mock_provider.__getitem__.side_effect = OSError(5, "NFS persistent write error")
+
+        with self.assertRaises(OSError):
+            generate_split(mock_provider, self.sino_dir, self.fbp_dir)
+
+        self.assertTrue(mock_out_flush.called, "sys.stdout.flush() phải được gọi khi xảy ra lỗi nghiêm trọng.")
+        self.assertTrue(mock_err_flush.called, "sys.stderr.flush() phải được gọi khi xảy ra lỗi nghiêm trọng.")
+
 
 class TestSlurmScriptMemorySettings(unittest.TestCase):
     """
@@ -202,6 +284,7 @@ class TestSlurmScriptMemorySettings(unittest.TestCase):
         """Xác minh các kịch bản nhẹ / sinh dữ liệu / benchmark được cấu hình --mem=8G."""
         self.assertEqual(self._get_mem_directive("scripts/generate_la_dataset.sh"), "8G")
         self.assertEqual(self._get_mem_directive("scripts/smoke_hpcuit.sh"), "8G")
+        self.assertEqual(self._get_mem_directive("scripts/generate_la_dataset_120.sh"), "8G")
 
     def test_train_scripts_mem_16g(self):
         """Xác minh các kịch bản huấn luyện mô hình được cấu hình --mem=16G."""
@@ -214,6 +297,12 @@ class TestSlurmScriptMemorySettings(unittest.TestCase):
         self.assertEqual(self._get_mem_directive("scripts/train_solar_dualmamba_la_ablate_b.sh"), "16G")
         self.assertEqual(self._get_mem_directive("scripts/train_solar_dualmamba_la_ablate_c.sh"), "16G")
         self.assertEqual(self._get_mem_directive("scripts/train_solar_dualmamba_la_ablate_d.sh"), "16G")
+        self.assertEqual(self._get_mem_directive("scripts/test_wave_b_ablation_hpcuit.sh"), "16G")
+        # Cập nhật 2026-11-18 (GT-WAVE-C-MEM12G / Change 34): 4 kịch bản Wave C LA-120° điều chỉnh xuống 12G để vừa RAM trống h200node02 (12,623 MB)
+        self.assertEqual(self._get_mem_directive("scripts/train_solar_dualmamba_la_120.sh"), "12G")
+        self.assertEqual(self._get_mem_directive("scripts/train_learn_la_120.sh"), "12G")
+        self.assertEqual(self._get_mem_directive("scripts/train_regformer_la_120.sh"), "12G")
+        self.assertEqual(self._get_mem_directive("scripts/train_dudotrans_la_120.sh"), "12G")
 
     def test_benchmark_normal_partition_directives(self):
         """Xác minh test_benchmark_hpcuit.sh cấu hình đúng phân vùng normal (Change 24)."""
@@ -239,6 +328,12 @@ class TestSlurmScriptMemorySettings(unittest.TestCase):
             "scripts/train_solar_dualmamba_la_ablate_b.sh",
             "scripts/train_solar_dualmamba_la_ablate_c.sh",
             "scripts/train_solar_dualmamba_la_ablate_d.sh",
+            "scripts/test_wave_b_ablation_hpcuit.sh",
+            "scripts/generate_la_dataset_120.sh",
+            "scripts/train_solar_dualmamba_la_120.sh",
+            "scripts/train_learn_la_120.sh",
+            "scripts/train_regformer_la_120.sh",
+            "scripts/train_dudotrans_la_120.sh",
         ]
         for relpath in scripts:
             script_path = os.path.join(REPO_ROOT, relpath)
@@ -264,6 +359,12 @@ class TestSlurmScriptMemorySettings(unittest.TestCase):
             "scripts/train_solar_dualmamba_la_ablate_b.sh",
             "scripts/train_solar_dualmamba_la_ablate_c.sh",
             "scripts/train_solar_dualmamba_la_ablate_d.sh",
+            "scripts/test_wave_b_ablation_hpcuit.sh",
+            "scripts/generate_la_dataset_120.sh",
+            "scripts/train_solar_dualmamba_la_120.sh",
+            "scripts/train_learn_la_120.sh",
+            "scripts/train_regformer_la_120.sh",
+            "scripts/train_dudotrans_la_120.sh",
         ]
         for relpath in scripts:
             script_path = os.path.join(REPO_ROOT, relpath)

@@ -1,5 +1,7 @@
+import gc
 import os
 import sys
+import traceback
 from pathlib import Path
 
 PROJECT_ROOT = str(Path(__file__).resolve().parent.parent)
@@ -14,8 +16,18 @@ from tqdm import tqdm
 
 try:
     from data.CTSlice_Provider_LA import LimitedAngleCT_Provider
+    from data.aapm.prepare_data_sinogram_LA import (
+        _DICOMGroundTruthProvider,
+        generate_split as _aapm_generate_split,
+        validate_safe_output_dir,
+    )
 except ImportError:
     from CTSlice_Provider_LA import LimitedAngleCT_Provider
+    from aapm.prepare_data_sinogram_LA import (
+        _DICOMGroundTruthProvider,
+        generate_split as _aapm_generate_split,
+        validate_safe_output_dir,
+    )
 
 
 def parse_args():
@@ -89,43 +101,38 @@ def parse_args():
         default=None,
         help="Danh sách mã bệnh nhân cho tập kiểm thử độc lập (mặc định: None, sử dụng bệnh nhân L310)"
     )
+    parser.add_argument(
+        "--gt_only",
+        action="store_true",
+        default=False,
+        help="Chỉ tạo cache Ground Truth gt_size_{input_size}/ từ DICOM mà không khởi tạo ODL/ASTRA hay chạm sino/ và fbp_u/"
+    )
     return parser.parse_args()
 
 
-def generate_split(provider, save_sino_path, save_fbp_path):
+def generate_split(provider, save_sino_path=None, save_fbp_path=None, save_gt_path=None, gt_only: bool = False):
     """
     Lặp qua toàn bộ lát cắt trong Dataset Provider:
     - Kiểm tra trước sự tồn tại của file .npy để bỏ qua tức thì (tiết kiệm thời gian tính toán ODL).
     - Chỉ thực hiện Chiếu thuận Radon và Chiếu ngược FBP cho các lát cắt chưa được tạo.
     - Lưu file .npy độc lập cho sinogram và FBP ban đầu.
     """
-    os.makedirs(save_sino_path, exist_ok=True)
-    os.makedirs(save_fbp_path, exist_ok=True)
-
-    total_slices = len(provider)
-    for i in tqdm(range(total_slices), desc="Generating slices"):
-        slice_path = provider.slices_path[i]
-        stem = os.path.basename(slice_path).split(".IMA")[0]
-        sino_file = os.path.join(save_sino_path, f"{stem}.npy")
-        fbp_file = os.path.join(save_fbp_path, f"{stem}.npy")
-
-        # Bỏ qua ngay lập tức nếu file đã tồn tại trên đĩa mà không cần tính Radon
-        if os.path.exists(sino_file) and os.path.exists(fbp_file):
-            continue
-
-        # Lấy dữ liệu và thực hiện phép chiếu Radon + FBP on-the-fly
-        _, phantom, fbp_u, sino = provider[i]
-
-        sino_np = sino.cpu().numpy() if isinstance(sino, torch.Tensor) else sino
-        fbp_np = fbp_u.cpu().numpy() if isinstance(fbp_u, torch.Tensor) else fbp_u
-
-        # Lưu mảng numpy
-        np.save(sino_file, sino_np)
-        np.save(fbp_file, fbp_np)
+    # Bỏ qua ngay lập tức nếu file đã tồn tại trên đĩa mà không cần tính Radon
+    # Lấy dữ liệu và thực hiện phép chiếu Radon + FBP on-the-fly
+    # Lưu mảng numpy
+    return _aapm_generate_split(
+        provider,
+        save_sino_path=save_sino_path,
+        save_fbp_path=save_fbp_path,
+        save_gt_path=save_gt_path,
+        gt_only=gt_only,
+    )
 
 
 def main():
     args = parse_args()
+    # Kiểm tra bảo vệ đường dẫn đầu ra trước khi tạo thư mục hay đọc dữ liệu (T0.5)
+    validate_safe_output_dir(args.output_dir, dicom_dir=args.data_dir)
 
     # -------------------------------------------------------------
     # 1. Tính toán góc bắt đầu và kết thúc (Radian) đối xứng qua tâm 0
@@ -141,6 +148,9 @@ def main():
     else:
         setting_tag += "_noise_0"
 
+    train_gt_dir = os.path.join(args.output_dir, "train", f"gt_size_{args.input_size}")
+    test_gt_dir = os.path.join(args.output_dir, "test", f"gt_size_{args.input_size}")
+
     print("=" * 70)
     print(f"🚀 BẮT ĐẦU TẠO SINH DATASET LIMITED-ANGLE CT")
     print(f"- Cung góc quét: [-{args.angle_range_deg/2:.1f}°, +{args.angle_range_deg/2:.1f}°] ({args.angle_range_deg}° total)")
@@ -152,6 +162,38 @@ def main():
     transform = transforms.Compose([
         transforms.Resize((args.input_size, args.input_size))
     ])
+
+    if args.gt_only:
+        train_gt_provider = _DICOMGroundTruthProvider(
+            dicom_dir=args.data_dir,
+            input_size=args.input_size,
+            transform=transform,
+            patient_list=args.train_patients,
+            test=False,
+            valid=False,
+        )
+        generate_split(train_gt_provider, save_gt_path=train_gt_dir, gt_only=True)
+
+        val_gt_provider = _DICOMGroundTruthProvider(
+            dicom_dir=args.data_dir,
+            input_size=args.input_size,
+            transform=transform,
+            patient_list=args.val_patients,
+            test=False,
+            valid=True,
+        )
+        generate_split(val_gt_provider, save_gt_path=train_gt_dir, gt_only=True)
+
+        test_gt_provider = _DICOMGroundTruthProvider(
+            dicom_dir=args.data_dir,
+            input_size=args.input_size,
+            transform=transform,
+            patient_list=args.test_patients,
+            test=True,
+            valid=False,
+        )
+        generate_split(test_gt_provider, save_gt_path=test_gt_dir, gt_only=True)
+        return
 
     # -------------------------------------------------------------
     # 2. Xử lý và lưu trữ dữ liệu cho tập TRAIN (8 bệnh nhân)
@@ -174,7 +216,12 @@ def main():
         test=False,
         valid=False
     )
-    generate_split(train_dataset, os.path.join(train_folder, "sino"), os.path.join(train_folder, "fbp_u"))
+    generate_split(
+        train_dataset,
+        os.path.join(train_folder, "sino"),
+        os.path.join(train_folder, "fbp_u"),
+        save_gt_path=train_gt_dir,
+    )
 
     # -------------------------------------------------------------
     # 3. Xử lý và lưu trữ dữ liệu cho tập VALIDATION (Bệnh nhân L333)
@@ -196,7 +243,12 @@ def main():
         test=False,
         valid=True
     )
-    generate_split(val_dataset, os.path.join(train_folder, "sino"), os.path.join(train_folder, "fbp_u"))
+    generate_split(
+        val_dataset,
+        os.path.join(train_folder, "sino"),
+        os.path.join(train_folder, "fbp_u"),
+        save_gt_path=train_gt_dir,
+    )
 
     # -------------------------------------------------------------
     # 4. Xử lý và lưu trữ dữ liệu cho tập TEST (Bệnh nhân L310)
@@ -218,7 +270,12 @@ def main():
         patient_list=args.test_patients,
         test=True
     )
-    generate_split(test_dataset, os.path.join(test_folder, "sino"), os.path.join(test_folder, "fbp_u"))
+    generate_split(
+        test_dataset,
+        os.path.join(test_folder, "sino"),
+        os.path.join(test_folder, "fbp_u"),
+        save_gt_path=test_gt_dir,
+    )
 
     print("\n🎉 Tạo sinh và lưu cache toàn bộ dataset Limited-Angle CT hoàn thành thành công!")
 

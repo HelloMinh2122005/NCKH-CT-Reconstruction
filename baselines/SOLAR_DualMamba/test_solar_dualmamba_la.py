@@ -31,6 +31,7 @@ if hasattr(torch, "load"):
     torch.load = _safe_torch_load
 
 from data.datamodule_factory import get_datamodule
+from data.split_guards import assert_aapm_split_counts
 from baselines.SOLAR_DualMamba.models import SOLAR_DualMamba_LA
 from baselines.eval_utils import find_best_val_checkpoint, run_slice_by_slice_evaluation
 
@@ -79,6 +80,18 @@ def parse_args():
         choices=["none", "a", "b", "c", "d"],
         default="none",
         help="Cấu hình loại bỏ thành phần (ablation switch): none, a, b, c, d"
+    )
+    parser.add_argument(
+        "--n_iterations",
+        type=int,
+        default=8,
+        help="Số giai đoạn unrolling tối ưu bậc 2 của SOLAR (mặc định = 8 stages)"
+    )
+    parser.add_argument(
+        "--allow_custom_split",
+        action="store_true",
+        default=False,
+        help="Cho phép bỏ qua kiểm tra số lát cắt chuẩn AAPM (757) khi chạy smoke test nhỏ có chủ đích"
     )
     return parser.parse_args()
 
@@ -140,6 +153,10 @@ def main():
         num_workers=args.num_workers,
         test_patients=args.test_patients,
     )
+    # Kiểm tra nghiêm ngặt số lượng lát cắt tập kiểm thử AAPM (757 lát) ngay sau setup("test") (T0.6)
+    dm.setup("test")
+    if args.dataset_type.lower() == "aapm":
+        assert_aapm_split_counts(dm, "test", allow_custom_split=args.allow_custom_split)
 
     # Thiết lập tham số truyền vào load_from_checkpoint
     load_kwargs = {
@@ -150,8 +167,11 @@ def main():
         "input_size": args.input_size,
     }
     # Chỉ truyền ablate khi người dùng truyền cờ --ablate trên dòng lệnh (U8)
-    if "--ablate" in sys.argv:
+    if any(arg == "--ablate" or arg.startswith("--ablate=") for arg in sys.argv):
         load_kwargs["ablate"] = args.ablate
+    # Chỉ truyền n_iterations khi người dùng truyền cờ --n_iterations trên dòng lệnh
+    if any(arg == "--n_iterations" or arg.startswith("--n_iterations=") for arg in sys.argv):
+        load_kwargs["n_iterations"] = args.n_iterations
 
     model = SOLAR_DualMamba_LA.load_from_checkpoint(
         ckpt_path,
@@ -168,6 +188,8 @@ def main():
             angle_deg=angle_range_deg,
             output_csv=args.output_csv,
             job_id=job_id,
+            dataset_type=args.dataset_type,
+            allow_custom_split=args.allow_custom_split,
         )
     else:
         trainer = pl.Trainer(

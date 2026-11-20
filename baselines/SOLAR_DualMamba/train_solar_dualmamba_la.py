@@ -35,6 +35,7 @@ if hasattr(torch, "load"):
 
 # Import DataModule Factory và Mô hình SOLAR_DualMamba
 from data.datamodule_factory import get_datamodule
+from data.split_guards import assert_aapm_split_counts
 from baselines.SOLAR_DualMamba.models import SOLAR_DualMamba_LA
 
 
@@ -250,6 +251,12 @@ def parse_args():
         default="none",
         help="Cấu hình loại bỏ thành phần (ablation switch): none, a (bỏ sinogram), b (GD DC), c (conv sinogram), d (CNN regularizer)"
     )
+    parser.add_argument(
+        "--allow_custom_split",
+        action="store_true",
+        default=False,
+        help="Cho phép bỏ qua kiểm tra số lát cắt chuẩn AAPM (8218/133) khi chạy smoke test nhỏ có chủ đích"
+    )
     
     return parser.parse_args()
 
@@ -358,6 +365,9 @@ def main():
 
     # Kiểm tra nghiêm ngặt số lượng lát cắt tập kiểm định (Validation) trên L110 (Q7)
     datamodule.setup("fit")
+    # Kiểm tra nghiêm ngặt số lượng lát cắt AAPM (8218 train / 133 val) theo experiments/split.md (T0.6)
+    if args.dataset_type.lower() == "aapm":
+        assert_aapm_split_counts(datamodule, "fit", allow_custom_split=args.allow_custom_split)
     val_count = len(datamodule.val_dataset) if hasattr(datamodule, "val_dataset") and datamodule.val_dataset is not None else 0
     print(f"📊 Kiểm tra tập Validation (L110): {val_count} lát cắt được nạp.")
     if val_count == 0:

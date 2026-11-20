@@ -18,6 +18,8 @@ import re
 import glob
 from typing import Tuple, List, Optional
 
+from data.split_guards import assert_aapm_split_counts
+
 # Danh mục các cột chuẩn hóa theo quyết định metrics-decision.md
 CSV_COLUMNS: List[str] = [
     "method",
@@ -234,6 +236,8 @@ def run_slice_by_slice_evaluation(
     output_csv: Optional[str] = None,
     job_id: str = "local",
     device: Optional[str] = None,
+    dataset_type: str = "aapm",
+    allow_custom_split: bool = False,
 ) -> dict:
     """
     Thực hiện đánh giá toàn diện mô hình trên tập kiểm thử (Test Cohort) theo từng lát cắt.
@@ -268,6 +272,9 @@ def run_slice_by_slice_evaluation(
 
     # Thiết lập tập kiểm thử và bật cờ trả về đường dẫn tệp
     datamodule.setup("test")
+    # Kiểm tra nghiêm ngặt số lượng lát cắt tập kiểm thử AAPM (757 lát) theo split.md (T0.6)
+    if (dataset_type or "aapm").lower() == "aapm":
+        assert_aapm_split_counts(datamodule, "test", allow_custom_split=allow_custom_split)
     test_dataset = getattr(datamodule, "test_dataset", None)
     if test_dataset is not None:
         test_dataset.return_path = True

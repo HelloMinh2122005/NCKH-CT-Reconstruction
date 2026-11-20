@@ -20,6 +20,7 @@ if hasattr(torch, "load"):
     torch.load = _safe_torch_load
 
 from data.datamodule_factory import get_datamodule
+from data.split_guards import assert_aapm_split_counts
 from baselines.LEARN.models import LEARN_LA
 from baselines.eval_utils import find_best_val_checkpoint, run_slice_by_slice_evaluation
 
@@ -61,6 +62,12 @@ def parse_args():
         type=str,
         default="LEARN",
         help="Tên phương pháp đánh giá (mặc định: LEARN)"
+    )
+    parser.add_argument(
+        "--allow_custom_split",
+        action="store_true",
+        default=False,
+        help="Cho phép bỏ qua kiểm tra số lát cắt chuẩn AAPM (757) khi chạy smoke test nhỏ có chủ đích"
     )
     return parser.parse_args()
 
@@ -122,6 +129,10 @@ def main():
         num_workers=args.num_workers,
         test_patients=args.test_patients,
     )
+    # Kiểm tra nghiêm ngặt số lượng lát cắt tập kiểm thử AAPM (757 lát) ngay sau setup("test") (T0.6)
+    dm.setup("test")
+    if args.dataset_type.lower() == "aapm":
+        assert_aapm_split_counts(dm, "test", allow_custom_split=args.allow_custom_split)
 
     model = LEARN_LA.load_from_checkpoint(
         ckpt_path,
@@ -142,6 +153,8 @@ def main():
             angle_deg=angle_range_deg,
             output_csv=args.output_csv,
             job_id=job_id,
+            dataset_type=args.dataset_type,
+            allow_custom_split=args.allow_custom_split,
         )
     else:
         trainer = pl.Trainer(

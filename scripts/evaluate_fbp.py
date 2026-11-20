@@ -38,6 +38,7 @@ except ImportError:
     HAS_TORCH = False
 
 # Import Provider dữ liệu từ module data của dự án
+from data.split_guards import assert_aapm_test_dataset_count
 try:
     from data.CTSlice_Provider_LA import LimitedAngleCT_Provider
 except ImportError:
@@ -442,6 +443,13 @@ def evaluate_fbp_for_angle(
 
     total_slices = len(test_dataset)
     print(f"- Tổng số lát cắt nạp được: {total_slices}")
+    # Kiểm tra nghiêm ngặt số lượng lát cắt tập kiểm thử AAPM (757 lát) theo split.md (T0.6)
+    if (getattr(args, "dataset_type", "aapm") or "aapm").lower() == "aapm":
+        assert_aapm_test_dataset_count(
+            test_dataset,
+            allow_custom_split=getattr(args, "allow_custom_split", False),
+            dataset_type=getattr(args, "dataset_type", "aapm"),
+        )
 
     device = torch.device(args.device if torch.cuda.is_available() and args.device == "cuda" else "cpu")
     print(f"- Thiết bị tính toán: {device}")
@@ -574,6 +582,12 @@ def parse_args(args_list: Optional[List[str]] = None) -> argparse.Namespace:
         help="Mã Job ID của Slurm để lưu trữ nguồn gốc dữ liệu (provenance)"
     )
     parser.add_argument("--device", type=str, default="cuda", choices=["cuda", "cpu"], help="Thiết bị tính toán")
+    parser.add_argument(
+        "--allow_custom_split",
+        action="store_true",
+        default=False,
+        help="Cho phép bỏ qua kiểm tra số lát cắt chuẩn AAPM (757) khi chạy smoke test nhỏ có chủ đích"
+    )
     
     if args_list is not None:
         return parser.parse_args(args_list)

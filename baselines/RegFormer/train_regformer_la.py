@@ -24,6 +24,7 @@ if hasattr(torch, "load"):
 
 # Import DataModule Factory và Mô hình RegFormer
 from data.datamodule_factory import get_datamodule
+from data.split_guards import assert_aapm_split_counts
 from baselines.RegFormer.models import RegFormer_LA
 
 
@@ -201,6 +202,12 @@ def parse_args():
         default=42,
         help="Hạt giống ngẫu nhiên phục vụ tái lập kết quả theo quyết định Q5 (mặc định: 42)"
     )
+    parser.add_argument(
+        "--allow_custom_split",
+        action="store_true",
+        default=False,
+        help="Cho phép bỏ qua kiểm tra số lát cắt chuẩn AAPM (8218/133) khi chạy smoke test nhỏ có chủ đích"
+    )
     
     return parser.parse_args()
 
@@ -309,6 +316,9 @@ def main():
     
     # Kiểm tra nghiêm ngặt số lượng lát cắt tập kiểm định (Validation) trên L110 (Q7)
     dm.setup("fit")
+    # Kiểm tra nghiêm ngặt số lượng lát cắt AAPM (8218 train / 133 val) theo experiments/split.md (T0.6)
+    if args.dataset_type.lower() == "aapm":
+        assert_aapm_split_counts(dm, "fit", allow_custom_split=args.allow_custom_split)
     val_count = len(dm.val_dataset) if hasattr(dm, "val_dataset") and dm.val_dataset is not None else 0
     print(f"📊 Kiểm tra tập Validation (L110): {val_count} lát cắt được nạp.")
     if val_count == 0:

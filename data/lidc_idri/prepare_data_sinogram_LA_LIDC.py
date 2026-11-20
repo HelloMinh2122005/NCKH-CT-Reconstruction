@@ -12,7 +12,40 @@ import argparse
 import numpy as np
 import torch
 import tqdm
-from CTSlice_Provider_LA_LIDC import LimitedAngleCT_LIDC_Provider
+
+try:
+    from data.lidc_idri.CTSlice_Provider_LA_LIDC import LimitedAngleCT_LIDC_Provider
+except ImportError:
+    from CTSlice_Provider_LA_LIDC import LimitedAngleCT_LIDC_Provider
+
+
+def save_atomic_npy(target_file: str, array: np.ndarray) -> None:
+    """
+    Lưu mảng numpy ra tệp nguyên tử (atomic write) nhằm ngăn chặn tệp bị cắt cụt do lỗi NFS:
+    - Ghi dữ liệu mảng ra tệp tạm <target_file>.tmp bằng luồng nhị phân wb.
+    - Thực hiện flush và fsync để đảm bảo toàn bộ dirty pages được commit xuống storage NFS.
+    - Dùng os.replace để tráo đổi nguyên tử tệp tạm vào vị trí tệp đích cuối cùng.
+    """
+    tmp_file = target_file + ".tmp"
+    with open(tmp_file, "wb") as f:
+        np.save(f, array)
+        f.flush()
+        os.fsync(f.fileno())
+    os.replace(tmp_file, target_file)
+
+
+def is_valid_cache_file(sino_file: str, fbp_file: str) -> bool:
+    """
+    Kiểm tra tính hợp lệ và toàn vẹn của cặp tệp cache sinogram và FBP:
+    - Cả 2 tệp phải tồn tại trên hệ thống tệp.
+    - Cả 2 tệp phải có kích thước tối thiểu >= 1000 bytes (tránh tệp 128 bytes chỉ có header do NFS stall).
+    """
+    if os.path.exists(sino_file) and os.path.exists(fbp_file):
+        try:
+            return os.path.getsize(sino_file) >= 1000 and os.path.getsize(fbp_file) >= 1000
+        except OSError:
+            return False
+    return False
 
 
 def generate_la_lidc_split(
@@ -73,33 +106,60 @@ def generate_la_lidc_split(
 
     saved_count = 0
     skipped_count = 0
+    corrupted_slices = []
+    corrupted_log_path = os.path.join(output_base_dir, "corrupted_slices.log")
+    split_corrupted_log_path = os.path.join(save_dir, "corrupted_slices.log")
 
     for idx in tqdm.tqdm(range(total_slices), desc=f"Sinh LIDC {split_name} ({deg_str})"):
-        dcm_path, phantom, fbp_u, sino = provider[idx]
+        # Lấy trước đường dẫn tệp DICOM để kiểm tra cache và ghi nhận lỗi nếu có
+        slice_dcm_path = provider.slices_path[idx] if hasattr(provider, "slices_path") and idx < len(provider.slices_path) else "unknown"
 
         # Tạo tên file cache: pat_id + slice_id
         pat_id = "UNKNOWN"
         for p in provider.patients:
-            if p in dcm_path:
+            if p in slice_dcm_path:
                 pat_id = p
                 break
-        slice_name = os.path.splitext(os.path.basename(dcm_path))[0]
+        slice_name = os.path.splitext(os.path.basename(slice_dcm_path))[0]
         cache_filename = f"{pat_id}_{slice_name}.npy"
 
         sino_file = os.path.join(sino_save_dir, cache_filename)
         fbp_file = os.path.join(fbp_save_dir, cache_filename)
 
-        if os.path.exists(sino_file) and os.path.exists(fbp_file):
+        if is_valid_cache_file(sino_file, fbp_file):
             skipped_count += 1
             continue
 
-        sino_np = sino.squeeze().cpu().numpy().astype(np.float32)
-        fbp_np = fbp_u.squeeze().cpu().numpy().astype(np.float32)
+        try:
+            dcm_path, phantom, fbp_u, sino = provider[idx]
+        except Exception as e:
+            err_msg = f"[CẢNH BÁO] Lát cắt tại index {idx} ({slice_dcm_path}) bị lỗi và được bỏ qua: {e}"
+            print(err_msg)
+            corrupted_slices.append((idx, slice_dcm_path, str(e)))
+            try:
+                for lp in [corrupted_log_path, split_corrupted_log_path]:
+                    with open(lp, "a", encoding="utf-8") as f_log:
+                        f_log.write(f"[{split_name}_{deg_str}] Index {idx} ({slice_dcm_path}): {e}\n")
+            except OSError:
+                pass
+            continue
 
-        np.save(sino_file, sino_np)
-        np.save(fbp_file, fbp_np)
+        sino_np = sino.squeeze().cpu().numpy().astype(np.float32) if hasattr(sino, "squeeze") else np.asarray(sino, dtype=np.float32)
+        fbp_np = fbp_u.squeeze().cpu().numpy().astype(np.float32) if hasattr(fbp_u, "squeeze") else np.asarray(fbp_u, dtype=np.float32)
+
+        save_atomic_npy(sino_file, sino_np)
+        save_atomic_npy(fbp_file, fbp_np)
         saved_count += 1
 
+        # Thu dọn bộ nhớ định kỳ sau mỗi 500 lát cắt
+        if (idx + 1) % 500 == 0:
+            import gc
+            gc.collect()
+            if hasattr(torch, "cuda") and torch.cuda.is_available():
+                torch.cuda.empty_cache()
+
+    if corrupted_slices:
+        print(f"[CẢNH BÁO] Phát hiện {len(corrupted_slices)} lát cắt bị hỏng trong {split_name} ({deg_str}). Xem nhật ký: {corrupted_log_path}")
     print(f"[HOÀN TẤT] LIDC-IDRI {split_name} ({deg_str}): Đã ghi mới {saved_count} lát, bỏ qua {skipped_count} lát.")
 
 
@@ -112,7 +172,7 @@ def main():
     parser.add_argument("--input_size", type=int, default=256)
     parser.add_argument("--poisson_level", type=float, default=0.0)
     parser.add_argument("--gaussian_level", type=float, default=0.0)
-    parser.add_argument("--angles", nargs="+", type=float, default=[120.0, 90.0])
+    parser.add_argument("--angles", nargs="+", type=float, default=[90.0, 120.0])
     parser.add_argument("--splits", nargs="+", type=str, default=["train", "val", "test"])
 
     args = parser.parse_args()

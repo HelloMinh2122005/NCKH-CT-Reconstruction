@@ -135,11 +135,34 @@ class LimitedAngleCT_LIDC_Provider(Dataset):
             HU = pixel_array * RescaleSlope + RescaleIntercept
         Cắt ngưỡng [-1000, 1000] HU và chuẩn hóa [0, 1].
         """
-        dcm = pydicom.dcmread(dcm_path, force=True)
+        # Đọc tệp DICOM với force=False trước để tôn trọng TransferSyntaxUID trong file_meta
+        try:
+            dcm = pydicom.dcmread(dcm_path, force=False)
+        except Exception:
+            # Fallback đọc với force=True nếu tệp thiếu preamble chuẩn DICOM (InvalidDicomError)
+            dcm = pydicom.dcmread(dcm_path, force=True)
+
         slope = getattr(dcm, "RescaleSlope", 1.0)
         intercept = getattr(dcm, "RescaleIntercept", -1024.0)
 
-        raw_array = dcm.pixel_array.astype(np.float32)
+        # Giải mã mảng điểm ảnh thô (pixel_array) kèm cơ chế bắt lỗi an toàn
+        try:
+            raw_array = dcm.pixel_array.astype(np.float32)
+        except Exception as e:
+            # Thử phương thức decompress() nếu TransferSyntax là dạng nén (codec fallback)
+            decompressed = False
+            try:
+                dcm.decompress()
+                raw_array = dcm.pixel_array.astype(np.float32)
+                decompressed = True
+            except Exception:
+                pass
+            if not decompressed:
+                raise ValueError(f"Không thể giải mã pixel_array từ tệp DICOM {dcm_path}: {e}") from e
+
+        if raw_array is None or raw_array.size == 0 or raw_array.ndim != 2:
+            raise ValueError(f"Dữ liệu pixel_array trong {dcm_path} không hợp lệ (kích thước={getattr(raw_array, 'shape', None)})")
+
         hu_image = raw_array * float(slope) + float(intercept)
 
         # Cắt ngưỡng cửa sổ mô mềm/phổi y tế [-1000, 1000] HU
@@ -159,7 +182,15 @@ class LimitedAngleCT_LIDC_Provider(Dataset):
 
     def __getitem__(self, index):
         dcm_path = self.slices_path[index]
-        ground_truth_256 = self._read_and_process_dicom(dcm_path)
+        try:
+            ground_truth_256 = self._read_and_process_dicom(dcm_path)
+        except Exception as e:
+            if not self.return_path and len(self.slices_path) > 1:
+                # Ghi log cảnh báo và chuyển tiếp sang lát cắt liền kề hợp lệ (graceful fallback)
+                print(f"[CẢNH BÁO] Lát cắt lỗi {dcm_path}: {e}. Fallback sang lát cắt liền kề.")
+                next_index = (index + 1) % len(self.slices_path)
+                return self.__getitem__(next_index)
+            raise
         phantom = torch.from_numpy(ground_truth_256).unsqueeze(0).float()
 
         # Tạo tên file cache từ path: .../LIDC-IDRI-0001/.../000050.dcm -> LIDC-IDRI-0001_000050.npy

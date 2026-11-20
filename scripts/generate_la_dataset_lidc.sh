@@ -27,6 +27,7 @@ REPO=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction
 ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 DICOM_DIR=/datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/
 OUTPUT_DIR=/datastore/doanhbc/minhdphan/datasets/lidc_idri/limited_angle/
+TARGET_ANGLES="90.0 120.0"
 
 mkdir -p "$REPO/scripts/output/generate_la_dataset_lidc/log"
 mkdir -p "$OUTPUT_DIR"
@@ -41,6 +42,7 @@ echo "[INFO] Partition:        ${SLURM_JOB_PARTITION:-<unset>}"
 echo "[INFO] Git commit:       $(git -C "$REPO" rev-parse HEAD 2>/dev/null || echo '<git-not-found>')"
 echo "[INFO] Dicom source:     $DICOM_DIR"
 echo "[INFO] Cache target:     $OUTPUT_DIR"
+echo "[INFO] Target angles:    $TARGET_ANGLES"
 echo ""
 
 # GPU allocation check
@@ -69,7 +71,7 @@ python3 -u data/lidc_idri/prepare_data_sinogram_LA_LIDC.py \
     --input_size 256 \
     --poisson_level 0 \
     --gaussian_level 0 \
-    --angles 120.0 90.0 \
+    --angles $TARGET_ANGLES \
     --splits train val test
 
 echo ""

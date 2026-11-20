@@ -20,14 +20,14 @@ REPO=/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction
 ENV_DIR=/datastore/doanhbc/minhdphan/envs/longnet
 OUTPUT_DIR=/datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom
 
-mkdir -p "$REPO/scripts/output/download_lidc_hpcuit/log"
-mkdir -p "$OUTPUT_DIR"
-
 cleanup() {
     local rc=$?
     echo "[INFO] cleanup rc=$rc at $(date)"
 }
 trap cleanup EXIT
+
+mkdir -p "$REPO/scripts/output/download_lidc_hpcuit/log"
+mkdir -p "$OUTPUT_DIR"
 
 echo "=========================================================="
 echo "    DOWNLOADING LIDC-IDRI DATASET FROM TCIA REST API     "
@@ -64,5 +64,16 @@ PATIENT_COUNT=$(find "$OUTPUT_DIR" -mindepth 1 -maxdepth 1 -type d | wc -l)
 FILE_COUNT=$(find "$OUTPUT_DIR" -type f -name "*.dcm" | wc -l)
 echo "[INFO] Total patients: $PATIENT_COUNT / 12"
 echo "[INFO] Total DICOM files: $FILE_COUNT"
+
+ZERO_COUNT=$(find "$OUTPUT_DIR" -type f -name "*.dcm" -size 0 | wc -l)
+VALID_COUNT=$(find "$OUTPUT_DIR" -type f -name "*.dcm" -size +100k | wc -l)
+echo "[INFO] Valid DICOM files (>100KB): $VALID_COUNT"
+echo "[INFO] Corrupt/Zero-byte files (0B): $ZERO_COUNT"
+
+if [ "$ZERO_COUNT" -gt 0 ] || [ "$VALID_COUNT" -eq 0 ]; then
+    echo "[ERROR] DICOM validation failed: ZERO_COUNT=$ZERO_COUNT, VALID_COUNT=$VALID_COUNT"
+    exit 1
+fi
+
 echo "[INFO] LIDC-IDRI download finished successfully at $(date)"
 echo "=========================================================="

@@ -1,0 +1,177 @@
+=== HPC-UIT BATCHED TEST: WAVE B ABLATION EVALUATION ===
+[INFO] Start at: Sat Nov 14 04:15:45 AM +07 2026
+[INFO] Hostname: h200node02
+[INFO] SLURM_JOB_ID: 26535
+[INFO] Git commit: 137757feee65dc1601767cf24ec7ef6ac212b594
+Sat Nov 14 04:15:45 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:52:00.0 Off |                   On |
+| N/A   49C    P0            195W /  700W |   51691MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0    4   0   0  |              29MiB / 33280MiB    | 32      0 |  2   0    2    0    2 |
+|                  |               0MiB / 29619MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[INFO] Khởi động đánh giá hàng loạt 4 biến thể ablation Wave B trên LA-90°...
+[INFO] Danh sách test patients: L058 L064 L094 L107
+[INFO] Tệp CSV kết quả per-slice: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/wave_b_ablation_per_slice_results.csv
+================================================================================
+🎯 ĐÁNH GIÁ BIẾN THỂ WAVE B: SOLAR_DualMamba_abl-a LA-90° (64 views)
+================================================================================
+[INFO] Git rev-parse HEAD: 137757feee65dc1601767cf24ec7ef6ac212b594
+[INFO] Slurm Job ID: 26535
+[INFO] Đã chọn checkpoint tốt nhất: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_90_abl-a/solar_dualmamba_la-epoch=20-val_psnr=26.5898-val_ssim=0.7127.ckpt (val_psnr = 26.5898 dB)
+================================================================================
+🔍 ĐÁNH GIÁ MÔ HÌNH ĐỘT PHÁ MIỀN KÉP: SOLAR_DualMamba (Sinogram Bi-Mamba + Newton-CG Swin)
+- Tệp checkpoint: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_90_abl-a/solar_dualmamba_la-epoch=20-val_psnr=26.5898-val_ssim=0.7127.ckpt
+- Tập dữ liệu: AAPM | Dải góc: 90.0° (Views: 64)
+- Bệnh nhân kiểm thử: ['L058', 'L064', 'L094', 'L107']
+- File CSV xuất kết quả per-slice: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/wave_b_ablation_per_slice_results.csv
+================================================================================
+[TEST] Loaded 757 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: test).
+🔍 Bắt đầu đánh giá SOLAR_DualMamba_abl-a (Góc 90.0°) trên 757 lát cắt...
+✅ Đã ghi nhận 757 dòng kết quả lát cắt vào: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/wave_b_ablation_per_slice_results.csv
+
+================================================================================
+📊 BẢNG TỔNG KẾT ĐÁNH GIÁ ĐỊNH LƯỢNG: SOLAR_DualMamba_abl-a (90.0°)
+   (Slurm Job ID: 26535 | Tổng số lát cắt: 757)
+================================================================================
+Patient ID   | Slices   | PSNR (dB)    | SSIM       | RMSE      
+--------------------------------------------------------------------------------
+L058         | 210      | 23.1852      | 0.7263     | 0.074257  
+L064         | 209      | 24.3837      | 0.7430     | 0.064024  
+L094         | 136      | 26.3884      | 0.7157     | 0.048439  
+L107         | 202      | 24.4253      | 0.7587     | 0.062926  
+--------------------------------------------------------------------------------
+OVERALL (Headline Mean ± Std qua 4 bệnh nhân):
+  • PSNR: 24.60 ± 1.15 dB
+  • SSIM: 0.7359 ± 0.0164
+  • RMSE: 0.062412 ± 0.009198
+================================================================================
+
+================================================================================
+🎯 ĐÁNH GIÁ BIẾN THỂ WAVE B: SOLAR_DualMamba_abl-b LA-90° (64 views)
+================================================================================
+[INFO] Git rev-parse HEAD: 137757feee65dc1601767cf24ec7ef6ac212b594
+[INFO] Slurm Job ID: 26535
+[INFO] Đã chọn checkpoint tốt nhất: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_90_abl-b/solar_dualmamba_la-epoch=13-val_psnr=23.4243-val_ssim=0.6255.ckpt (val_psnr = 23.4243 dB)
+================================================================================
+🔍 ĐÁNH GIÁ MÔ HÌNH ĐỘT PHÁ MIỀN KÉP: SOLAR_DualMamba (Sinogram Bi-Mamba + Newton-CG Swin)
+- Tệp checkpoint: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_90_abl-b/solar_dualmamba_la-epoch=13-val_psnr=23.4243-val_ssim=0.6255.ckpt
+- Tập dữ liệu: AAPM | Dải góc: 90.0° (Views: 64)
+- Bệnh nhân kiểm thử: ['L058', 'L064', 'L094', 'L107']
+- File CSV xuất kết quả per-slice: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/wave_b_ablation_per_slice_results.csv
+================================================================================
+[TEST] Loaded 757 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: test).
+🔍 Bắt đầu đánh giá SOLAR_DualMamba_abl-b (Góc 90.0°) trên 757 lát cắt...
+✅ Đã ghi nhận 757 dòng kết quả lát cắt vào: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/wave_b_ablation_per_slice_results.csv
+
+================================================================================
+📊 BẢNG TỔNG KẾT ĐÁNH GIÁ ĐỊNH LƯỢNG: SOLAR_DualMamba_abl-b (90.0°)
+   (Slurm Job ID: 26535 | Tổng số lát cắt: 757)
+================================================================================
+Patient ID   | Slices   | PSNR (dB)    | SSIM       | RMSE      
+--------------------------------------------------------------------------------
+L058         | 210      | 21.0425      | 0.6464     | 0.089543  
+L064         | 209      | 21.9811      | 0.6729     | 0.079776  
+L094         | 136      | 22.7601      | 0.6950     | 0.070712  
+L107         | 202      | 21.9639      | 0.6962     | 0.078048  
+--------------------------------------------------------------------------------
+OVERALL (Headline Mean ± Std qua 4 bệnh nhân):
+  • PSNR: 21.94 ± 0.61 dB
+  • SSIM: 0.6776 ± 0.0203
+  • RMSE: 0.079520 ± 0.006714
+================================================================================
+
+================================================================================
+🎯 ĐÁNH GIÁ BIẾN THỂ WAVE B: SOLAR_DualMamba_abl-c LA-90° (64 views)
+================================================================================
+[INFO] Git rev-parse HEAD: 137757feee65dc1601767cf24ec7ef6ac212b594
+[INFO] Slurm Job ID: 26535
+[INFO] Đã chọn checkpoint tốt nhất: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_90_abl-c/solar_dualmamba_la-epoch=11-val_psnr=27.1140-val_ssim=0.6812.ckpt (val_psnr = 27.1140 dB)
+================================================================================
+🔍 ĐÁNH GIÁ MÔ HÌNH ĐỘT PHÁ MIỀN KÉP: SOLAR_DualMamba (Sinogram Bi-Mamba + Newton-CG Swin)
+- Tệp checkpoint: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_90_abl-c/solar_dualmamba_la-epoch=11-val_psnr=27.1140-val_ssim=0.6812.ckpt
+- Tập dữ liệu: AAPM | Dải góc: 90.0° (Views: 64)
+- Bệnh nhân kiểm thử: ['L058', 'L064', 'L094', 'L107']
+- File CSV xuất kết quả per-slice: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/wave_b_ablation_per_slice_results.csv
+================================================================================
+[TEST] Loaded 757 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: test).
+🔍 Bắt đầu đánh giá SOLAR_DualMamba_abl-c (Góc 90.0°) trên 757 lát cắt...
+✅ Đã ghi nhận 757 dòng kết quả lát cắt vào: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/wave_b_ablation_per_slice_results.csv
+
+================================================================================
+📊 BẢNG TỔNG KẾT ĐÁNH GIÁ ĐỊNH LƯỢNG: SOLAR_DualMamba_abl-c (90.0°)
+   (Slurm Job ID: 26535 | Tổng số lát cắt: 757)
+================================================================================
+Patient ID   | Slices   | PSNR (dB)    | SSIM       | RMSE      
+--------------------------------------------------------------------------------
+L058         | 210      | 23.4601      | 0.7186     | 0.071537  
+L064         | 209      | 24.9665      | 0.7413     | 0.060347  
+L094         | 136      | 26.5566      | 0.7366     | 0.047435  
+L107         | 202      | 24.9856      | 0.7587     | 0.059316  
+--------------------------------------------------------------------------------
+OVERALL (Headline Mean ± Std qua 4 bệnh nhân):
+  • PSNR: 24.99 ± 1.09 dB
+  • SSIM: 0.7388 ± 0.0143
+  • RMSE: 0.059659 ± 0.008531
+================================================================================
+
+================================================================================
+🎯 ĐÁNH GIÁ BIẾN THỂ WAVE B: SOLAR_DualMamba_abl-d LA-90° (64 views)
+================================================================================
+[INFO] Git rev-parse HEAD: 137757feee65dc1601767cf24ec7ef6ac212b594
+[INFO] Slurm Job ID: 26535
+[INFO] Đã chọn checkpoint tốt nhất: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_90_abl-d/solar_dualmamba_la-epoch=17-val_psnr=26.7106-val_ssim=0.6707.ckpt (val_psnr = 26.7106 dB)
+================================================================================
+🔍 ĐÁNH GIÁ MÔ HÌNH ĐỘT PHÁ MIỀN KÉP: SOLAR_DualMamba (Sinogram Bi-Mamba + Newton-CG Swin)
+- Tệp checkpoint: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_90_abl-d/solar_dualmamba_la-epoch=17-val_psnr=26.7106-val_ssim=0.6707.ckpt
+- Tập dữ liệu: AAPM | Dải góc: 90.0° (Views: 64)
+- Bệnh nhân kiểm thử: ['L058', 'L064', 'L094', 'L107']
+- File CSV xuất kết quả per-slice: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/wave_b_ablation_per_slice_results.csv
+================================================================================
+[TEST] Loaded 757 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: test).
+🔍 Bắt đầu đánh giá SOLAR_DualMamba_abl-d (Góc 90.0°) trên 757 lát cắt...
+✅ Đã ghi nhận 757 dòng kết quả lát cắt vào: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/wave_b_ablation_per_slice_results.csv
+
+================================================================================
+📊 BẢNG TỔNG KẾT ĐÁNH GIÁ ĐỊNH LƯỢNG: SOLAR_DualMamba_abl-d (90.0°)
+   (Slurm Job ID: 26535 | Tổng số lát cắt: 757)
+================================================================================
+Patient ID   | Slices   | PSNR (dB)    | SSIM       | RMSE      
+--------------------------------------------------------------------------------
+L058         | 210      | 23.2144      | 0.7084     | 0.074188  
+L064         | 209      | 24.4212      | 0.7294     | 0.064838  
+L094         | 136      | 26.4259      | 0.7401     | 0.047833  
+L107         | 202      | 24.4437      | 0.7498     | 0.063299  
+--------------------------------------------------------------------------------
+OVERALL (Headline Mean ± Std qua 4 bệnh nhân):
+  • PSNR: 24.63 ± 1.15 dB
+  • SSIM: 0.7319 ± 0.0154
+  • RMSE: 0.062540 ± 0.009458
+================================================================================
+
+[INFO] Batched test Wave B ablation hoàn tất thành công lúc Sat Nov 14 04:25:27 AM +07 2026
+[INFO] cleanup rc=0 at Sat Nov 14 04:25:27 AM +07 2026

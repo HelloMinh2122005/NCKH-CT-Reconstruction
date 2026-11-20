@@ -1,0 +1,48 @@
+================================================================================
+🚀 SMOKE BENCHMARK 55 BỆNH NHÂN (8,218 LÁT): SOLAR_DualMamba LA-120° (batch_size=4)
+[INFO] start at Thu Nov 19 12:45:23 PM +07 2026
+[INFO] hostname=h200node01
+[INFO] SLURM_JOB_ID=61265
+[INFO] SLURM_JOB_PARTITION=normal
+[INFO] Git commit: 137757feee65dc1601767cf24ec7ef6ac212b594
+================================================================================
+Thu Nov 19 12:45:23 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:43:00.0 Off |                   On |
+| N/A   37C    P0            124W /  700W |   31685MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0    5   0   0  |              29MiB / 33280MiB    | 32      0 |  2   0    2    0    2 |
+|                  |               0MiB / 29619MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[INFO] Cấu hình phân chia: Train=55 BN, Val=1 BN, Test=4 BN
+
+================================================================================
+🔍 [BƯỚC 1/2] PREFLIGHT KIỂM TRA TÍCH HỢP DỮ LIỆU (8,218 / 133 / 757) & SYMLINK
+================================================================================
+[TRAIN] Loaded 8218 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: train).
+[TRAIN] Loaded 133 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: train).
+[TEST] Loaded 757 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: test).
+[INFO] cleanup rc=1 at Thu Nov 19 12:45:43 PM +07 2026

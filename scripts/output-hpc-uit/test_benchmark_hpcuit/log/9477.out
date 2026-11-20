@@ -1,0 +1,73 @@
+=== HPC-UIT BATCHED TEST BENCHMARK ===
+[INFO] Start at: Tue Nov  3 03:30:20 PM +07 2026
+[INFO] Hostname: h200node01
+[INFO] SLURM_JOB_ID: 9477
+[INFO] Git commit: 5e1922397ad47a91ea6ffaf2cccc91886563a570
+Tue Nov  3 15:30:20 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:DF:00.0 Off |                   On |
+| N/A   52C    P0            325W /  700W |   17178MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0    9   0   0  |              15MiB / 16384MiB    | 16      0 |  1   0    1    0    1 |
+|                  |               0MiB / 14809MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[INFO] Khởi động đánh giá benchmark hàng loạt trên các checkpoint Wave A sẵn có...
+[INFO] Danh sách test patients: L058 L064 L094 L107
+[INFO] Tệp CSV kết quả benchmark: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/benchmark_per_slice_results.csv
+================================================================================
+🎯 ĐÁNH GIÁ: LEARN LA-90° (64 views)
+================================================================================
+[WARN] Bỏ qua LEARN_90: Không tìm thấy checkpoint nào trong /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/LEARN_90
+================================================================================
+🎯 ĐÁNH GIÁ: LEARN LA-120° (64 views)
+================================================================================
+[WARN] Bỏ qua LEARN_120: Thư mục không tồn tại (/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/LEARN_120)
+================================================================================
+🎯 ĐÁNH GIÁ: RegFormer LA-90° (64 views)
+================================================================================
+[WARN] Bỏ qua RegFormer_90: Không tìm thấy checkpoint nào trong /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/RegFormer_90
+================================================================================
+🎯 ĐÁNH GIÁ: RegFormer LA-120° (64 views)
+================================================================================
+[WARN] Bỏ qua RegFormer_120: Thư mục không tồn tại (/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/RegFormer_120)
+================================================================================
+🎯 ĐÁNH GIÁ: DuDoTrans LA-90° (64 views)
+================================================================================
+[WARN] Bỏ qua DuDoTrans_90: Không tìm thấy checkpoint nào trong /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/DuDoTrans_90
+================================================================================
+🎯 ĐÁNH GIÁ: DuDoTrans LA-120° (64 views)
+================================================================================
+[WARN] Bỏ qua DuDoTrans_120: Thư mục không tồn tại (/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/DuDoTrans_120)
+================================================================================
+🎯 ĐÁNH GIÁ: SOLAR_DualMamba LA-90° (64 views)
+================================================================================
+[WARN] Bỏ qua SOLAR_DualMamba_90: Không tìm thấy checkpoint nào trong /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_90
+================================================================================
+🎯 ĐÁNH GIÁ: SOLAR_DualMamba LA-120° (64 views)
+================================================================================
+[WARN] Bỏ qua SOLAR_DualMamba_120: Thư mục không tồn tại (/datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_120)
+[INFO] Batched benchmark hoàn tất thành công lúc Tue Nov  3 03:30:21 PM +07 2026
+[INFO] cleanup rc=0 at Tue Nov  3 03:30:21 PM +07 2026

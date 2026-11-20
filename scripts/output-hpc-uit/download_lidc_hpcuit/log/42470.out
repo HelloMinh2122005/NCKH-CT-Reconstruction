@@ -1,0 +1,464 @@
+==========================================================
+    DOWNLOADING LIDC-IDRI DATASET FROM TCIA REST API     
+==========================================================
+[INFO] Start at:      Tue Nov 17 12:30:20 AM +07 2026
+[INFO] Hostname:      h200node01
+[INFO] Slurm Job:     42470
+[INFO] Partition:     small
+[INFO] Git commit:    137757feee65dc1601767cf24ec7ef6ac212b594
+[INFO] Target dir:    /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom
+
+[INFO] Activated env at: /datastore/doanhbc/minhdphan/envs/longnet
+Python 3.12.13
+Tue Nov 17 00:30:20 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:DF:00.0 Off |                   On |
+| N/A   49C    P0            261W /  700W |   31339MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0   12   0   0  |              15MiB / 16384MiB    | 16      0 |  1   0    1    0    1 |
+|                  |               0MiB / 14809MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[INFO] Launching download_lidc_subset.py...
+======================================================================
+KHỞI CHẠY TIẾN TRÌNH TẢI BỘ DỮ LIỆU LIDC-IDRI TỪ TCIA REST API
+Thư mục lưu trữ: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom
+Tổng số ca bệnh nhân dự kiến: 12
+======================================================================
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0001 (train)...
+[THÀNH CÔNG] LIDC-IDRI-0001: Đã giải nén 133 lát cắt DICOM.
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0002 (train)...
+[THÀNH CÔNG] LIDC-IDRI-0002: Đã giải nén 261 lát cắt DICOM.
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000001.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000002.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000003.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000004.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000005.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000006.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000007.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000008.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000009.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000010.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000011.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000012.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000013.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000014.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000015.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000016.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000017.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000018.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000019.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000020.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000021.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000022.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000023.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000024.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000025.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000026.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000027.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000028.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000029.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000030.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000031.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000032.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000033.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000034.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000035.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000036.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000037.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000038.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000039.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000040.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000041.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000042.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000043.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000044.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000045.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000046.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000047.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000048.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000049.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000050.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000051.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000052.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000053.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000054.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000055.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000056.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000057.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000058.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000059.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000060.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000061.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000062.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000063.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000064.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000065.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000066.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000067.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000068.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000069.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000070.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000071.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000072.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000073.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000074.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000075.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000076.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000077.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000078.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000079.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000080.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000081.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000082.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000083.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000084.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000085.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000086.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000087.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000088.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000089.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000090.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000091.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000092.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000093.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000094.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000095.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000096.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000097.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000098.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000099.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000100.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000101.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000102.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000103.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000104.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000105.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000106.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000107.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000108.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000109.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000110.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000111.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000112.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000113.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000114.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000115.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000116.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000117.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000118.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000119.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000120.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000121.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000122.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000123.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000124.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000125.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000126.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000127.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000128.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000129.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000130.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000131.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000132.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000133.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000134.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000135.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000136.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000137.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000138.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000139.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0003/00000140.dcm
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0003 (train)...
+[THÀNH CÔNG] LIDC-IDRI-0003: Đã giải nén 140 lát cắt DICOM.
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000001.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000002.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000003.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000004.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000005.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000006.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000007.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000008.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000009.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000010.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000011.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000012.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000013.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000014.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000015.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000016.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000017.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000018.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000019.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000020.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000021.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000022.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000023.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000024.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000025.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000026.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000027.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000028.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000029.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000030.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000031.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000032.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000033.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000034.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000035.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000036.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000037.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000038.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000039.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000040.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000041.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000042.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000043.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000044.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000045.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000046.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000047.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000048.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000049.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000050.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000051.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000052.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000053.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000054.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000055.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000056.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000057.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000058.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000059.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000060.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000061.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000062.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000063.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000064.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000065.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000066.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000067.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000068.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000069.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000070.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000071.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000072.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000073.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000074.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000075.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000076.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000077.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000078.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000079.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000080.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000081.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000082.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000083.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000084.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000085.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000086.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000087.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000088.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000089.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000090.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000091.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000092.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000093.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000094.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000095.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000096.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000097.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000098.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000099.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000100.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000101.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000102.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000103.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000104.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000105.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000106.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000107.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000108.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000109.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000110.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000111.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000112.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000113.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000114.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000115.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000116.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000117.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000118.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000119.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000120.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000121.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000122.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000123.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000124.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000125.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000126.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000127.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000128.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000129.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000130.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000131.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000132.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000133.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000134.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000135.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000136.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000137.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000138.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000139.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000140.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000141.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000142.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000143.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000144.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000145.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000146.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000147.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000148.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000149.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000150.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000151.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000152.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000153.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000154.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000155.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000156.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000157.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000158.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000159.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000160.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000161.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000162.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000163.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000164.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000165.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000166.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000167.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000168.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000169.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000170.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000171.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000172.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000173.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000174.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000175.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000176.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000177.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000178.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000179.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000180.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000181.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000182.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000183.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000184.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000185.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000186.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000187.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000188.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000189.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000190.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000191.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000192.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000193.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000194.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000195.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000196.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000197.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000198.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000199.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000200.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000201.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000202.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000203.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000204.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000205.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000206.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000207.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000208.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000209.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000210.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000211.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000212.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000213.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000214.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000215.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000216.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000217.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000218.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000219.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000220.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000221.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000222.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000223.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000224.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000225.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000226.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000227.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000228.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000229.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000230.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000231.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000232.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000233.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000234.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000235.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000236.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000237.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000238.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000239.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000240.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0004/00000241.dcm
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0004 (train)...
+[THỬ LẠI] Lần 1/3 gặp sự cố khi tải LIDC-IDRI-0004: [Errno 122] Disk quota exceeded
+[CHỜ] Chờ 5s trước khi thử lại...
+[THỬ LẠI] Lần 2/3 gặp sự cố khi tải LIDC-IDRI-0004: <urlopen error [Errno 110] Connection timed out>
+[CHỜ] Chờ 10s trước khi thử lại...
+[THỬ LẠI] Lần 3/3 gặp sự cố khi tải LIDC-IDRI-0004: [Errno 122] Disk quota exceeded
+[LỖI] Thất bại toàn diện sau 3 lần thử đối với LIDC-IDRI-0004.
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000001.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000002.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000003.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000004.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000005.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000006.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000007.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000008.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000009.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000010.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000011.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000012.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000013.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000014.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000015.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/LIDC-IDRI-0005/00000016.dcm
+[DỌN DẸP] Đã xóa tệp DICOM hỏng/0-byte: /datastore/doanhbc/minhdphan/data

@@ -1,0 +1,52 @@
+==========================================================
+    LIDC-IDRI LIMITED-ANGLE CT DATA PREPARATION           
+==========================================================
+[INFO] start at:         Thu Nov 12 06:31:25 AM +07 2026
+[INFO] hostname:         h200node01
+[INFO] SLURM_JOB_ID:     12792
+[INFO] Partition:        small
+[INFO] Git commit:       137757feee65dc1601767cf24ec7ef6ac212b594
+[INFO] Dicom source:     /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/
+[INFO] Cache target:     /datastore/doanhbc/minhdphan/datasets/lidc_idri/limited_angle/
+
+Thu Nov 12 06:31:25 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:DF:00.0 Off |                   On |
+| N/A   36C    P0             77W /  700W |     102MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0   10   0   0  |              15MiB / 16384MiB    | 16      0 |  1   0    1    0    1 |
+|                  |               0MiB / 14809MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[INFO] Activated env at: /datastore/doanhbc/minhdphan/envs/longnet
+Python 3.12.13
+
+[INFO] Bắt đầu sinh dữ liệu LIDC-IDRI:
+       Phân vùng: train
+       Dải góc quét: [-60.0°, +60.0°] (120.0° span)
+       Số góc chiếu (Views): 64
+       Thư mục đích: /datastore/doanhbc/minhdphan/datasets/lidc_idri/limited_angle/train/limited_ang_120deg_numview_64_size_256_noise_0
+[INFO] Tổng số lát cắt cần sinh cho train: 925
+[INFO] cleanup rc=1 at Thu Nov 12 06:31:41 AM +07 2026

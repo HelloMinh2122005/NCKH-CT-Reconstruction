@@ -1,0 +1,97 @@
+==========================================================
+    DOWNLOADING LIDC-IDRI DATASET FROM TCIA REST API     
+==========================================================
+[INFO] Start at:      Tue Nov 10 11:41:06 PM +07 2026
+[INFO] Hostname:      h200node01
+[INFO] Slurm Job:     12516
+[INFO] Partition:     small
+[INFO] Git commit:    3345492bc7b1da0e19ab770755653f12fa46a62a
+[INFO] Target dir:    /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom
+
+[INFO] Activated env at: /datastore/doanhbc/minhdphan/envs/longnet
+Python 3.12.13
+Tue Nov 10 23:41:06 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:DF:00.0 Off |                   On |
+| N/A   39C    P0            168W /  700W |    1011MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0    7   0   0  |              15MiB / 16384MiB    | 16      0 |  1   0    1    0    1 |
+|                  |               0MiB / 14809MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[INFO] Launching download_lidc_subset.py...
+======================================================================
+KHỞI CHẠY TIẾN TRÌNH TẢI BỘ DỮ LIỆU LIDC-IDRI TỪ TCIA REST API
+Thư mục lưu trữ: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom
+Tổng số ca bệnh nhân dự kiến: 12
+======================================================================
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0001 (train)...
+[LỖI] Không thể tải LIDC-IDRI-0001: <urlopen error [Errno 110] Connection timed out>
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0002 (train)...
+[LỖI] Không thể tải LIDC-IDRI-0002: <urlopen error [Errno 110] Connection timed out>
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0003 (train)...
+[THÀNH CÔNG] LIDC-IDRI-0003: Đã giải nén 140 lát cắt DICOM.
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0004 (train)...
+[THÀNH CÔNG] LIDC-IDRI-0004: Đã giải nén 241 lát cắt DICOM.
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0005 (train)...
+[THÀNH CÔNG] LIDC-IDRI-0005: Đã giải nén 133 lát cắt DICOM.
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0006 (train)...
+[THÀNH CÔNG] LIDC-IDRI-0006: Đã giải nén 133 lát cắt DICOM.
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0007 (train)...
+[THÀNH CÔNG] LIDC-IDRI-0007: Đã giải nén 145 lát cắt DICOM.
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0008 (train)...
+[THÀNH CÔNG] LIDC-IDRI-0008: Đã giải nén 133 lát cắt DICOM.
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0009 (val)...
+[THÀNH CÔNG] LIDC-IDRI-0009: Đã giải nén 256 lát cắt DICOM.
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0010 (val)...
+[THÀNH CÔNG] LIDC-IDRI-0010: Đã giải nén 277 lát cắt DICOM.
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0011 (test)...
+[THÀNH CÔNG] LIDC-IDRI-0011: Đã giải nén 128 lát cắt DICOM.
+
+[DOWNLOAD] Bắt đầu tải LIDC-IDRI-0012 (test)...
+[THÀNH CÔNG] LIDC-IDRI-0012: Đã giải nén 128 lát cắt DICOM.
+
+======================================================================
+[HOÀN TẤT 100%] Tổng cộng đã tải và giải nén thành công 1714 lát cắt DICOM!
+Bản tổng hợp split: /datastore/doanhbc/minhdphan/datasets/lidc_idri/dicom/../splits_summary.json
+======================================================================
+
+[INFO] Verifying downloaded DICOM files...
+[INFO] Total patients: 12 / 12
+[INFO] Total DICOM files: 1714
+[INFO] LIDC-IDRI download finished successfully at Tue Nov 10 11:52:40 PM +07 2026
+==========================================================
+[INFO] cleanup rc=0 at Tue Nov 10 11:52:40 PM +07 2026

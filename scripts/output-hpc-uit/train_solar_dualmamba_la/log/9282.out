@@ -1,0 +1,41 @@
+=== HPC-UIT TRAINING: SOLAR_DualMamba ===
+[INFO] start at Tue Nov  3 10:30:04 AM +07 2026
+[INFO] hostname=h200node02
+[INFO] SLURM_JOB_ID=9282
+[INFO] SLURM_JOB_PARTITION=normal
+[INFO] Git commit: 5e1922397ad47a91ea6ffaf2cccc91886563a570
+Tue Nov  3 10:30:04 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:D1:00.0 Off |                   On |
+| N/A   51C    P0            273W /  700W |   30245MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0    5   0   0  |              29MiB / 33280MiB    | 32      0 |  2   0    2    0    2 |
+|                  |               0MiB / 29619MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[INFO] Cấu hình góc quét: 90.0° (Views: 64)
+[INFO] Launching SOLAR_DualMamba Training on Limited-Angle CT (AAPM) at Tue Nov  3 10:30:04 AM +07 2026
+[INFO] Hạt giống tái lập thực nghiệm: --seed 42 (spec-1-decisions.md Q5)
+[INFO] cleanup rc=1 at Tue Nov  3 10:30:07 AM +07 2026

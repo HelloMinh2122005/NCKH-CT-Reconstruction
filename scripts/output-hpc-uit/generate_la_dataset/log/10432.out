@@ -1,0 +1,113 @@
+=== KHỞI ĐỘNG TIỀN XỬ LÝ SINH DỮ LIỆU LIMITED-ANGLE CT ===
+[INFO] start at Thu Nov  5 11:15:38 PM +07 2026
+[INFO] hostname=h200node01
+[INFO] SLURM_JOB_ID=10432
+[INFO] SLURM_JOB_PARTITION=small
+[INFO] Git commit: 3723d53d457541a72fb26d0e5682c2a22c9ff117
+Thu Nov  5 23:15:38 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:DF:00.0 Off |                   On |
+| N/A   58C    P0            338W /  700W |   28854MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0   10   0   0  |              15MiB / 16384MiB    | 16      0 |  1   0    1    0    1 |
+|                  |               0MiB / 14809MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[INFO] Cấu hình phân chia: Train=55 BN, Val=1 BN, Test=4 BN
+[INFO] Cấu hình góc quét mục tiêu (TARGET_ANGLES): 90.0
+[INFO] Launching Limited-Angle CT Data Preparation at Thu Nov  5 11:15:39 PM +07 2026
+[INFO] Bỏ qua LA-120° theo cấu hình TARGET_ANGLES='90.0' (tối ưu hạn ngạch đĩa cho Wave A)
+--------------------------------------------------------------------------------
+🚀 [2/2] Đang tạo dữ liệu góc giới hạn LA-90° (64 views, 512 detectors, 256x256)
+--------------------------------------------------------------------------------
+======================================================================
+🚀 BẮT ĐẦU TẠO SINH DATASET LIMITED-ANGLE CT
+- Cung góc quét: [-45.0°, +45.0°] (90.0° total)
+- Số góc chiếu (Views): 64 | Detectors: 512
+- Độ phân giải không gian: 256x256
+- Cấu hình lưu trữ (Tag): limited_ang_90deg_numview_64_size_256_noise_0
+======================================================================
+
+[1/3] Đang xử lý tập TRAIN -> /datastore/doanhbc/minhdphan/datasets/aapm/limited_angle/train/limited_ang_90deg_numview_64_size_256_noise_0
+[TRAIN] Loaded 8218 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: train).
+
+[2/3] Đang xử lý tập VALIDATION (L333) -> /datastore/doanhbc/minhdphan/datasets/aapm/limited_angle/train/limited_ang_90deg_numview_64_size_256_noise_0
+[VALID] Loaded 133 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: train).
+
+[3/3] Đang xử lý tập TEST (L310) -> /datastore/doanhbc/minhdphan/datasets/aapm/limited_angle/test/limited_ang_90deg_numview_64_size_256_noise_0
+[TEST] Loaded 757 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: test).
+
+🎉 Tạo sinh và lưu cache toàn bộ dataset Limited-Angle CT hoàn thành thành công!
+[INFO] All Limited-Angle CT data preparation finished at Thu Nov  5 11:17:21 PM +07 2026
+================================================================================
+🎯 KÍCH HOẠT T3: ĐÁNH GIÁ BASELINE FBP (TEST COHORT: 120° & 90°)
+================================================================================
+================================================================================
+🔬 HỆ THỐNG ĐÁNH GIÁ BENCHMARK FBP TRÊN TẬP KIỂM THỬ AAPM LIMITED-ANGLE CT
+- Các góc quét cần đánh giá: [90.0]
+- Bệnh nhân kiểm thử: ['L058', 'L064', 'L094', 'L107']
+- Job ID: 10432
+================================================================================
+
+🚀 BẮT ĐẦU ĐÁNH GIÁ FBP CHO GÓC QUÉT 90°
+- Cung quét: [-45.0°, +45.0°] (90.0°)
+- Tập bệnh nhân kiểm thử: ['L058', 'L064', 'L094', 'L107']
+- Thư mục DICOM: /datastore/doanhbc/minhdphan/datasets/aapm/split/
+- Thư mục Cache: /datastore/doanhbc/minhdphan/datasets/aapm/limited_angle/ (use_precomputed=True)
+- File CSV đầu ra: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/fbp_benchmark/per_slice_test.csv
+[TEST] Loaded 757 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: test).
+- Tổng số lát cắt nạp được: 757
+- Thiết bị tính toán: cuda
+  [100/757] BN: L058 Lát #99: PSNR=11.48dB, SSIM=0.4337, RMSE=0.33563
+  [200/757] BN: L058 Lát #199: PSNR=12.36dB, SSIM=0.3978, RMSE=0.30567
+  [300/757] BN: L064 Lát #89: PSNR=12.98dB, SSIM=0.3710, RMSE=0.25014
+  [400/757] BN: L064 Lát #189: PSNR=12.42dB, SSIM=0.3923, RMSE=0.26763
+  [500/757] BN: L094 Lát #80: PSNR=11.64dB, SSIM=0.6465, RMSE=0.33110
+  [600/757] BN: L107 Lát #44: PSNR=11.43dB, SSIM=0.6052, RMSE=0.31354
+  [700/757] BN: L107 Lát #144: PSNR=12.81dB, SSIM=0.5274, RMSE=0.26832
+  [757/757] BN: L107 Lát #201: PSNR=11.06dB, SSIM=0.4813, RMSE=0.32231
+✅ Đã ghi thành công 757 dòng vào: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/fbp_benchmark/per_slice_test.csv
+
+================================================================================
+📊 BẢNG TỔNG HỢP KẾT QUẢ ĐÁNH GIÁ FBP (Cung quét: 90°)
+================================================================================
+Bệnh nhân    Số lát     PSNR (dB)          SSIM               RMSE              
+--------------------------------------------------------------------------------
+L058         210        12.3746            0.4188             0.293221          
+L064         209        12.4345            0.4454             0.276271          
+L094         136        12.1082            0.6329             0.301726          
+L107         202        12.1725            0.5062             0.286345          
+--------------------------------------------------------------------------------
+TRUNG BÌNH 4 BỆNH NHÂN (Mean ± Std):
+  • PSNR: 12.2725 ± 0.1567 dB
+  • SSIM: 0.5008 ± 0.0954
+  • RMSE: 0.289391 ± 0.010774
+  • Tổng số lát cắt: 757
+================================================================================
+
+
+🎉 Hoàn thành toàn bộ quy trình đánh giá FBP cho các góc quét chỉ định!
+[INFO] Hoàn tất toàn bộ công việc của generate_la_dataset lúc Thu Nov  5 11:17:51 PM +07 2026
+[INFO] cleanup rc=0 at Thu Nov  5 11:17:51 PM +07 2026

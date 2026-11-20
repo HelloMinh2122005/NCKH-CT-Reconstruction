@@ -1,0 +1,74 @@
+=== HPC-UIT TEST: SOLAR_DualMamba LAST.CKPT EVALUATION ===
+[INFO] Start at: Sat Nov 14 03:03:48 PM +07 2026
+[INFO] Hostname: h200node02
+[INFO] SLURM_JOB_ID: 30623
+[INFO] Git commit: 137757feee65dc1601767cf24ec7ef6ac212b594
+Sat Nov 14 15:03:48 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:D1:00.0 Off |                   On |
+| N/A   55C    P0            433W /  700W |   58423MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0    5   0   0  |              29MiB / 33280MiB    | 32      0 |  2   0    2    0    2 |
+|                  |               0MiB / 29619MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[INFO] Khởi động đánh giá SOLAR_DualMamba trên checkpoint last.ckpt (LA-90°, 64 views)...
+[INFO] Danh sách test patients: L058 L064 L094 L107
+[INFO] Tệp CSV kết quả per-slice: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/solar_last_ckpt_per_slice_results.csv
+================================================================================
+🎯 ĐÁNH GIÁ: SOLAR_DualMamba (last.ckpt) LA-90° (64 views)
+================================================================================
+[INFO] Git rev-parse HEAD: 137757feee65dc1601767cf24ec7ef6ac212b594
+[INFO] Slurm Job ID: 30623
+================================================================================
+🔍 ĐÁNH GIÁ MÔ HÌNH ĐỘT PHÁ MIỀN KÉP: SOLAR_DualMamba (Sinogram Bi-Mamba + Newton-CG Swin)
+- Tệp checkpoint: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/saved_models/SOLAR_DualMamba_90/last.ckpt
+- Tập dữ liệu: AAPM | Dải góc: 90.0° (Views: 64)
+- Bệnh nhân kiểm thử: ['L058', 'L064', 'L094', 'L107']
+- File CSV xuất kết quả per-slice: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/solar_last_ckpt_per_slice_results.csv
+================================================================================
+[TEST] Loaded 757 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: test).
+🔍 Bắt đầu đánh giá SOLAR_DualMamba_last_ckpt (Góc 90.0°) trên 757 lát cắt...
+✅ Đã ghi nhận 757 dòng kết quả lát cắt vào: /datastore/doanhbc/minhdphan/NCKH-CT-Reconstruction/reports/solar_last_ckpt_per_slice_results.csv
+
+================================================================================
+📊 BẢNG TỔNG KẾT ĐÁNH GIÁ ĐỊNH LƯỢNG: SOLAR_DualMamba_last_ckpt (90.0°)
+   (Slurm Job ID: 30623 | Tổng số lát cắt: 757)
+================================================================================
+Patient ID   | Slices   | PSNR (dB)    | SSIM       | RMSE      
+--------------------------------------------------------------------------------
+L058         | 210      | 22.7180      | 0.6863     | 0.080431  
+L064         | 209      | 23.4129      | 0.7015     | 0.073754  
+L094         | 136      | 26.6524      | 0.7575     | 0.047641  
+L107         | 202      | 23.4799      | 0.7245     | 0.071539  
+--------------------------------------------------------------------------------
+OVERALL (Headline Mean ± Std qua 4 bệnh nhân):
+  • PSNR: 24.07 ± 1.52 dB
+  • SSIM: 0.7174 ± 0.0268
+  • RMSE: 0.068341 ± 0.012392
+================================================================================
+
+[INFO] Đánh giá SOLAR_DualMamba last.ckpt hoàn tất thành công lúc Sat Nov 14 03:06:31 PM +07 2026
+[INFO] cleanup rc=0 at Sat Nov 14 03:06:31 PM +07 2026

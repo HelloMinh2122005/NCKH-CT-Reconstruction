@@ -1,0 +1,54 @@
+=== KHỞI ĐỘNG TIỀN XỬ LÝ SINH DỮ LIỆU LIMITED-ANGLE CT (LA-120°) ===
+[INFO] start at Sun Nov 15 04:31:42 PM +07 2026
+[INFO] hostname=h200node01
+[INFO] SLURM_JOB_ID=30579
+[INFO] SLURM_JOB_PARTITION=small
+[INFO] Git commit: 137757feee65dc1601767cf24ec7ef6ac212b594
+Sun Nov 15 16:31:43 2026       
++-----------------------------------------------------------------------------------------+
+| NVIDIA-SMI 580.126.20             Driver Version: 580.126.20     CUDA Version: 13.0     |
++-----------------------------------------+------------------------+----------------------+
+| GPU  Name                 Persistence-M | Bus-Id          Disp.A | Volatile Uncorr. ECC |
+| Fan  Temp   Perf          Pwr:Usage/Cap |           Memory-Usage | GPU-Util  Compute M. |
+|                                         |                        |               MIG M. |
+|=========================================+========================+======================|
+|   0  NVIDIA H200                    On  |   00000000:DF:00.0 Off |                   On |
+| N/A   38C    P0            122W /  700W |    5874MiB / 143771MiB |     N/A      Default |
+|                                         |                        |              Enabled |
++-----------------------------------------+------------------------+----------------------+
+
++-----------------------------------------------------------------------------------------+
+| MIG devices:                                                                            |
++------------------+----------------------------------+-----------+-----------------------+
+| GPU  GI  CI  MIG |              Shared Memory-Usage |        Vol|        Shared         |
+|      ID  ID  Dev |                Shared BAR1-Usage | SM     Unc| CE ENC  DEC  OFA  JPG |
+|                  |                                  |        ECC|                       |
+|==================+==================================+===========+=======================|
+|  0   12   0   0  |              15MiB / 16384MiB    | 16      0 |  1   0    1    0    1 |
+|                  |               0MiB / 14809MiB    |           |                       |
++------------------+----------------------------------+-----------+-----------------------+
+
++-----------------------------------------------------------------------------------------+
+| Processes:                                                                              |
+|  GPU   GI   CI              PID   Type   Process name                        GPU Memory |
+|        ID   ID                                                               Usage      |
+|=========================================================================================|
+|  No running processes found                                                             |
++-----------------------------------------------------------------------------------------+
+[INFO] Cấu hình phân chia: Train=55 BN, Val=1 BN, Test=4 BN
+[INFO] Cấu hình góc quét mục tiêu (TARGET_ANGLES): 120.0
+[INFO] Launching Limited-Angle CT Data Preparation at Sun Nov 15 04:31:43 PM +07 2026
+--------------------------------------------------------------------------------
+🚀 Đang tạo dữ liệu góc giới hạn LA-120° (64 views, 512 detectors, 256x256)
+--------------------------------------------------------------------------------
+======================================================================
+🚀 BẮT ĐẦU TẠO SINH DATASET LIMITED-ANGLE CT
+- Cung góc quét: [-60.0°, +60.0°] (120.0° total)
+- Số góc chiếu (Views): 64 | Detectors: 512
+- Độ phân giải không gian: 256x256
+- Cấu hình lưu trữ (Tag): limited_ang_120deg_numview_64_size_256_noise_0
+======================================================================
+
+[1/3] Đang xử lý tập TRAIN -> /datastore/doanhbc/minhdphan/datasets/aapm/limited_angle/train/limited_ang_120deg_numview_64_size_256_noise_0
+[TRAIN] Loaded 8218 CT slices from /datastore/doanhbc/minhdphan/datasets/aapm/split/ (split: train).
+[INFO] cleanup rc=1 at Sun Nov 15 04:32:39 PM +07 2026

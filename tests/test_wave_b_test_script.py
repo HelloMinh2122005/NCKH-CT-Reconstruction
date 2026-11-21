@@ -154,8 +154,10 @@ class TestWaveBTestScriptContract(unittest.TestCase):
             content = f.read()
 
         # [2026-11-20 T1.6] Cho phép báo cáo tại reports/hpc-uit-55p hoặc reports/
+        # [2026-11-21 P6] Cho phép báo cáo tại reports/hpc-uit-55p với ${ANGLE}
         self.assertTrue(
-            "reports/hpc-uit-55p/wave_b_ablation_per_slice_results.csv" in content
+            "reports/hpc-uit-55p/wave_b_ablation_${ANGLE}_per_slice_results.csv" in content
+            or "reports/hpc-uit-55p/wave_b_ablation_per_slice_results.csv" in content
             or "reports/wave_b_ablation_per_slice_results.csv" in content,
             "Đường dẫn kết quả CSV phải nằm trong reports/hpc-uit-55p hoặc reports/"
         )

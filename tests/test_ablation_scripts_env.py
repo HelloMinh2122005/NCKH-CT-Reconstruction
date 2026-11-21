@@ -64,6 +64,20 @@ class TestAblationScriptsEnv(unittest.TestCase):
         # Đường dẫn checkpoint phải tham chiếu ${ANGLE}
         self.assertIn('SOLAR_DualMamba_${ANGLE}_abl-${VARIANT}', content)
 
+    def test_p6_csv_output_defined_after_angle_and_includes_angle(self):
+        """P6: Xác minh CSV_OUTPUT đặt sau định nghĩa ANGLE và chứa ${ANGLE}."""
+        content = TEST_ABLATION_SCRIPT.read_text(encoding="utf-8")
+        angle_pos = content.find('ANGLE="${1:-${ANGLE:-90}}"')
+        csv_pos = content.find('CSV_OUTPUT=')
+        self.assertNotEqual(angle_pos, -1, "Không tìm thấy định nghĩa ANGLE")
+        self.assertNotEqual(csv_pos, -1, "Không tìm thấy định nghĩa CSV_OUTPUT")
+        self.assertGreater(csv_pos, angle_pos, "P6: CSV_OUTPUT phải được định nghĩa SAU dòng gán ANGLE")
+        self.assertIn(
+            'CSV_OUTPUT="$REPO/reports/hpc-uit-55p/wave_b_ablation_${ANGLE}_per_slice_results.csv"',
+            content,
+            "P6: CSV_OUTPUT phải chứa ${ANGLE} để tránh ghi đè giữa 90° và 120°"
+        )
+
     def test_bash_syntax_validity(self):
         """Kiểm tra cú pháp bash hợp lệ trên toàn bộ 5 script ablation."""
         all_scripts = TRAIN_ABLATION_SCRIPTS + [TEST_ABLATION_SCRIPT]

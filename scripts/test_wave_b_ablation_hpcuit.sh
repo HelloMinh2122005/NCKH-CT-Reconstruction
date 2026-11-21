@@ -69,12 +69,14 @@ export TRITON_CACHE_DIR=$XDG_CACHE_HOME/triton
 # Cấu hình danh sách bệnh nhân kiểm thử đóng băng theo split.md
 # Gồm 4 bệnh nhân kiểm thử độc lập: L058, L064, L094, L107 (tổng cộng 757 lát cắt)
 TEST_PATIENTS=("L058" "L064" "L094" "L107")
-# [2026-11-20 T1.6] Tách triệt để kết quả 55 BN sang reports/hpc-uit-55p/
-CSV_OUTPUT="$REPO/reports/hpc-uit-55p/wave_b_ablation_per_slice_results.csv"
 
 # [2026-11-21 T1.11 C3] Tham số hóa ANGLE và VARIANTS
 ANGLE="${1:-${ANGLE:-90}}"
 VARIANTS="${2:-${VARIANTS:-a b c d}}"
+
+# [2026-11-20 T1.6] Tách triệt để kết quả 55 BN sang reports/hpc-uit-55p/
+# [2026-11-21 T1.11 P6] Phân tách CSV theo ANGLE để tránh ghi đè giữa 90° và 120°
+CSV_OUTPUT="$REPO/reports/hpc-uit-55p/wave_b_ablation_${ANGLE}_per_slice_results.csv"
 
 echo "[INFO] Khởi động đánh giá hàng loạt 4 biến thể ablation Wave B trên LA-90°..."
 echo "[INFO] Cấu hình: LA-${ANGLE}°, danh sách biến thể: ${VARIANTS}"

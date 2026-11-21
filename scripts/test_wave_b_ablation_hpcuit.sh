@@ -72,7 +72,12 @@ TEST_PATIENTS=("L058" "L064" "L094" "L107")
 # [2026-11-20 T1.6] Tách triệt để kết quả 55 BN sang reports/hpc-uit-55p/
 CSV_OUTPUT="$REPO/reports/hpc-uit-55p/wave_b_ablation_per_slice_results.csv"
 
+# [2026-11-21 T1.11 C3] Tham số hóa ANGLE và VARIANTS
+ANGLE="${1:-${ANGLE:-90}}"
+VARIANTS="${2:-${VARIANTS:-a b c d}}"
+
 echo "[INFO] Khởi động đánh giá hàng loạt 4 biến thể ablation Wave B trên LA-90°..."
+echo "[INFO] Cấu hình: LA-${ANGLE}°, danh sách biến thể: ${VARIANTS}"
 echo "[INFO] Danh sách test patients: ${TEST_PATIENTS[*]}"
 echo "[INFO] Tệp CSV kết quả per-slice: $CSV_OUTPUT"
 
@@ -81,9 +86,10 @@ run_ablation_eval() {
     local VARIANT="$1"
     local METHOD="$2"
     local SCRIPT_NAME="baselines/SOLAR_DualMamba/test_solar_dualmamba_la.py"
-    local ANGLE="90"
+    local ANGLE="$ANGLE"
     # [2026-11-20 T1.6] Đọc checkpoint từ saved_models_55p/
-    local CKPT_DIR="$REPO/saved_models_55p/SOLAR_DualMamba_90_abl-${VARIANT}"
+    # [2026-11-21 T1.11 C3] Đường dẫn checkpoint theo ${ANGLE} và ${VARIANT}
+    local CKPT_DIR="$REPO/saved_models_55p/SOLAR_DualMamba_${ANGLE}_abl-${VARIANT}"
     local EXTRA_ARGS=("${@:3}")
 
     echo "================================================================================"
@@ -123,16 +129,29 @@ run_ablation_eval() {
         "${EXTRA_ARGS[@]}"
 }
 
-# 1. Đánh giá Ablation a: SOLAR_DualMamba_90_abl-a (Loại bỏ Sinogram Refinement - ŷ = y, loss_sino = 0)
-run_ablation_eval "a" "SOLAR_DualMamba_abl-a" --ablate a
-
-# 2. Đánh giá Ablation b: SOLAR_DualMamba_90_abl-b (Gradient Descent Data Consistency - stage-matched K=8)
-run_ablation_eval "b" "SOLAR_DualMamba_abl-b" --ablate b --n_iterations 8
-
-# 3. Đánh giá Ablation c: SOLAR_DualMamba_90_abl-c (Bi-Mamba -> Conv2D trong Sinogram Restoration)
-run_ablation_eval "c" "SOLAR_DualMamba_abl-c" --ablate c
-
-# 4. Đánh giá Ablation d: SOLAR_DualMamba_90_abl-d (Swin Transformer -> CNN trong Image Regularizer)
-run_ablation_eval "d" "SOLAR_DualMamba_abl-d" --ablate d
+# Lặp qua các biến thể được yêu cầu trong $VARIANTS
+for V in $VARIANTS; do
+    case "$V" in
+        a)
+            # 1. Đánh giá Ablation a: SOLAR_DualMamba_90_abl-a (Loại bỏ Sinogram Refinement - ŷ = y, loss_sino = 0)
+            run_ablation_eval "a" "SOLAR_DualMamba_abl-a" --ablate a
+            ;;
+        b)
+            # 2. Đánh giá Ablation b: SOLAR_DualMamba_90_abl-b (Gradient Descent Data Consistency - stage-matched K=8)
+            run_ablation_eval "b" "SOLAR_DualMamba_abl-b" --ablate b --n_iterations 8
+            ;;
+        c)
+            # 3. Đánh giá Ablation c: SOLAR_DualMamba_90_abl-c (Bi-Mamba -> Conv2D trong Sinogram Restoration)
+            run_ablation_eval "c" "SOLAR_DualMamba_abl-c" --ablate c
+            ;;
+        d)
+            # 4. Đánh giá Ablation d: SOLAR_DualMamba_90_abl-d (Swin Transformer -> CNN trong Image Regularizer)
+            run_ablation_eval "d" "SOLAR_DualMamba_abl-d" --ablate d
+            ;;
+        *)
+            echo "[WARN] Bỏ qua biến thể không xác định: $V"
+            ;;
+    esac
+done
 
 echo "[INFO] Batched test Wave B ablation hoàn tất thành công lúc $(date)"

@@ -66,7 +66,8 @@ export TRITON_CACHE_DIR=$XDG_CACHE_HOME/triton
 # ================= CẤU HÌNH GÓC QUÉT & CHECKPOINT =================
 # [2026-11-20 T1.7] Tham số hóa số epoch: mặc định 50
 # Tham số hóa góc quét: mặc định 90 độ, có thể cấu hình 120 độ qua đối số $1
-ANGLE="${1:-90}"
+# [2026-11-21 T1.11 C3] Hỗ trợ đọc ANGLE từ biến môi trường nếu không truyền đối số
+ANGLE="${1:-${ANGLE:-90}}"
 ANGLE_DEG="${ANGLE}.0"
 # Tham số hóa số epoch: mặc định 50 (T1.7)
 MAX_EPOCHS="${MAX_EPOCHS:-50}"
